@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="GameTechlabWeek2/GameTechlabWeek2.vcxproj" Id="814a0a05-c4da-42ec-bc14-d9c9fd2b368a" />
+</Solution>
