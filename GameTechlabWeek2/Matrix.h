@@ -34,4 +34,17 @@ struct FMatrix
 {
 	float M[4][4];
 	static const FMatrix Identity;
+
+	FMatrix Transpose() const
+	{
+		FMatrix Result;
+		for (int Row = 0; Row < 4; ++Row)
+		{
+			for (int Col = 0; Col < 4; ++Col)
+			{
+				Result.M[Row][Col] = M[Col][Row];
+			}
+		}
+		return Result;
+	}
 };

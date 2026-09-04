@@ -304,7 +304,7 @@ void FRenderer::ReleaseConstantBuffer()
     }
 }
 
-void FRenderer::UpdateConstant(FVector Offset)
+void FRenderer::UpdateConstantBuffer(const FMatrix& WorldMatrix)
 {
     if (ConstantBuffer)
     {
@@ -312,17 +312,44 @@ void FRenderer::UpdateConstant(FVector Offset)
 
         DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR); // update constant buffer every frame
         FConstants* constants = (FConstants*)constantbufferMSR.pData;
-        {
-            constants->Offset = Offset;
-        }
+        constants->WorldMatrix = WorldMatrix.Transpose();
         DeviceContext->Unmap(ConstantBuffer, 0);
     }
 }
 
-void FRenderer::RenderPrimitive(ID3D11Buffer* pBuffer, UINT numVertices)
+void FRenderer::Render(UScene* Scene)
 {
+    //BeginFrame();
+    UpdateFrameConstantBuffer(Scene->GetCamera());
+
+    for (UPrimitiveComponent* Prim : Scene->GetPrimitiveComponents())
+    {
+        FPrimitiveRenderData Data = Prim->GetRenderData();
+        RenderPrimitive(Data);
+    }
+
     UINT offset = 0;
     DeviceContext->IASetVertexBuffers(0, 1, &pBuffer, &Stride, &offset);
 
     DeviceContext->Draw(numVertices, 0);
+    //EndFrame();
+}
+
+void FRenderer::RenderPrimitive(const FPrimitiveRenderData& Data)
+{
+    // 오브젝트별 상수버퍼 갱신 (Renderer가 소유한 CB에 World만 갈아끼움)
+    UpdateConstantBuffer(*Data.WorldMatrix);
+    DeviceContext->VSSetConstantBuffers(0, 1, &PerObjectCB);
+
+    // 지오메트리 바인딩
+    UINT Offset = 0;
+    DeviceContext->IASetVertexBuffers(0, 1, &Data.VertexBuffer, &Data.Stride, &Offset);
+    DeviceContext->IASetIndexBuffer(Data.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+    DeviceContext->IASetPrimitiveTopology(Data.Topology);
+
+    // 머티리얼(셰이더/텍스처) 바인딩
+    BindMaterial(Data.Material);
+
+    // Draw
+    DeviceContext->DrawIndexed(Data.IndexCount, 0, 0);
 }

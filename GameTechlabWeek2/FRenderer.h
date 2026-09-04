@@ -9,7 +9,6 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 
-//#include "UEngine"
 #include "Matrix.h"
 
 struct FVertexSimple;
@@ -18,8 +17,10 @@ struct FConstants
     FVector Offset;
     float Padding;
 };
+class UScene;
+struct FPrimitiveRenderData;
 
-class FRenderer // : public UEngine
+class FRenderer
 {
 public:
     // Direct3D 11 장치(Device)와 장치 컨텍스트(Device Context) 및 스왑 체인(Swap Chain)을 관리하기 위한 포인터들
@@ -69,7 +70,8 @@ public:
 
     void CreateConstantBuffer();                    // 상수 버퍼 생성 함수
     void ReleaseConstantBuffer();                   // 상수 버퍼 소멸 함수
-    void UpdateConstant(FVector Offset);            // 상수 버퍼 업데이트 함수
+    void UpdateConstantBuffer(const FMatrix& WorldMatrix);      // 상수 버퍼 업데이트 함수
 
-    void RenderPrimitive(ID3D11Buffer* pBuffer, UINT numVertices);
+    void Render(UScene* Scene);
+    void RenderPrimitive(const FPrimitiveRenderData& Data);
 };
