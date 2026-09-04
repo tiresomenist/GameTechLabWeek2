@@ -147,7 +147,7 @@ bool FMatrix::TryInverse(FMatrix& OutInverse) const
         }
 
         // 피벗이 거의 0일때 역행렬 존재X
-        if (MaxValue <= UEngineStatics::Epsilon) {
+        if (MaxValue <= 1.0e-8f) {
             return false;
         }
 
