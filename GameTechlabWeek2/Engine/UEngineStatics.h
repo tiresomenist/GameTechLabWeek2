@@ -5,6 +5,10 @@
 
 class UEngineStatics
 {
-	static uint32 GenUUID();
+	static uint32 GenUUID()
+	{
+		return NextUUID++;
+	}
+
 	static uint32 NextUUID;
 };
