@@ -14,12 +14,17 @@
 class UObject
 {
 public:
-    static UObject* CreateObject(uint32 UUID, uint32 InternalIndex);
+    static UObject* CreateObject(uint32 UUID, uint32 InternalIndex, FClassType* InClassType);
     static FClassType* GetClass();
 
-    UObject(uint32 InUUID, uint32 InInternalIndex);
+    FClassType* GetClassType();
+
+    UObject(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
 
     uint32 UUID;
     uint32 InternalIndex;
+
+private:
+    FClassType* ClassType;
 };
 

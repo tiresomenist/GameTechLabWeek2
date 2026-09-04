@@ -5,9 +5,10 @@
 #include "../../FString.h"
 
 class UObject;
+struct FClassType;
 
 // UObject 생성자 타입
-using Constructor = std::function<UObject* (uint32, uint32)>;
+using Constructor = std::function<UObject* (uint32, uint32, FClassType*)>;
 
 struct FClassType
 {

@@ -4,6 +4,8 @@
 #include "Object/UObject.h"
 #include "Object/USceneComponent.h"
 
+#include <format>
+
 float GetTime()
 {
 	LARGE_INTEGER currentTime;
@@ -25,6 +27,17 @@ void GEngine::Initialize()
 
 	UObject* Object = FObjectFactory::ConstructObject(UObject::GetClass());
 	UObject* SceneObject = FObjectFactory::ConstructObject(USceneComponent::GetClass());
+
+	USceneComponent* SceneComponent = reinterpret_cast<USceneComponent*>(SceneObject);
+	SceneComponent->RelativeLocation = FVector{ 1.0f, 2.0f, 3.0f };
+	SceneComponent->RelativeRotation = FVector{ 1.0f, 2.0f, 3.0f };
+	SceneComponent->RelativeScale3D = FVector{ 1.0f, 1.0f, 1.0f };
+
+	MessageBox(nullptr, std::format(L"테스트입니다 {} {} {}",
+		SceneComponent->RelativeLocation.X,
+		SceneComponent->RelativeLocation.Y,
+		SceneComponent->RelativeLocation.Z).c_str(), L"", 0);
+
 }
 
 void GEngine::Tick()

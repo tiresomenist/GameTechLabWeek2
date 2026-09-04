@@ -1,9 +1,9 @@
 #include "UObject.h"
 #include "GObjects.h"
 
-UObject* UObject::CreateObject(uint32 UUID, uint32 InternalIndex)
+UObject* UObject::CreateObject(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
 {
-	return new UObject(UUID, InternalIndex);
+	return new UObject(InUUID, InInternalIndex, InClassType);
 }
 
 FClassType* UObject::GetClass()
@@ -12,8 +12,9 @@ FClassType* UObject::GetClass()
     return &Type;
 }
 
-UObject::UObject(uint32 InUUID, uint32 InInternalIndex)
+UObject::UObject(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
 	: UUID{ InUUID }
 	, InternalIndex{ InInternalIndex }
+	, ClassType{ InClassType }
 {
 }

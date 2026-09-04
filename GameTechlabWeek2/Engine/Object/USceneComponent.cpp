@@ -1,8 +1,8 @@
 #include "USceneComponent.h"
 
-UObject* USceneComponent::CreateObject(uint32 UUID, uint32 InternalIndex)
+UObject* USceneComponent::CreateObject(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
 {
-	return new USceneComponent(UUID, InternalIndex);
+	return new USceneComponent(InUUID, InInternalIndex, InClassType);
 }
 
 FClassType* USceneComponent::GetClass()
@@ -11,7 +11,7 @@ FClassType* USceneComponent::GetClass()
 	return &Type;
 }
 
-USceneComponent::USceneComponent(uint32 InUUID, uint32 InInternalIndex)
-	: UObject{ InUUID, InInternalIndex }
+USceneComponent::USceneComponent(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
+	: UObject{ InUUID, InInternalIndex, InClassType }
 {
 }

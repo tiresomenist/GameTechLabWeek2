@@ -24,7 +24,7 @@ public:
 		uint32 UUID = UEngineStatics::GenUUID();
 		uint32 InternalIndex = GObjects::GetNextIndex();
 
-		UObject* Object = Type->ClassConstructor(UUID, InternalIndex);
+		UObject* Object = Type->ClassConstructor(UUID, InternalIndex, Type);
 		GObjects::AddObject(Object);
 
 		return Object;
