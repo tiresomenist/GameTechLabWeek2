@@ -1,4 +1,6 @@
 #pragma once
+#include "Windows.h"
+#include "FRenderer.h"
 
 #include "Core.h"
 
@@ -7,7 +9,7 @@ class GEngine
 public:
 	static GEngine* GetInstance();
 
-	void Initialize();
+	void Initialize(HWND d);
 
 	void Tick();
 
@@ -16,6 +18,8 @@ public:
 private:
 	float LastTickTime = 0;
 	
+	FRenderer r;
+
 	// 싱글톤
 	GEngine() = default;
 	~GEngine() = default;

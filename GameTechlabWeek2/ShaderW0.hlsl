@@ -33,5 +33,5 @@ PS_INPUT mainVS(VS_INPUT input)
 float4 mainPS(PS_INPUT input) : SV_TARGET
 {
     // Output the color directly
-    return input.color;
+    return (0.5f, 0.5f, 0.5f, 0.5f);
 }

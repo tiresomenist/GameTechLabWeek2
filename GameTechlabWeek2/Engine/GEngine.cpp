@@ -3,6 +3,7 @@
 #include "Object/FObjectFactory.h"
 #include "Object/UObject.h"
 #include "Object/USceneComponent.h"
+#include "FRenderer.h"
 
 #include <format>
 
@@ -21,7 +22,7 @@ GEngine* GEngine::GetInstance()
 	return Engine;
 }
 
-void GEngine::Initialize()
+void GEngine::Initialize(HWND d)
 {
 	LastTickTime = GetTime();
 
@@ -38,12 +39,14 @@ void GEngine::Initialize()
 		SceneComponent->RelativeLocation.Y,
 		SceneComponent->RelativeLocation.Z).c_str(), L"", 0);
 
+	r.Create(d, 1024, 1024);
+
 }
 
 void GEngine::Tick()
 {
 	float DeltaTime = GetTime() - LastTickTime;
-
+	r.Render();
 	// 게임 로직을 수행합니다.
 	// GSceneManager.Update(DeltaTime);
 

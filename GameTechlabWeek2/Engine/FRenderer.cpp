@@ -1,6 +1,69 @@
+#pragma once
 #include "FRenderer.h"
 #include "../Matrix.h"
 #include "../FVertexSimple.h"
+
+void GenerateSphere(float Radius, int Slices, int Stacks, std::vector<FVertex>& OutVertices, std::vector<uint32_t>& OutIndices)
+{
+    OutVertices.clear();
+    OutIndices.clear();
+
+    const float PI = 3.141592654f;
+
+    // 1. 정점(Vertex) 데이터 생성
+    for (int i = 0; i <= Stacks; ++i)
+    {
+        float V = (float)i / (float)Stacks;
+        float phi = V * PI; // 0 ~ PI (위에서 아래로)
+
+        for (int j = 0; j <= Slices; ++j)
+        {
+            float U = (float)j / (float)Slices;
+            float theta = U * 2.0f * PI; // 0 ~ 2PI (한 바퀴)
+
+            // 구면 좌표계를 직교 좌표계로 변환 (Left-Handed 기준)
+            float x = Radius * sinf(phi) * cosf(theta);
+            float y = Radius * cosf(phi);
+            float z = Radius * sinf(phi) * sinf(theta);
+
+            FVertex vertex;
+            vertex.x = x; vertex.y = y; vertex.z = z;
+
+            // 법선(Normal) 벡터는 위치 벡터를 정규화한 것과 동일 (원점 중심이므로)
+            vertex.nx = x / Radius;
+            vertex.ny = y / Radius;
+            vertex.nz = z / Radius;
+
+            vertex.u = U;
+            vertex.v = V;
+
+            OutVertices.push_back(vertex);
+        }
+    }
+
+    // 2. 인덱스(Index) 데이터 생성
+    for (int i = 0; i < Stacks; ++i)
+    {
+        for (int j = 0; j < Slices; ++j)
+        {
+            // 현재 사각형을 구성하는 4개의 정점 인덱스 계산
+            uint32_t p0 = (i * (Slices + 1)) + j;
+            uint32_t p1 = (i * (Slices + 1)) + (j + 1);
+            uint32_t p2 = ((i + 1) * (Slices + 1)) + j;
+            uint32_t p3 = ((i + 1) * (Slices + 1)) + (j + 1);
+
+            // 첫 번째 삼각형 (시계 방향 - D3D 기본 전면)
+            OutIndices.push_back(p0);
+            OutIndices.push_back(p1);
+            OutIndices.push_back(p2);
+
+            // 두 번째 삼각형
+            OutIndices.push_back(p2);
+            OutIndices.push_back(p1);
+            OutIndices.push_back(p3);
+        }
+    }
+}
 
 void FRenderer::Create(HWND hWindow, uint32 InWidth, uint32 InHeight)
 {
@@ -363,6 +426,10 @@ ID3D11Buffer* FRenderer::CreateIndexBuffer(uint32_t* indices, UINT byteWidth)
     }
 
     return indexBuffer;
+}
+
+void FRenderer::Render(UScene* Scene)
+{
 }
 
 void FRenderer::Render()
