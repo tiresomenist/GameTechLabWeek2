@@ -1,5 +1,8 @@
 #include "GEngine.h"
 #include "Windows.h"
+#include "Object/FObjectFactory.h"
+#include "Object/UObject.h"
+#include "Object/USceneComponent.h"
 
 float GetTime()
 {
@@ -19,6 +22,9 @@ GEngine* GEngine::GetInstance()
 void GEngine::Initialize()
 {
 	LastTickTime = GetTime();
+
+	UObject* Object = FObjectFactory::ConstructObject(UObject::GetClass());
+	UObject* SceneObject = FObjectFactory::ConstructObject(USceneComponent::GetClass());
 }
 
 void GEngine::Tick()

@@ -8,6 +8,6 @@ private:
 	std::string String;
 
 public:
-	FString(std::string_view str);
+	FString(std::string_view InString);
 
 };

@@ -1,14 +1,14 @@
 #pragma once
 
 #include "Core.h"
-#include "Object/UObject.h"
 
 class UEngineStatics
 {
+public:
 	static uint32 GenUUID()
 	{
 		return NextUUID++;
-	}
+	};
 
-	static uint32 NextUUID;
+	inline static uint32 NextUUID = 0;
 };
