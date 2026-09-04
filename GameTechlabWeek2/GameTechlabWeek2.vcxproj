@@ -139,6 +139,7 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FVertexSimple.h" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\imgui_demo.cpp" />
     <ClCompile Include="ImGui\imgui_draw.cpp" />
@@ -151,6 +152,7 @@
     <ClCompile Include="TLinkedList.h" />
     <ClCompile Include="TMap.h" />
     <ClCompile Include="URender.cpp" />
+    <ClCompile Include="URenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cube.h" />

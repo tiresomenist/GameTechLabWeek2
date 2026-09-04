@@ -8,13 +8,9 @@
 
 #include "Matrix.h"
 
-struct FVertexSimple
-{
-    float x, y, z;    // Position
-    float r, g, b, a; // Color
-};
 
 // 구체 배열 헤더 파일
+#include "FVertexSimple.h"
 #include "Sphere.h"
 #include "Cube.h"
 #include "Triangle.h"
