@@ -111,6 +111,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -139,7 +140,9 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="UEngineStatics.h" />
+    <ClCompile Include="Engine\GEngine.cpp" />
+    <ClCompile Include="Engine\GSceneManager.cpp" />
+    <ClCompile Include="Engine\UEngineStatics.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\imgui_demo.cpp" />
     <ClCompile Include="ImGui\imgui_draw.cpp" />
@@ -149,12 +152,31 @@
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="Engine\UEngine.cpp" />
+    <ClCompile Include="Engine\FConsole.cpp" />
+    <ClCompile Include="Engine\Editor\UEditor.cpp" />
+    <ClCompile Include="Engine\Editor\Window\UEditorWindow.cpp" />
+    <ClCompile Include="Engine\Editor\Window\UConsoleWindow.cpp" />
+    <ClCompile Include="Engine\Editor\Window\USceneWindow.cpp" />
+    <ClCompile Include="Engine\Editor\Window\UDetailsWindow.cpp" />
+    <ClCompile Include="Engine\Object\GObjects.cpp" />
+    <ClCompile Include="Engine\Object\UObject.cpp" />
+    <ClCompile Include="Engine\Object\USceneComponent.cpp" />
+    <ClCompile Include="Engine\Object\UCameraComponent.cpp" />
+    <ClCompile Include="Engine\Object\Primitive\UPrimitiveComponent.cpp" />
+    <ClCompile Include="Engine\Object\Primitive\UCubeComp.cpp" />
+    <ClCompile Include="Engine\Object\Primitive\USphereComp.cpp" />
+    <ClCompile Include="Engine\Object\Primitive\UPlaneComp.cpp" />
     <ClCompile Include="TLinkedList.h" />
     <ClCompile Include="TMap.h" />
     <ClCompile Include="URender.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cube.h" />
+    <ClInclude Include="Engine\Core.h" />
+    <ClInclude Include="Engine\GEngine.h" />
+    <ClInclude Include="Engine\GSceneManager.h" />
+    <ClInclude Include="Engine\UEngineStatics.h" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />
     <ClInclude Include="ImGui\imgui_impl_dx11.h" />
@@ -170,6 +192,21 @@
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="Tset.h" />
     <ClInclude Include="URenderer.h" />
+    <ClInclude Include="Engine\UEngine.h" />
+    <ClInclude Include="Engine\FConsole.h" />
+    <ClInclude Include="Engine\Editor\UEditor.h" />
+    <ClInclude Include="Engine\Editor\Window\UEditorWindow.h" />
+    <ClInclude Include="Engine\Editor\Window\UConsoleWindow.h" />
+    <ClInclude Include="Engine\Editor\Window\USceneWindow.h" />
+    <ClInclude Include="Engine\Editor\Window\UDetailsWindow.h" />
+    <ClInclude Include="Engine\Object\GObjects.h" />
+    <ClInclude Include="Engine\Object\UObject.h" />
+    <ClInclude Include="Engine\Object\USceneComponent.h" />
+    <ClInclude Include="Engine\Object\UCameraComponent.h" />
+    <ClInclude Include="Engine\Object\Primitive\UPrimitiveComponent.h" />
+    <ClInclude Include="Engine\Object\Primitive\UCubeComp.h" />
+    <ClInclude Include="Engine\Object\Primitive\USphereComp.h" />
+    <ClInclude Include="Engine\Object\Primitive\UPlaneComp.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderW0.hlsl">
