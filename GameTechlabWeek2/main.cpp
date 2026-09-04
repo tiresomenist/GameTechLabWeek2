@@ -8,19 +8,14 @@
 
 #include "Matrix.h"
 
-struct FVertexSimple
-{
-    float x, y, z;    // Position
-    float r, g, b, a; // Color
-};
-
 // 구체 배열 헤더 파일
+#include "FVertexSimple.h"
 #include "Sphere.h"
 #include "Cube.h"
 #include "Triangle.h"
 
 //렌더러 헤더파일
-#include "URenderer.h"
+#include "FRenderer.h"
 
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);

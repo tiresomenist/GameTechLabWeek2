@@ -72,9 +72,6 @@
     <ClCompile Include="ImGui\imgui_widgets.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="URender.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="TMap.h">
       <Filter>헤더 파일\Containers</Filter>
     </ClCompile>
@@ -141,6 +138,9 @@
     <ClCompile Include="Engine\UGizmo\UWorldGridGizmo.cpp">
       <Filter>Engine\UGizmo</Filter>
     </ClCompile>
+    <ClCompile Include="FRenderer.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sphere.h">
@@ -175,9 +175,6 @@
     </ClInclude>
     <ClInclude Include="ImGui\imstb_truetype.h">
       <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="URenderer.h">
-      <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="TArray.h">
       <Filter>헤더 파일\Containers</Filter>
@@ -247,6 +244,12 @@
     </ClInclude>
     <ClInclude Include="Engine\UGizmo\UWorldGridGizmo.h">
       <Filter>Engine\UGizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="FRenderer.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="FVertexSimple.h">
+      <Filter>헤더 파일\DrawableComponent</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
