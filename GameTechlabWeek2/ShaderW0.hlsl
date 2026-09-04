@@ -8,7 +8,8 @@ cbuffer constants : register(b0)
 struct VS_INPUT
 {
     float4 position : POSITION; // Input position from vertex buffer
-    float4 color : COLOR; // Input color from vertex buffer
+    float3 normal : NORMAL;
+    float2 uv : TEXCOORD;
 };
 
 struct PS_INPUT
@@ -24,8 +25,7 @@ PS_INPUT mainVS(VS_INPUT input)
     //MVP행렬 곱으로 위치 변환
     output.position = mul(float4(input.position.xyz, 1.0f), MVP);
     
-    // Pass the color to the pixel shader
-    output.color = input.color;
+    output.color = float4(abs(input.normal), 1.0f);
     
     return output;
 }
@@ -33,5 +33,5 @@ PS_INPUT mainVS(VS_INPUT input)
 float4 mainPS(PS_INPUT input) : SV_TARGET
 {
     // Output the color directly
-    return (0.5f, 0.5f, 0.5f, 0.5f);
+    return input.color;
 }

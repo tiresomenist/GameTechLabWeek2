@@ -196,6 +196,8 @@ public:
 
 	std::vector<FVertex> SphereVertices;
 	std::vector<uint32_t> SphereIndices;
+	ID3D11Buffer* SphereVertexBuffer = nullptr;
+	ID3D11Buffer* SphereIndexBuffer = nullptr;
 
 public:
 	void Create(HWND hWindow, uint32 InWidth, uint32 InHeight);  // 렌더러 초기화 함수

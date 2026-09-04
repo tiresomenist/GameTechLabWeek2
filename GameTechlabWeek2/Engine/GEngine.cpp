@@ -5,8 +5,6 @@
 #include "Object/USceneComponent.h"
 #include "FRenderer.h"
 
-#include <format>
-
 float GetTime()
 {
 	LARGE_INTEGER currentTime;
@@ -34,11 +32,6 @@ void GEngine::Initialize(HWND d)
 	SceneComponent->RelativeRotation = FVector{ 1.0f, 2.0f, 3.0f };
 	SceneComponent->RelativeScale3D = FVector{ 1.0f, 1.0f, 1.0f };
 
-	MessageBox(nullptr, std::format(L"테스트입니다 {} {} {}",
-		SceneComponent->RelativeLocation.X,
-		SceneComponent->RelativeLocation.Y,
-		SceneComponent->RelativeLocation.Z).c_str(), L"", 0);
-
 	r.Create(d, 1024, 1024);
 
 }
@@ -46,7 +39,10 @@ void GEngine::Initialize(HWND d)
 void GEngine::Tick()
 {
 	float DeltaTime = GetTime() - LastTickTime;
+	r.Prepare();
+	r.PrepareShader();
 	r.Render();
+	r.SwapBuffer();
 	// 게임 로직을 수행합니다.
 	// GSceneManager.Update(DeltaTime);
 
@@ -57,5 +53,5 @@ void GEngine::Tick()
 
 void GEngine::Destroy()
 {
-	// TODO: 정리 로직
+	r.Shutdown();
 }

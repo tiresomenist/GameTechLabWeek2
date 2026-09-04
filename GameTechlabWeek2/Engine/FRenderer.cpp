@@ -70,9 +70,18 @@ void FRenderer::Create(HWND hWindow, uint32 InWidth, uint32 InHeight)
     CreateDeviceAndSwapChain(hWindow);
     CreateFrameBuffer();
     CreateRasterizerState();
-    CreateDepthStencilBuffer(InWidth, InHeight);
+    CreateDepthStencilBuffer(
+        static_cast<int32>(ViewportInfo.Width),
+        static_cast<int32>(ViewportInfo.Height));
     GenerateSphere(1.0f, 30, 30, SphereVertices, SphereIndices);
-    //CreateBlendState();
+    CreateShader();
+    CreateConstantBuffer();
+
+    const UINT vertexByteWidth = static_cast<UINT>(SphereVertices.size() * sizeof(FVertex));
+    SphereVertexBuffer = CreateVertexBuffer(SphereVertices.data(), vertexByteWidth);
+
+    const UINT indexByteWidth = static_cast<UINT>(SphereIndices.size() * sizeof(uint32_t));
+    SphereIndexBuffer = CreateIndexBuffer(SphereIndices.data(), indexByteWidth);
 }
 
 void FRenderer::CreateDeviceAndSwapChain(HWND hWindow)
@@ -226,24 +235,30 @@ void FRenderer::ReleaseDepthStencilBuffer()
     }
     if (DepthStencilView)
     {
-        DepthStencilBuffer->Release();
-        DepthStencilBuffer = nullptr;
+        DepthStencilView->Release();
+        DepthStencilView = nullptr;
     }
 }
 
 void FRenderer::Shutdown()
 {
-    //ReleaseVertexBuffer(vertex);
+    ReleaseVertexBuffer(SphereVertexBuffer);
+    SphereVertexBuffer = nullptr;
+    if (SphereIndexBuffer)
+    {
+        SphereIndexBuffer->Release();
+        SphereIndexBuffer = nullptr;
+    }
     ReleaseConstantBuffer();
     ReleaseShader();
-    RasterizerState->Release();
+    ReleaseRasterizerState();
 
     // 렌더 타겟을 초기화
     DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
 
+    ReleaseDepthStencilBuffer();
     ReleaseFrameBuffer();
     ReleaseDeviceAndSwapChain();
-    ReleaseDepthStencilBuffer();
 }
 
 void FRenderer::SwapBuffer()
@@ -256,23 +271,24 @@ void FRenderer::CreateShader()
     ID3DBlob* vertexshaderCSO;
     ID3DBlob* pixelshaderCSO;
 
-    D3DCompileFromFile(L"ShaderW0.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &vertexshaderCSO, nullptr);
+    D3DCompileFromFile(L"GameTechlabWeek2/ShaderW0.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &vertexshaderCSO, nullptr);
 
     Device->CreateVertexShader(vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(), nullptr, &SimpleVertexShader);
 
-    D3DCompileFromFile(L"ShaderW0.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &pixelshaderCSO, nullptr);
+    D3DCompileFromFile(L"GameTechlabWeek2/ShaderW0.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &pixelshaderCSO, nullptr);
 
     Device->CreatePixelShader(pixelshaderCSO->GetBufferPointer(), pixelshaderCSO->GetBufferSize(), nullptr, &SimplePixelShader);
 
     D3D11_INPUT_ELEMENT_DESC layout[] =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
 
     Device->CreateInputLayout(layout, ARRAYSIZE(layout), vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(), &SimpleInputLayout);
 
-    Stride = sizeof(FVertexSimple);
+    Stride = sizeof(FVertex);
 
     vertexshaderCSO->Release();
     pixelshaderCSO->Release();
@@ -302,13 +318,14 @@ void FRenderer::ReleaseShader()
 void FRenderer::Prepare()
 {
     DeviceContext->ClearRenderTargetView(FrameBufferRTV, ClearColor);
+    DeviceContext->ClearDepthStencilView(DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
     DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     DeviceContext->RSSetViewports(1, &ViewportInfo);
     DeviceContext->RSSetState(RasterizerState);
 
-    DeviceContext->OMSetRenderTargets(1, &FrameBufferRTV, nullptr);
+    DeviceContext->OMSetRenderTargets(1, &FrameBufferRTV, DepthStencilView);
     DeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
 }
 
@@ -362,7 +379,10 @@ ID3D11Buffer* FRenderer::CreateVertexBuffer(FVertex* vertices, UINT byteWidth)
 
 void FRenderer::ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer)
 {
-    vertexBuffer->Release();
+    if (vertexBuffer)
+    {
+        vertexBuffer->Release();
+    }
 }
 
 void FRenderer::CreateConstantBuffer()
@@ -434,32 +454,17 @@ void FRenderer::Render(UScene* Scene)
 
 void FRenderer::Render()
 {
-    XMFLOAT4X4 Mat = Matrix4x4::Identity();
-    //FMatrix tempview = ;
-    //FMatrix tempProj = ;
-    //Fmatrix temp = tempview * tempProj;
-
     XMMATRIX View = XMMatrixLookAtLH({ 0.0f, 0.0f, -5.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f });
-    XMMATRIX Proj = XMMatrixPerspectiveFovLH(3.141592654f / 4.0f, 1280.0f / 720.0f, 0.1f, 100.0f);
+    const float AspectRatio = ViewportInfo.Width / ViewportInfo.Height;
+    XMMATRIX Proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, AspectRatio, 0.1f, 100.0f);
     XMMATRIX WorldMat = XMMatrixIdentity();
     XMMATRIX MVP = WorldMat * View * Proj;
-    XMFLOAT4X4 VPFloat4x4;
 
-    XMStoreFloat4x4(&VPFloat4x4, MVP);
-
-    UINT vertexByteWidth = static_cast<UINT>(SphereVertices.size() * sizeof(FVertexSimple));
-    ID3D11Buffer* VertexBuffer = CreateVertexBuffer(SphereVertices.data(), vertexByteWidth);
-
-    // 인덱스 버퍼 생성
-    UINT indexByteWidth = static_cast<UINT>(SphereIndices.size() * sizeof(uint32_t));
-    ID3D11Buffer* IndexBuffer = CreateIndexBuffer(SphereIndices.data(), indexByteWidth);
-
-    FPrimitiveRenderData Data;
-
-    Data.VertexBuffer = VertexBuffer;
-    Data.IndexBuffer = IndexBuffer;
+    FPrimitiveRenderData Data{};
+    Data.VertexBuffer = SphereVertexBuffer;
+    Data.IndexBuffer = SphereIndexBuffer;
     Data.IndexCount = static_cast<UINT>(SphereIndices.size());
-    Data.Stride = sizeof(FVertexSimple);
+    Data.Stride = sizeof(FVertex);
     Data.Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
     UpdateConstantBuffer(MVP);
@@ -474,7 +479,7 @@ void FRenderer::UpdateConstantBuffer(const XMMATRIX& MVP)
 
         DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR);
         FConstants* constants = (FConstants*)constantbufferMSR.pData;
-        //constants->MVP = MVP.Transpose();
+        XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&constants->MVP.M[0][0]), MVP);
         DeviceContext->Unmap(ConstantBuffer, 0);
     }
 }
