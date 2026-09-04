@@ -1,8 +1,7 @@
 // ShaderW0.hlsl
 cbuffer constants : register(b0)
 {
-    float3 Offset;
-    float Pad;
+    row_major float4x4 MVP; // MVP행렬, 접두사를 통해 행벡터를 기준으로 읽는다.
 }
 
 
@@ -22,8 +21,8 @@ PS_INPUT mainVS(VS_INPUT input)
 {
     PS_INPUT output;
     
-    // 상수버퍼를 통해 넘겨 받은 Offset을 더해서 버텍스를 이동 시켜 픽셀쉐이더로 넘김
-    output.position = float4(Offset, 0) + input.position;
+    //MVP행렬 곱으로 위치 변환
+    output.position = mul(float4(input.position.xyz, 1.0f), MVP);
     
     // Pass the color to the pixel shader
     output.color = input.color;
