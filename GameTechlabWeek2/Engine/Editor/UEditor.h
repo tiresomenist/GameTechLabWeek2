@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../GEngine.h"
-#include "../../FRenderer.h"
+#include "../FRenderer.h"
 #include <Windows.h>
 
 
