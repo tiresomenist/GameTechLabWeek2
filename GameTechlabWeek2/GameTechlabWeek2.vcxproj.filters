@@ -43,9 +43,6 @@
     <Filter Include="Engine\Object\Primitive">
       <UniqueIdentifier>{1A000005-0000-0000-0000-000000000005}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\UGizmo">
-      <UniqueIdentifier>{1A000006-0000-0000-0000-000000000006}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -84,10 +81,7 @@
     <ClCompile Include="Engine\UEngine.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\UConsole.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\USceneManager.cpp">
+    <ClCompile Include="Engine\FConsole.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Editor\UEditor.cpp">
@@ -129,14 +123,14 @@
     <ClCompile Include="Engine\Object\Primitive\UPlaneComp.cpp">
       <Filter>Engine\Object\Primitive</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\UGizmo\UObjectAxisGizmo.cpp">
-      <Filter>Engine\UGizmo</Filter>
+    <ClCompile Include="Engine\GEngine.cpp">
+      <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\UGizmo\UWorldAxisGizmo.cpp">
-      <Filter>Engine\UGizmo</Filter>
+    <ClCompile Include="Engine\GSceneManager.cpp">
+      <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\UGizmo\UWorldGridGizmo.cpp">
-      <Filter>Engine\UGizmo</Filter>
+    <ClCompile Include="Engine\UEngineStatics.cpp">
+      <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="FRenderer.cpp">
       <Filter>Engine</Filter>
@@ -191,10 +185,7 @@
     <ClInclude Include="Engine\UEngine.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\UConsole.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\USceneManager.h">
+    <ClInclude Include="Engine\FConsole.h">
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Editor\UEditor.h">
@@ -236,14 +227,17 @@
     <ClInclude Include="Engine\Object\Primitive\UPlaneComp.h">
       <Filter>Engine\Object\Primitive</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\UGizmo\UObjectAxisGizmo.h">
-      <Filter>Engine\UGizmo</Filter>
+    <ClInclude Include="Engine\Core.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\UGizmo\UWorldAxisGizmo.h">
-      <Filter>Engine\UGizmo</Filter>
+    <ClInclude Include="Engine\GEngine.h">
+      <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\UGizmo\UWorldGridGizmo.h">
-      <Filter>Engine\UGizmo</Filter>
+    <ClInclude Include="Engine\GSceneManager.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\UEngineStatics.h">
+      <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="FRenderer.h">
       <Filter>Engine</Filter>

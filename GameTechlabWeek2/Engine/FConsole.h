@@ -1,6 +1,6 @@
 #pragma once
 
-class UEngine
+class FConsole
 {
 };
 
