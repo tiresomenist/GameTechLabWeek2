@@ -1,6 +1,8 @@
 #pragma once
 
-class UWorldGridGizmo
+#include "UGizmo.h"
+
+class UWorldGridGizmo : public UGizmo
 {
 };
 
