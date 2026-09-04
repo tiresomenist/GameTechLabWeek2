@@ -2,9 +2,9 @@
 
 typedef matrix FMatrix;
 
-cbuffer constants : register(b0)
+cbuffer Constants : register(b0)
 {
-    row_major FMatrix WorldMatrix;
+     FMatrix MVP;
 }
 
 struct VS_INPUT
@@ -24,7 +24,7 @@ PS_INPUT mainVS(VS_INPUT input)
     PS_INPUT output;
     
     // 상수버퍼를 통해 넘겨 받은 Offset을 더해서 버텍스를 이동 시켜 픽셀쉐이더로 넘김
-    output.position = mul(input.position, WorldMatrix);
+    output.position = mul(input.position, MVP);
     
     // Pass the color to the pixel shader
     output.color = input.color;

@@ -14,8 +14,7 @@
 struct FVertexSimple;
 struct FConstants
 {
-    FVector Offset;
-    float Padding;
+    FMatrix MVP;
 };
 class UScene;
 struct FPrimitiveRenderData;
@@ -54,8 +53,9 @@ public:
     void ReleaseFrameBuffer();                      // 프레임 버퍼를 해제하는 함수
     void CreateRasterizerState();                   // 래스터라이저 상태를 생성하는 함수
     void ReleaseRasterizerState();                  // 래스터라이저 상태를 해제하는 함수
-    bool CreateDepthStencilBuffer(int32 InWidth, int32 InHeight);                // 깊이 스텐실 버퍼를 생성하는 함수
+    bool CreateDepthStencilBuffer(int32 InWidth, int32 InHeight); // 깊이 스텐실 버퍼를 생성하는 함수
     void ReleaseDepthStencilBuffer();               // 깊이 스텐실 버퍼를 해제하는 함수
+
     void Shutdown();                                // 렌더러에 사용된 모든 리소스를 해제하는 함수
     void SwapBuffer();                              // 스왑 체인의 백 버퍼와 프론트 버퍼를 교체하여 화면에 출력
 
@@ -73,5 +73,5 @@ public:
     void UpdateConstantBuffer(const FMatrix& WorldMatrix);      // 상수 버퍼 업데이트 함수
 
     void Render(UScene* Scene);
-    void RenderPrimitive(const FPrimitiveRenderData& Data);
+    void RenderPrimitive(const FPrimitiveRenderData& Data, const FMatrix& MVP);
 };
