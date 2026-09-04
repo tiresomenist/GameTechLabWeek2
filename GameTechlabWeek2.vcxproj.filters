@@ -25,9 +25,6 @@
     <Filter Include="GameTechlabWeek2\ImGui">
       <UniqueIdentifier>{3AA3E08C-269D-09DF-0F0A-A0EFFBA26F4B}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MatrixTests">
-      <UniqueIdentifier>{6DA6B83E-D95B-3134-6250-2B0BCE042838}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameTechlabWeek2\Cube.h">
@@ -59,6 +56,9 @@
     </ClInclude>
     <ClInclude Include="GameTechlabWeek2\Engine\GSceneManager.h">
       <Filter>GameTechlabWeek2\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="GameTechlabWeek2\Engine\Gizmo\UGizmo.h">
+      <Filter>GameTechlabWeek2\Engine\Gizmo</Filter>
     </ClInclude>
     <ClInclude Include="GameTechlabWeek2\Engine\Gizmo\UObjectAxisGizmo.h">
       <Filter>GameTechlabWeek2\Engine\Gizmo</Filter>
@@ -99,10 +99,16 @@
     <ClInclude Include="GameTechlabWeek2\Engine\UEngineStatics.h">
       <Filter>GameTechlabWeek2\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="GameTechlabWeek2\FRenderer.h">
+      <Filter>GameTechlabWeek2</Filter>
+    </ClInclude>
     <ClInclude Include="GameTechlabWeek2\FString.h">
       <Filter>GameTechlabWeek2</Filter>
     </ClInclude>
     <ClInclude Include="GameTechlabWeek2\FVector.h">
+      <Filter>GameTechlabWeek2</Filter>
+    </ClInclude>
+    <ClInclude Include="GameTechlabWeek2\FVertexSimple.h">
       <Filter>GameTechlabWeek2</Filter>
     </ClInclude>
     <ClInclude Include="GameTechlabWeek2\ImGui\imconfig.h">
@@ -179,6 +185,9 @@
     <ClCompile Include="GameTechlabWeek2\Engine\GSceneManager.cpp">
       <Filter>GameTechlabWeek2\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="GameTechlabWeek2\Engine\Gizmo\UGizmo.cpp">
+      <Filter>GameTechlabWeek2\Engine\Gizmo</Filter>
+    </ClCompile>
     <ClCompile Include="GameTechlabWeek2\Engine\Gizmo\UObjectAxisGizmo.cpp">
       <Filter>GameTechlabWeek2\Engine\Gizmo</Filter>
     </ClCompile>
@@ -218,6 +227,9 @@
     <ClCompile Include="GameTechlabWeek2\Engine\UEngineStatics.cpp">
       <Filter>GameTechlabWeek2\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="GameTechlabWeek2\FRenderer.cpp">
+      <Filter>GameTechlabWeek2</Filter>
+    </ClCompile>
     <ClCompile Include="GameTechlabWeek2\FVector.cpp">
       <Filter>GameTechlabWeek2</Filter>
     </ClCompile>
@@ -247,9 +259,6 @@
     </ClCompile>
     <ClCompile Include="GameTechlabWeek2\main.cpp">
       <Filter>GameTechlabWeek2</Filter>
-    </ClCompile>
-    <ClCompile Include="MatrixTests\MatrixTests.cpp">
-      <Filter>MatrixTests</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

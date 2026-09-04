@@ -33,7 +33,6 @@ FVector FVector::operator/(float scalar) const
 
 	const float Inverse = 1.0f / scalar;
 	return *this * Inverse;
-	return FVector(X / scalar, Y / scalar, Z / scalar);
 }
 
 FVector& FVector::operator+=(const FVector& rhs)
@@ -78,6 +77,11 @@ FVector FVector::Cross(const FVector& rhs)const
 	);
 }
 
+bool FVector::Equals(const FVector& other, float Epsilon) const
+{
+	return std::fabs(X - other.X) <= Epsilon && std::fabs(Y - other.Y) <= Epsilon && std::fabs(Z - other.Z) <= Epsilon;
+}
+
 float FVector::Length() const
 {
 	return sqrtf(LengthSquared());
@@ -97,7 +101,7 @@ float FVector::Distance(const FVector& rhs) const
 FVector FVector::GetNormalized() const
 {
 	float length = Length();
-	if (length > 0.0f)
+	if (length > UEngineStatics::Epsilon)
 	{
 		return *this / length;
 	}
@@ -107,7 +111,7 @@ FVector FVector::GetNormalized() const
 void FVector::Normalize()
 {
 	float length = Length();
-	if (length > 0.0f)
+	if (length > UEngineStatics::Epsilon)
 	{
 		*this /= length;
 	}
@@ -129,12 +133,12 @@ float FVector4::Length()const
 	return sqrtf(LengthSquared());
 }
 
-float FVector4::LengthSqured3()const
+float FVector4::LengthSquared3()const
 {
 	return X * X + Y * Y + Z * Z;
 }
 
 float FVector4::Length3()const
 {
-	return sqrtf(LengthSqured3());
+	return sqrtf(LengthSquared3());
 }

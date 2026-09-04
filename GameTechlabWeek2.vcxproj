@@ -105,6 +105,7 @@
     <ClInclude Include="GameTechlabWeek2\Engine\FConsole.h" />
     <ClInclude Include="GameTechlabWeek2\Engine\GEngine.h" />
     <ClInclude Include="GameTechlabWeek2\Engine\GSceneManager.h" />
+    <ClInclude Include="GameTechlabWeek2\Engine\Gizmo\UGizmo.h" />
     <ClInclude Include="GameTechlabWeek2\Engine\Gizmo\UObjectAxisGizmo.h" />
     <ClInclude Include="GameTechlabWeek2\Engine\Gizmo\UWorldAxisGizmo.h" />
     <ClInclude Include="GameTechlabWeek2\Engine\Gizmo\UWorldGridGizmo.h" />
@@ -118,8 +119,10 @@
     <ClInclude Include="GameTechlabWeek2\Engine\Object\UObject.h" />
     <ClInclude Include="GameTechlabWeek2\Engine\Object\USceneComponent.h" />
     <ClInclude Include="GameTechlabWeek2\Engine\UEngineStatics.h" />
+    <ClInclude Include="GameTechlabWeek2\FRenderer.h" />
     <ClInclude Include="GameTechlabWeek2\FString.h" />
     <ClInclude Include="GameTechlabWeek2\FVector.h" />
+    <ClInclude Include="GameTechlabWeek2\FVertexSimple.h" />
     <ClInclude Include="GameTechlabWeek2\ImGui\imconfig.h" />
     <ClInclude Include="GameTechlabWeek2\ImGui\imgui.h" />
     <ClInclude Include="GameTechlabWeek2\ImGui\imgui_impl_dx11.h" />
@@ -146,6 +149,7 @@
     <ClCompile Include="GameTechlabWeek2\Engine\FConsole.cpp" />
     <ClCompile Include="GameTechlabWeek2\Engine\GEngine.cpp" />
     <ClCompile Include="GameTechlabWeek2\Engine\GSceneManager.cpp" />
+    <ClCompile Include="GameTechlabWeek2\Engine\Gizmo\UGizmo.cpp" />
     <ClCompile Include="GameTechlabWeek2\Engine\Gizmo\UObjectAxisGizmo.cpp" />
     <ClCompile Include="GameTechlabWeek2\Engine\Gizmo\UWorldAxisGizmo.cpp" />
     <ClCompile Include="GameTechlabWeek2\Engine\Gizmo\UWorldGridGizmo.cpp" />
@@ -159,6 +163,7 @@
     <ClCompile Include="GameTechlabWeek2\Engine\Object\UObject.cpp" />
     <ClCompile Include="GameTechlabWeek2\Engine\Object\USceneComponent.cpp" />
     <ClCompile Include="GameTechlabWeek2\Engine\UEngineStatics.cpp" />
+    <ClCompile Include="GameTechlabWeek2\FRenderer.cpp" />
     <ClCompile Include="GameTechlabWeek2\FVector.cpp" />
     <ClCompile Include="GameTechlabWeek2\ImGui\imgui.cpp" />
     <ClCompile Include="GameTechlabWeek2\ImGui\imgui_demo.cpp" />
@@ -169,7 +174,6 @@
     <ClCompile Include="GameTechlabWeek2\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="GameTechlabWeek2\Matrix.cpp" />
     <ClCompile Include="GameTechlabWeek2\main.cpp" />
-    <ClCompile Include="MatrixTests\MatrixTests.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

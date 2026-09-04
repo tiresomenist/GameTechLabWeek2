@@ -31,6 +31,7 @@ struct FVector
 	float Dot(const FVector& rhs)const;
 	FVector Cross(const FVector& rhs)const;
 
+	bool Equals(const FVector& other, float Epsilon = UEngineStatics::Epsilon)const;
 
 	float Length() const;
 	float LengthSquared() const;
@@ -52,7 +53,7 @@ struct FVector4
 	float Dot(const FVector4& Other)const;
 	float LengthSquared()const;
 	float Length()const;
-	float LengthSqured3()const;
+	float LengthSquared3()const;
 	float Length3()const;
 	FVector4(float _x = 0.0f, float _y = 0.0f, float _z = 0.0f, float _w = 0.0f) : X(_x), Y(_y), Z(_z), W(_w) {}
 };

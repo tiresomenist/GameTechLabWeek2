@@ -249,6 +249,25 @@ FMatrix FMatrix::NormalMatrix() const
 	return Result.Inverse().Transpose();
 }
 
+bool FMatrix::IsOrthogonal(float Epsilon) const
+{
+	FVector4 Temp1 = FVector4(M[0][0], M[0][1], M[0][2], M[0][3]);
+	FVector4 Temp2 = FVector4(M[1][0], M[1][1], M[1][2], M[1][3]);
+	FVector4 Temp3 = FVector4(M[2][0], M[2][1], M[2][2], M[2][3]);
+	FVector4 Temp4 = FVector4(M[3][0], M[3][1], M[3][2], M[3][3]);
+	
+	return std::fabs(Temp1.Dot(Temp2)) <= Epsilon && std::fabs(Temp1.Dot(Temp3)) <= Epsilon && std::fabs(Temp1.Dot(Temp4)) <= Epsilon && std::fabs(Temp3.Dot(Temp2)) <= Epsilon && std::fabs(Temp4.Dot(Temp2)) <= Epsilon && std::fabs(Temp3.Dot(Temp4)) <= Epsilon;
+}
+
+bool FMatrix::IsOrthonormal(float Epsilon) const
+{
+	FVector4 Temp1 = FVector4(M[0][0], M[0][1], M[0][2], M[0][3]);
+	FVector4 Temp2 = FVector4(M[1][0], M[1][1], M[1][2], M[1][3]);
+	FVector4 Temp3 = FVector4(M[2][0], M[2][1], M[2][2], M[2][3]);
+	FVector4 Temp4 = FVector4(M[3][0], M[3][1], M[3][2], M[3][3]);
+	return IsOrthogonal(Epsilon)&&std::fabs(Temp1.Length()-1.0f)<=Epsilon&& fabs(Temp2.Length() - 1.0f) <= Epsilon&& fabs(Temp3.Length() - 1.0f) <= Epsilon&& fabs(Temp4.Length() - 1.0f) <= Epsilon;
+}
+
 FVector4 operator*(const FVector4& V, const FMatrix& Matrix)
 {
 	return Matrix.TransformVector4(V);

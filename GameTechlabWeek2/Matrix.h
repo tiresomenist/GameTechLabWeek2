@@ -53,6 +53,10 @@ struct FMatrix
 	// 법선 행렬
 	FMatrix NormalMatrix() const;
 
+	//직교행렬인가? 정규직교행렬인가?
+	bool IsOrthogonal(float Epsilon = UEngineStatics::Epsilon) const;
+	bool IsOrthonormal(float Epsilon = UEngineStatics::Epsilon) const;
+
 	FMatrix(float m00 = 1.0f, float m01 = 0.0f, float m02 = 0.0f, float m03 = 0.0f,
 		float m10 = 0.0f, float m11 = 1.0f, float m12 = 0.0f, float m13 = 0.0f,
 		float m20 = 0.0f, float m21 = 0.0f, float m22 = 1.0f, float m23 = 0.0f,
