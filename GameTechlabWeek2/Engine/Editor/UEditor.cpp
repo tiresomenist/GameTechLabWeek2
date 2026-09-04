@@ -1,5 +1,5 @@
 #include "UEditor.h"
-#include "../../URenderer.h"
+#include "../../FRenderer.h"
 #include "../../ImGui/imgui.h"
 #include "../../ImGui/imgui_internal.h"
 #include "../../ImGui/imgui_impl_dx11.h"
@@ -18,7 +18,7 @@ void UEditor::startEditor(HWND Hwnd,ID3D11Device* device, ID3D11DeviceContext* d
 	ImGui_ImplWin32_Init(Hwnd);
 	ImGui_ImplDX11_Init(device, device_context);
 }
-void UEditor::updateEditor(URenderer &renderer)
+void UEditor::updateEditor(FRenderer &renderer)
 {
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
