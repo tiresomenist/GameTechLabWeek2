@@ -1,6 +1,6 @@
 #pragma once
 
-class UConsole
+class GEngine
 {
 };
 
