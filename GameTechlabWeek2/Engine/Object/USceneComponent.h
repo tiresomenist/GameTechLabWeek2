@@ -5,6 +5,7 @@
 class USceneComponent : public UObject
 {
 public:
+    
     ~USceneComponent() override = default;
 };
 

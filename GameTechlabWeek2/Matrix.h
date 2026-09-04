@@ -3,61 +3,10 @@
 #include <cmath>
 #include <cassert>
 #include <algorithm>
-#include "UEngineStatics.h"
-
+#include "Engine/UEngineStatics.h"
+#include "FVector.h"
 //벡터, 행렬 구조체 선언
 
-struct FVector
-{
-	//거의 동일한 값 비교, 디비전 바이 제로 처리 안됨
-	float X;
-	float Y;
-	float Z;
-
-	static const FVector Zero;
-	static const FVector Forward;
-	static const FVector Right;
-	static const FVector Up;
-
-	FVector operator+(const FVector& rhs) const;
-	FVector operator-(const FVector& rhs) const;
-	FVector operator*(float scalar) const;
-	FVector operator/(float scalar) const;
-
-	FVector& operator+=(const FVector& rhs);
-	FVector& operator-=(const FVector& rhs);
-	FVector& operator*=(float scalar);
-	FVector& operator/=(float scalar);
-
-
-	float Dot(const FVector& rhs);
-	FVector Cross(const FVector& rhs);
-
-
-	float Length() const;
-	float LengthSquared() const;
-
-	float Distance(const FVector& rhs) const;
-
-	FVector GetNormalized() const;
-	void Normalize();
-	FVector(float _x = 0.0f, float _y = 0.0f, float _z = 0.0f) : X(_x), Y(_y), Z(_z) {}
-
-};
-
-struct FVector4
-{
-	float X;
-	float Y;
-	float Z;
-	float W;
-	float Dot(const FVector4& Other);
-	float LengthSquared();
-	float Length();
-	float LengthSqured3();
-	float Length3();
-	FVector4(float _x = 0.0f, float _y = 0.0f, float _z = 0.0f, float _w = 0.0f) : X(_x), Y(_y), Z(_z), W(_w) {}
-};
 
 struct FMatrix
 {
@@ -83,7 +32,8 @@ struct FMatrix
 		const FVector& Rotation,
 		const FVector& Scale);
 
-	static FMatrix MakeNormalMatrix(const FMatrix& Input);
+	//모델 행렬을 넣어서 법선 행렬을 만드는 함수
+	static FMatrix MakeNormalMatrix(const FMatrix& model);
 
 	//행렬곱
 	FMatrix operator*(const FMatrix& Rhs) const;
@@ -100,7 +50,7 @@ struct FMatrix
 	// 축 위치 추출
 	FVector GetAxis(int32 AxisIndex) const; // 0: X축, 1: Y축, 2: Z축
 	FVector GetOrigin() const;
-	// 정규 행렬
+	// 법선 행렬
 	FMatrix NormalMatrix() const;
 
 	FMatrix(float m00 = 1.0f, float m01 = 0.0f, float m02 = 0.0f, float m03 = 0.0f,

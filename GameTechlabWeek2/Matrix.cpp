@@ -1,10 +1,5 @@
 #include "Matrix.h"
 
-const FVector FVector::Zero = FVector(0.0f, 0.0f, 0.0f);
-const FVector FVector::Forward = FVector(1.0f, 0.0f, 0.0f);
-const FVector FVector::Right = FVector(0.0f, 1.0f, 0.0f);
-const FVector FVector::Up = FVector(0.0f, 0.0f, 1.0f);
-
 const FMatrix FMatrix::Identity = FMatrix(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 
 FMatrix FMatrix::MakeTranslationMatrix(const FVector& Location)
@@ -81,139 +76,6 @@ FMatrix FMatrix::MakeModelMatrix(
 FMatrix FMatrix::MakeNormalMatrix(const FMatrix& Input)
 {
 	return Input.NormalMatrix();
-}
-
-FVector FVector::operator+(const FVector& rhs) const
-{
-	return FVector(X + rhs.X, Y + rhs.Y, Z + rhs.Z);
-}
-
-FVector FVector::operator-(const FVector& rhs) const
-{
-	return FVector(X - rhs.X, Y - rhs.Y, Z - rhs.Z);
-}
-
-FVector FVector::operator*(float scalar) const
-{
-	return FVector(X * scalar, Y * scalar, Z * scalar);
-}
-
-FVector FVector::operator/(float scalar) const
-{
-	assert(std::fabs(scalar) > UEngineStatics::Epsilon);
-
-	if (std::fabs(scalar) <= UEngineStatics::Epsilon)
-	{
-
-		return Zero;
-	}
-
-	const float Inverse = 1.0f / scalar;
-	return *this * Inverse;
-	return FVector(X / scalar, Y / scalar, Z / scalar);
-}
-
-FVector& FVector::operator+=(const FVector& rhs)
-{
-	FVector result = *this + rhs;
-	*this = result;
-	return *this;
-}
-
-FVector& FVector::operator-=(const FVector& rhs)
-{
-	FVector result = *this - rhs;
-	*this = result;
-	return *this;
-}
-
-FVector& FVector::operator*=(float scalar)
-{
-	FVector result = *this * scalar;
-	*this = result;
-	return *this;
-}
-
-FVector& FVector::operator/=(float scalar)
-{
-	FVector result = *this / scalar;
-	*this = result;
-	return *this;
-}
-
-float FVector::Dot(const FVector& rhs)
-{
-	return X * rhs.X + Y * rhs.Y + Z * rhs.Z;
-}
-
-FVector FVector::Cross(const FVector& rhs)
-{
-	return FVector(
-		Y * rhs.Z - Z * rhs.Y,
-		Z * rhs.X - X * rhs.Z,
-		X * rhs.Y - Y * rhs.X
-	);
-}
-
-float FVector::Length() const
-{
-	return sqrtf(LengthSquared());
-}
-
-float FVector::LengthSquared() const
-{
-	return X * X + Y * Y + Z * Z;
-}
-
-float FVector::Distance(const FVector& rhs) const
-{
-	FVector diff = *this - rhs;
-	return diff.Length();
-}
-
-FVector FVector::GetNormalized() const
-{
-	float length = Length();
-	if (length > 0.0f)
-	{
-		return *this / length;
-	}
-	return FVector();
-}
-
-void FVector::Normalize()
-{
-	float length = Length();
-	if (length > 0.0f)
-	{
-		*this /= length;
-	}
-}
-
-float FVector4::Dot(const FVector4& Other)
-{
-	return X * Other.X + Y * Other.Y + Z * Other.Z + W * Other.W;
-}
-
-
-float FVector4::LengthSquared()
-{
-	return X * X + Y * Y + Z * Z + W * W;
-}
-
-float FVector4::Length()
-{
-	return sqrtf(LengthSquared());
-}
-
-float FVector4::LengthSqured3()
-{
-	return X * X + Y * Y + Z * Z;
-}
-
-float FVector4::Length3()
-{
-	return sqrtf(LengthSqured3());
 }
 
 FMatrix FMatrix::operator*(const FMatrix& Rhs) const
@@ -368,6 +230,7 @@ float FMatrix::Determinant() const
 
 FVector FMatrix::GetAxis(int32 AxisIndex) const
 {
+	assert(AxisIndex >= 0 && AxisIndex < 3);
 	return FVector(M[AxisIndex][0], M[AxisIndex][1], M[AxisIndex][2]);
 }
 

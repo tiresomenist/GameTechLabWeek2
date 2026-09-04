@@ -143,6 +143,7 @@
     <ClCompile Include="Engine\GEngine.cpp" />
     <ClCompile Include="Engine\GSceneManager.cpp" />
     <ClCompile Include="Engine\UEngineStatics.cpp" />
+    <ClCompile Include="FVector.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\imgui_demo.cpp" />
     <ClCompile Include="ImGui\imgui_draw.cpp" />
@@ -152,7 +153,6 @@
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrix.cpp" />
-    <ClCompile Include="Engine\UEngine.cpp" />
     <ClCompile Include="Engine\FConsole.cpp" />
     <ClCompile Include="Engine\Editor\UEditor.cpp" />
     <ClCompile Include="Engine\Editor\Window\UEditorWindow.cpp" />
@@ -169,7 +169,6 @@
     <ClCompile Include="Engine\Object\Primitive\UPlaneComp.cpp" />
     <ClCompile Include="TLinkedList.h" />
     <ClCompile Include="TMap.h" />
-    <ClCompile Include="URender.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cube.h" />
@@ -177,6 +176,7 @@
     <ClInclude Include="Engine\GEngine.h" />
     <ClInclude Include="Engine\GSceneManager.h" />
     <ClInclude Include="Engine\UEngineStatics.h" />
+    <ClInclude Include="FVector.h" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />
     <ClInclude Include="ImGui\imgui_impl_dx11.h" />
@@ -191,8 +191,6 @@
     <ClInclude Include="TQueue.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="Tset.h" />
-    <ClInclude Include="URenderer.h" />
-    <ClInclude Include="Engine\UEngine.h" />
     <ClInclude Include="Engine\FConsole.h" />
     <ClInclude Include="Engine\Editor\UEditor.h" />
     <ClInclude Include="Engine\Editor\Window\UEditorWindow.h" />

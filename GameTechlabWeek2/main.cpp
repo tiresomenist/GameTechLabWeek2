@@ -20,7 +20,7 @@ struct FVertexSimple
 #include "Triangle.h"
 
 //렌더러 헤더파일
-#include "URenderer.h"
+//#include "URenderer.h"
 
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
