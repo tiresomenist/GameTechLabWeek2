@@ -140,6 +140,7 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FRenderer.cpp" />
     <ClCompile Include="Engine\GEngine.cpp" />
     <ClCompile Include="Engine\GSceneManager.cpp" />
     <ClCompile Include="Engine\UEngineStatics.cpp" />
@@ -169,10 +170,11 @@
     <ClCompile Include="Engine\Object\Primitive\UPlaneComp.cpp" />
     <ClCompile Include="TLinkedList.h" />
     <ClCompile Include="TMap.h" />
-    <ClCompile Include="URender.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cube.h" />
+    <ClInclude Include="FRenderer.h" />
+    <ClInclude Include="FVertexSimple.h" />
     <ClInclude Include="Engine\Core.h" />
     <ClInclude Include="Engine\GEngine.h" />
     <ClInclude Include="Engine\GSceneManager.h" />
@@ -191,7 +193,6 @@
     <ClInclude Include="TQueue.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="Tset.h" />
-    <ClInclude Include="URenderer.h" />
     <ClInclude Include="Engine\UEngine.h" />
     <ClInclude Include="Engine\FConsole.h" />
     <ClInclude Include="Engine\Editor\UEditor.h" />
