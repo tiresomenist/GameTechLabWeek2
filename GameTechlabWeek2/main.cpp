@@ -15,7 +15,7 @@
 #include "Triangle.h"
 
 //렌더러 헤더파일
-#include "FRenderer.h"
+#include "Engine/FRenderer.h"
 
 
 #include "Engine/GEngine.h"
