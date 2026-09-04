@@ -28,6 +28,24 @@
     <Filter Include="헤더 파일\Math">
       <UniqueIdentifier>{6a2d9e82-6441-4dbc-b507-a0e5a0d7b0e8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{1A000001-0000-0000-0000-000000000001}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Editor">
+      <UniqueIdentifier>{1A000002-0000-0000-0000-000000000002}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Editor\Window">
+      <UniqueIdentifier>{1A000003-0000-0000-0000-000000000003}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Object">
+      <UniqueIdentifier>{1A000004-0000-0000-0000-000000000004}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Object\Primitive">
+      <UniqueIdentifier>{1A000005-0000-0000-0000-000000000005}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\UGizmo">
+      <UniqueIdentifier>{1A000006-0000-0000-0000-000000000006}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -65,6 +83,63 @@
     </ClCompile>
     <ClCompile Include="Matrix.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\UEngine.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\UConsole.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\USceneManager.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Editor\UEditor.cpp">
+      <Filter>Engine\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Editor\Window\UEditorWindow.cpp">
+      <Filter>Engine\Editor\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Editor\Window\UConsoleWindow.cpp">
+      <Filter>Engine\Editor\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Editor\Window\USceneWindow.cpp">
+      <Filter>Engine\Editor\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Editor\Window\UDetailsWindow.cpp">
+      <Filter>Engine\Editor\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Object\GObjects.cpp">
+      <Filter>Engine\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Object\UObject.cpp">
+      <Filter>Engine\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Object\USceneComponent.cpp">
+      <Filter>Engine\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Object\UCameraComponent.cpp">
+      <Filter>Engine\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Object\Primitive\UPrimitiveComponent.cpp">
+      <Filter>Engine\Object\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Object\Primitive\UCubeComp.cpp">
+      <Filter>Engine\Object\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Object\Primitive\USphereComp.cpp">
+      <Filter>Engine\Object\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Object\Primitive\UPlaneComp.cpp">
+      <Filter>Engine\Object\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\UGizmo\UObjectAxisGizmo.cpp">
+      <Filter>Engine\UGizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\UGizmo\UWorldAxisGizmo.cpp">
+      <Filter>Engine\UGizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\UGizmo\UWorldGridGizmo.cpp">
+      <Filter>Engine\UGizmo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -115,6 +190,63 @@
     </ClInclude>
     <ClInclude Include="Matrix.h">
       <Filter>헤더 파일\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\UEngine.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\UConsole.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\USceneManager.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Editor\UEditor.h">
+      <Filter>Engine\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Editor\Window\UEditorWindow.h">
+      <Filter>Engine\Editor\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Editor\Window\UConsoleWindow.h">
+      <Filter>Engine\Editor\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Editor\Window\USceneWindow.h">
+      <Filter>Engine\Editor\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Editor\Window\UDetailsWindow.h">
+      <Filter>Engine\Editor\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Object\GObjects.h">
+      <Filter>Engine\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Object\UObject.h">
+      <Filter>Engine\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Object\USceneComponent.h">
+      <Filter>Engine\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Object\UCameraComponent.h">
+      <Filter>Engine\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Object\Primitive\UPrimitiveComponent.h">
+      <Filter>Engine\Object\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Object\Primitive\UCubeComp.h">
+      <Filter>Engine\Object\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Object\Primitive\USphereComp.h">
+      <Filter>Engine\Object\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Object\Primitive\UPlaneComp.h">
+      <Filter>Engine\Object\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\UGizmo\UObjectAxisGizmo.h">
+      <Filter>Engine\UGizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\UGizmo\UWorldAxisGizmo.h">
+      <Filter>Engine\UGizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\UGizmo\UWorldGridGizmo.h">
+      <Filter>Engine\UGizmo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
