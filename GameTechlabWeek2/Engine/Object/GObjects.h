@@ -1,5 +1,5 @@
 #pragma once
-#include "../../TArray.h"
+#include "../../Container/TArray.h"
 #include "../Core.h"
 
 // 전방 선언

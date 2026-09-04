@@ -1,7 +1,18 @@
 #pragma once
 
-class UEditor
-{
+#include "../GEngine.h"
+#include "../../FRenderer.h"
+#include <Windows.h>
 
+
+class UEditor : public GEngine
+{
+public:
+	UEditor() = default;
+	~UEditor() = default;
+
+	void startEditor(HWND Hwnd, ID3D11Device* device, ID3D11DeviceContext* device_context);
+	void updateEditor(FRenderer &renderer);
+	void endEditor();
 };
 

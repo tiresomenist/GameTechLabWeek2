@@ -2,7 +2,7 @@
 
 #include <functional>
 #include "../Core.h"
-#include "../../FString.h"
+#include "../../Container/FString.h"
 
 class UObject;
 struct FClassType;
