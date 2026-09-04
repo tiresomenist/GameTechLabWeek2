@@ -70,6 +70,21 @@ struct FMatrix
 	// 단위행렬
 	static const FMatrix Identity;
 
+	static FMatrix MakeTranslationMatrix(const FVector& Location);
+	static FMatrix MakeScaleMatrix(const FVector& Scale);
+
+	static FMatrix MakeRotationXMatrix(float Radian);
+	static FMatrix MakeRotationYMatrix(float Radian);
+	static FMatrix MakeRotationZMatrix(float Radian);
+
+	static FMatrix MakeRotationMatrix(const FVector& Rotation);
+	static FMatrix MakeModelMatrix(
+		const FVector& Location,
+		const FVector& Rotation,
+		const FVector& Scale);
+
+	static FMatrix MakeNormalMatrix(const FMatrix& Input);
+
 	//행렬곱
 	FMatrix operator*(const FMatrix& Rhs) const;
 	//벡터*행렬

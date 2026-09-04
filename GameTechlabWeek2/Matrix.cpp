@@ -7,6 +7,82 @@ const FVector FVector::Up = FVector(0.0f, 0.0f, 1.0f);
 
 const FMatrix FMatrix::Identity = FMatrix(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 
+FMatrix FMatrix::MakeTranslationMatrix(const FVector& Location)
+{
+	return FMatrix(
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		Location.X, Location.Y, Location.Z, 1.0f);
+}
+
+FMatrix FMatrix::MakeScaleMatrix(const FVector& Scale)
+{
+	return FMatrix(
+		Scale.X, 0.0f, 0.0f, 0.0f,
+		0.0f, Scale.Y, 0.0f, 0.0f,
+		0.0f, 0.0f, Scale.Z, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+FMatrix FMatrix::MakeRotationXMatrix(float Radian)
+{
+	const float Cos = std::cos(Radian);
+	const float Sin = std::sin(Radian);
+
+	return FMatrix(
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, Cos, Sin, 0.0f,
+		0.0f, -Sin, Cos, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+FMatrix FMatrix::MakeRotationYMatrix(float Radian)
+{
+	const float Cos = std::cos(Radian);
+	const float Sin = std::sin(Radian);
+
+	return FMatrix(
+		Cos, 0.0f, -Sin, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		Sin, 0.0f, Cos, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+FMatrix FMatrix::MakeRotationZMatrix(float Radian)
+{
+	const float Cos = std::cos(Radian);
+	const float Sin = std::sin(Radian);
+
+	return FMatrix(
+		Cos, Sin, 0.0f, 0.0f,
+		-Sin, Cos, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+FMatrix FMatrix::MakeRotationMatrix(const FVector& Rotation)
+{
+	return MakeRotationZMatrix(Rotation.Z)
+		* MakeRotationYMatrix(Rotation.Y)
+		* MakeRotationXMatrix(Rotation.X);
+}
+
+FMatrix FMatrix::MakeModelMatrix(
+	const FVector& Location,
+	const FVector& Rotation,
+	const FVector& Scale)
+{
+	return MakeScaleMatrix(Scale)
+		* MakeRotationMatrix(Rotation)
+		* MakeTranslationMatrix(Location);
+}
+
+FMatrix FMatrix::MakeNormalMatrix(const FMatrix& Input)
+{
+	return Input.NormalMatrix();
+}
+
 FVector FVector::operator+(const FVector& rhs) const
 {
 	return FVector(X + rhs.X, Y + rhs.Y, Z + rhs.Z);
@@ -285,6 +361,7 @@ float FMatrix::Determinant() const
 	const float S5 = M[2][2] * M[3][3] - M[2][3] * M[3][2];
 
 	
+
 	// 2x2 소행렬식들의 여인수 전개
 	return (C0 * S5 - C1 * S4 + C2 * S3 + C3 * S2 - C4 * S1 + C5 * S0);
 }
