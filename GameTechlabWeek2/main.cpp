@@ -18,8 +18,9 @@
 #include "FRenderer.h"
 
 
-extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+#include "Engine/GEngine.h"
 
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // 각종 메시지를 처리할 함수
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -62,13 +63,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     HWND hWnd = CreateWindowExW(0, WindowClass, Title, WS_POPUP | WS_VISIBLE | WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT, 1024, 1024,
         nullptr, nullptr, hInstance, nullptr);
-
     
-    bool bIsExit = false;
 
-    // Enter()
+    // 엔진을 초기화합니다.
+    GEngine* Engine = GEngine::GetInstance();
+    Engine->Initialize();
 
     // Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
+    bool bIsExit = false;
     while (bIsExit == false)
     {
 
@@ -93,10 +95,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
         ////////////////////////////////////////////
         // 매번 실행되는 코드를 여기에 추가합니다.
-
-        //Update();;
+        Engine->Tick();
 
     }
+
+
+    // 엔진을 정리합니다.
+    Engine->Destroy();
+    Engine = nullptr;
 
     //Exit();
     return 0;
