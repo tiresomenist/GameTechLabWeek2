@@ -1,6 +1,8 @@
 #pragma once
 
-class UObjectAxisGizmo
+#include "UGizmo.h"
+
+class UObjectAxisGizmo : public UGizmo
 {
 };
 

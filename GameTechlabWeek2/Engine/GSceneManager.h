@@ -2,7 +2,7 @@
 
 
 // Singleton
-class USceneManager
+class GSceneManager
 {
 };
 
