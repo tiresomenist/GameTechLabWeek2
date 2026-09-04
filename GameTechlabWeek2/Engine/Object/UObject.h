@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Core.h"
-#include "../../FString.h"
+#include "../../Container/FString.h"
 #include "FClassType.h"
 
 #include <cstdlib>
