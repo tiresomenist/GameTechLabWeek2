@@ -3,7 +3,7 @@
 #include "../Matrix.h"
 #include "../FVertexSimple.h"
 
-void GenerateSphere(float Radius, int Slices, int Stacks, std::vector<FVertex>& OutVertices, std::vector<uint32_t>& OutIndices)
+void GenerateSphere(float Radius, int Slices, int Stacks, std::vector<FVertexTest>& OutVertices, std::vector<uint32_t>& OutIndices)
 {
     OutVertices.clear();
     OutIndices.clear();
@@ -26,7 +26,7 @@ void GenerateSphere(float Radius, int Slices, int Stacks, std::vector<FVertex>& 
             float y = Radius * cosf(phi);
             float z = Radius * sinf(phi) * sinf(theta);
 
-            FVertex vertex;
+            FVertexTest vertex;
             vertex.x = x; vertex.y = y; vertex.z = z;
 
             // 법선(Normal) 벡터는 위치 벡터를 정규화한 것과 동일 (원점 중심이므로)
@@ -76,7 +76,7 @@ void FRenderer::Create(HWND hWindow, uint32 InWidth, uint32 InHeight)
     GenerateSphere(1.0f, 30, 30, SphereVertices, SphereIndices);
     CreateShader();
     CreateConstantBuffer();
-    const UINT vertexByteWidth = static_cast<UINT>(SphereVertices.size() * sizeof(FVertex));
+    const UINT vertexByteWidth = static_cast<UINT>(SphereVertices.size() * sizeof(FVertexTest));
     SphereVertexBuffer = CreateVertexBuffer(SphereVertices.data(), vertexByteWidth);
     const UINT indexByteWidth = static_cast<UINT>(SphereIndices.size() * sizeof(uint32_t));
     SphereIndexBuffer = CreateIndexBuffer(SphereIndices.data(), indexByteWidth);
@@ -286,7 +286,7 @@ void FRenderer::CreateShader()
 
     Device->CreateInputLayout(layout, ARRAYSIZE(layout), vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(), &SimpleInputLayout);
 
-    Stride = sizeof(FVertex);
+    Stride = sizeof(FVertexTest);
 
     vertexshaderCSO->Release();
     pixelshaderCSO->Release();
@@ -357,7 +357,7 @@ ID3D11Buffer* FRenderer::CreateVertexBuffer(FVertexSimple* vertices, UINT byteWi
     return vertexBuffer;
 }
 
-ID3D11Buffer* FRenderer::CreateVertexBuffer(FVertex* vertices, UINT byteWidth)
+ID3D11Buffer* FRenderer::CreateVertexBuffer(FVertexTest* vertices, UINT byteWidth)
 {
     D3D11_BUFFER_DESC vertexbufferdesc = {};
     vertexbufferdesc.ByteWidth = byteWidth;
@@ -401,6 +401,17 @@ void FRenderer::ReleaseConstantBuffer()
     }
 }
 
+void FRenderer::BeginFrame()
+{
+    Prepare();
+    PrepareShader();
+}
+
+void FRenderer::EndFrame()
+{
+    SwapBuffer();
+}
+
 // @TEST >>
 //void FRenderer::Render(UScene* Scene)
 //{
@@ -438,12 +449,11 @@ ID3D11Buffer* FRenderer::CreateIndexBuffer(uint32_t* indices, UINT byteWidth)
     bd.CPUAccessFlags = 0;
 
     D3D11_SUBRESOURCE_DATA initData = {};
-    initData.pSysMem = indices;              // 초기 데이터 포인터
+    initData.pSysMem = indices;
 
     HRESULT hr = Device->CreateBuffer(&bd, &initData, &indexBuffer);
     if (FAILED(hr))
     {
-        // 에러 처리
         return nullptr;
     }
 
@@ -452,6 +462,8 @@ ID3D11Buffer* FRenderer::CreateIndexBuffer(uint32_t* indices, UINT byteWidth)
 
 void FRenderer::Render()
 {
+    BeginFrame();
+
     XMMATRIX View = XMMatrixLookAtLH({ 0.0f, 0.0f, -5.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f });
     const float AspectRatio = ViewportInfo.Width / ViewportInfo.Height;
     XMMATRIX Proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, AspectRatio, 0.1f, 100.0f);
@@ -462,11 +474,13 @@ void FRenderer::Render()
     Data.VertexBuffer = SphereVertexBuffer;
     Data.IndexBuffer = SphereIndexBuffer;
     Data.IndexCount = static_cast<UINT>(SphereIndices.size());
-    Data.Stride = sizeof(FVertex);
+    Data.Stride = sizeof(FVertexTest);
     Data.Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
     UpdateConstantBuffer(MVP);
     RenderPrimitive(Data);
+
+    EndFrame();
 }
 
 void FRenderer::UpdateConstantBuffer(const XMMATRIX& MVP)

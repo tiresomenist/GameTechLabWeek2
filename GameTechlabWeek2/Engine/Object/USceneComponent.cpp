@@ -33,7 +33,33 @@ void USceneComponent::SetRelativeScale3D(const FVector& Scale3D)
 	RelativeScale3D = Scale3D;
 }
 
+const FMatrix& USceneComponent::GetWorldMatrix() const
+{
+    //if (bWorldMatrixDirty)
+    UpdateWorldTransform();
+    return CachedWorldMatrix;
+}
+
 USceneComponent::USceneComponent(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
 	: UObject{ InUUID, InInternalIndex, InClassType }
 {
+}
+
+void USceneComponent::UpdateWorldTransform() const
+{
+    FMatrix LocalSRTMatrix = FMatrix::MakeScaleMatrix(RelativeScale3D)
+        * FMatrix::MakeRotationMatrix(RelativeRotation)
+        * FMatrix::MakeTranslationMatrix(RelativeLocation);
+
+    // 부모가 있으면 부모의 월드 행렬과 곱함
+    if (AttachParent)
+    {
+        CachedWorldMatrix = LocalSRTMatrix * AttachParent->GetWorldMatrix();
+    }
+    else
+    {
+        CachedWorldMatrix = LocalSRTMatrix;
+    }
+
+    //bWorldMatrixDirty = false;
 }
