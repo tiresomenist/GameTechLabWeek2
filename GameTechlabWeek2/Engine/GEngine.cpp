@@ -3,6 +3,7 @@
 #include "Object/FObjectFactory.h"
 #include "Object/UObject.h"
 #include "Object/USceneComponent.h"
+#include "Object/UCameraComponent.h"
 
 #include <format>
 
@@ -13,7 +14,6 @@ float GetTime()
 
 	return static_cast<float>(currentTime.QuadPart);
 }
-
 
 GEngine* GEngine::GetInstance()
 {
@@ -28,15 +28,20 @@ void GEngine::Initialize()
 	UObject* Object = FObjectFactory::ConstructObject(UObject::GetClass());
 	UObject* SceneObject = FObjectFactory::ConstructObject(USceneComponent::GetClass());
 
-	USceneComponent* SceneComponent = reinterpret_cast<USceneComponent*>(SceneObject);
-	SceneComponent->RelativeLocation = FVector{ 1.0f, 2.0f, 3.0f };
-	SceneComponent->RelativeRotation = FVector{ 1.0f, 2.0f, 3.0f };
-	SceneComponent->RelativeScale3D = FVector{ 1.0f, 1.0f, 1.0f };
+	if (SceneObject->IsA(UObject::GetClass()))
+	{
+		MessageBox(nullptr, std::format(L"[RTTI Test] SceneObject는 UObject입니다.").c_str(), L"", 0);
+	}
 
-	MessageBox(nullptr, std::format(L"테스트입니다 {} {} {}",
-		SceneComponent->RelativeLocation.X,
-		SceneComponent->RelativeLocation.Y,
-		SceneComponent->RelativeLocation.Z).c_str(), L"", 0);
+	if (SceneObject->IsA(USceneComponent::GetClass()))
+	{
+		MessageBox(nullptr, std::format(L"[RTTI Test] SceneObject는 USceneComponent입니다.").c_str(), L"", 0);
+	}
+
+	if (SceneObject->IsA(UCameraComponent::GetClass()))
+	{
+		MessageBox(nullptr, std::format(L"[RTTI Test] SceneObject는 UCameraComponent입니다.").c_str(), L"", 0);
+	}
 
 }
 

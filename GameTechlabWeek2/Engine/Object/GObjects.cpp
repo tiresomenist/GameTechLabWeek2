@@ -6,7 +6,6 @@ void GObjects::AddObject(UObject* Object)
 	GUObjectArray.Add(Object);
 }
 
-
 void GObjects::DestoryObject(uint32 InternalIndex)
 {
 	GUObjectArray.RemoveAt(InternalIndex);

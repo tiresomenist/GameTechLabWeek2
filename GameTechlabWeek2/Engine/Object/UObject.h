@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Core.h"
-#include "../../Container/FString.h"
-#include "FClassType.h"
+#include "Engine/Object/FClassType.h"
+#include "Engine/Core.h"
+#include "Container/FString.h"
 
 #include <cstdlib>
 #include <string>
@@ -14,7 +14,6 @@
 class UObject
 {
 public:
-    static UObject* CreateObject(uint32 UUID, uint32 InternalIndex, FClassType* InClassType);
     static FClassType* GetClass();
 
     FClassType* GetClassType();
@@ -23,6 +22,8 @@ public:
 
     uint32 UUID;
     uint32 InternalIndex;
+
+    bool IsA(FClassType* InClassType) const;
 
 private:
     FClassType* ClassType;

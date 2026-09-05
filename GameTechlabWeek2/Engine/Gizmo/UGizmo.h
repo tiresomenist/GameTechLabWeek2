@@ -10,19 +10,27 @@ struct FGizmoVertex
 	FVector Position;
 	FVector4 Color;
 };
+#include "Engine/Object/UObject.h"
 
 class UGizmo : public FEditor
 {
+private:
+	UGizmo(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
 public:
-	UGizmo() = default;
 	virtual ~UGizmo() = default;
 
 	void Create(FRenderer& renderer);
 	void Render(FRenderer& renderer);
 	void Release();
 
+public:
+
 	void SetVisible(bool bVisible);
 	bool IsVisible();
+
+
+	static FClassType* GetClass();
+
 protected:
 	ID3D11Buffer* vertexBuffer = nullptr;
 	uint32 VertexCount = 0;
