@@ -1,9 +1,8 @@
 #pragma once
 
-<<<<<<< HEAD
 #include "../FEditor.h"
 #include "../../Matrix.h"
-#include "../../URenderer.h"
+#include "../FRenderer.h"
 
 
 struct FGizmoVertex
@@ -14,25 +13,18 @@ struct FGizmoVertex
 
 class UGizmo : public FEditor
 {
-public :
+public:
 	UGizmo() = default;
 	virtual ~UGizmo() = default;
 
-	void Create(URenderer& renderer);
-	void Render(URenderer& renderer);
+	void Create(FRenderer& renderer);
+	void Render(FRenderer& renderer);
 	void Release();
 
 	void SetVisible(bool bVisible);
 	bool IsVisible();
-protected :
+protected:
 	ID3D11Buffer* vertexBuffer = nullptr;
 	uint32 VertexCount = 0;
 	bool bVisible = true;
-=======
-#include "../Object/UObject.h"
-
-class UGizmo : public UObject
-{
-
->>>>>>> main
 };
