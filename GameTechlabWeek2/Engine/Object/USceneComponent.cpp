@@ -1,5 +1,6 @@
 #include "USceneComponent.h"
 #include "Engine/Object/UObject.h"
+#include "FObjectFactory.h"
 
 FClassType* USceneComponent::GetClass()
 {

@@ -4,7 +4,7 @@
 #include "Engine/Core.h"
 #include "FVector.h"
 #include "../../Matrix.h"
-
+#include "FClassType.h"
 
 class USceneComponent : public UObject
 {
@@ -27,7 +27,9 @@ protected:
     // 로컬 트랜스폼
     FVector RelativeLocation;
     FVector RelativeRotation;
-    FVector RelativeScale3D;
+    // Transform의 기본 스케일은 단위 스케일이어야 한다. FVector의 기본값은
+    // (0, 0, 0)이므로 명시하지 않으면 메시 정점이 원점으로 붕괴한다.
+    FVector RelativeScale3D{ 1.0f, 1.0f, 1.0f };
 
     // 계층 구조(구현X)
     USceneComponent* AttachParent = nullptr;

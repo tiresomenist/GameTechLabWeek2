@@ -17,7 +17,7 @@ FClassType* UCameraComponent::GetClass()
 	{
 		.Name = "CameraComponent",
 		.ClassConstructor = CreateObject,
-		.ParentClassType = UObject::GetClass(),
+		.ParentClassType = USceneComponent::GetClass(),
 	};
 
 	return &Type;
