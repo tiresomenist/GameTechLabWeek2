@@ -9,10 +9,10 @@ class UEditorWindow
 {
 public:
 	UEditorWindow() = default;
-	~UEditorWindow() = default;
+	virtual ~UEditorWindow() = default;
 
 	void startEditor(HWND Hwnd, ID3D11Device* device, ID3D11DeviceContext* device_context);
-	void updateEditor(FRenderer &renderer);
+	virtual void updateEditor(FRenderer &renderer) = 0;
 	void endEditor();
 };
 
