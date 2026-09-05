@@ -15,7 +15,6 @@ float GetTime()
 	return static_cast<float>(currentTime.QuadPart);
 }
 
-
 GEngine* GEngine::GetInstance()
 {
 	static GEngine* Engine = new GEngine();

@@ -4,9 +4,10 @@
 
 class UGizmo : public UObject
 {
-public:
+private:
     UGizmo(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
 
-    static UObject* CreateObject(uint32 UUID, uint32 InternalIndex, FClassType* InClassType);
+public:
+
     static FClassType* GetClass();
 };

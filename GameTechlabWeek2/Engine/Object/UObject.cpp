@@ -1,14 +1,14 @@
 #include "UObject.h"
 #include "Engine/Object/GObjects.h"
 
-UObject* UObject::CreateObject(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
-{
-	return new UObject(InUUID, InInternalIndex, InClassType);
-}
-
 FClassType* UObject::GetClass()
 {
-	static FClassType Type{ FString{"Object"}, UObject::CreateObject };
+	static auto CreateObject = [](uint32 UUID, uint32 InternalIndex, FClassType* InClassType)
+		{
+			return new UObject(UUID, InternalIndex, InClassType);
+		};
+
+	static FClassType Type{ "Object", CreateObject };
     return &Type;
 }
 

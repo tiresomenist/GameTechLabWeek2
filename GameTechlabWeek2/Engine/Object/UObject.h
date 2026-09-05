@@ -14,7 +14,6 @@
 class UObject
 {
 public:
-    static UObject* CreateObject(uint32 UUID, uint32 InternalIndex, FClassType* InClassType);
     static FClassType* GetClass();
 
     FClassType* GetClassType();

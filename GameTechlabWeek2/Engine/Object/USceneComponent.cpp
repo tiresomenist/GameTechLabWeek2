@@ -1,14 +1,14 @@
 #include "USceneComponent.h"
 #include "Engine/Object/UObject.h"
 
-UObject* USceneComponent::CreateObject(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
-{
-	return new USceneComponent(InUUID, InInternalIndex, InClassType);
-}
-
 FClassType* USceneComponent::GetClass()
 {
-	static FClassType Type{ FString{"SceneComponent"}, USceneComponent::CreateObject, UObject::GetClass() };
+	static auto CreateObject = [](uint32 UUID, uint32 InternalIndex, FClassType* InClassType)
+		{
+			return new USceneComponent(UUID, InternalIndex, InClassType);
+		};
+
+	static FClassType Type{ "SceneComponent", CreateObject, UObject::GetClass() };
 	return &Type;
 }
 

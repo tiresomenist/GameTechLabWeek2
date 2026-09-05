@@ -6,13 +6,13 @@ UCameraComponent::UCameraComponent(uint32 InUUID, uint32 InInternalIndex, FClass
 {
 }
 
-UObject* UCameraComponent::CreateObject(uint32 UUID, uint32 InternalIndex, FClassType* InClassType)
-{
-	return new UCameraComponent(UUID, InternalIndex, InClassType);
-}
-
 FClassType* UCameraComponent::GetClass()
 {
-	static FClassType Type{ FString{"CameraComponent"}, UCameraComponent::CreateObject, UObject::GetClass() };
+	static auto CreateObject = [](uint32 UUID, uint32 InternalIndex, FClassType* InClassType)
+		{
+			return new USceneComponent(UUID, InternalIndex, InClassType);
+		};
+
+	static FClassType Type{ "CameraComponent", CreateObject, UObject::GetClass() };
 	return &Type;
 }
