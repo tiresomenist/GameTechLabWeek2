@@ -13,8 +13,6 @@ FClassType* UGizmo::GetClass()
 		.Name = "Gizmo",
 		.ClassConstructor = CreateObject,
 		.ParentClassType = UObject::GetClass(),
-		.MemorySize = sizeof(UGizmo),
-		.MemoryAlign = alignof(UGizmo),
 	};
 
 	return &Type;
