@@ -8,7 +8,13 @@ FClassType* USceneComponent::GetClass()
 			return new USceneComponent(UUID, InternalIndex, InClassType);
 		};
 
-	static FClassType Type{ "SceneComponent", CreateObject, UObject::GetClass() };
+	static FClassType Type
+	{
+		.Name = "SceneComponent",
+		.ClassConstructor = CreateObject,
+		.ParentClassType = UObject::GetClass(),
+	};
+
 	return &Type;
 }
 

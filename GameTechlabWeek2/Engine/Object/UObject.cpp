@@ -8,7 +8,12 @@ FClassType* UObject::GetClass()
 			return new UObject(UUID, InternalIndex, InClassType);
 		};
 
-	static FClassType Type{ "Object", CreateObject };
+	static FClassType Type
+	{
+		.Name = "Object",
+		.ClassConstructor = CreateObject,
+	};
+
     return &Type;
 }
 

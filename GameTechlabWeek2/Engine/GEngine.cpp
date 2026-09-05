@@ -25,24 +25,6 @@ void GEngine::Initialize(HWND InHwnd)
 {
 	LastTickTime = GetTime();
 
-	UObject* Object = FObjectFactory::ConstructObject(UObject::GetClass());
-	UObject* SceneObject = FObjectFactory::ConstructObject(USceneComponent::GetClass());
-
-	if (SceneObject->IsA(UObject::GetClass()))
-	{
-		MessageBox(nullptr, std::format(L"[RTTI Test] SceneObject는 UObject입니다.").c_str(), L"", 0);
-	}
-
-	if (SceneObject->IsA(USceneComponent::GetClass()))
-	{
-		MessageBox(nullptr, std::format(L"[RTTI Test] SceneObject는 USceneComponent입니다.").c_str(), L"", 0);
-	}
-
-	if (SceneObject->IsA(UCameraComponent::GetClass()))
-	{
-		MessageBox(nullptr, std::format(L"[RTTI Test] SceneObject는 UCameraComponent입니다.").c_str(), L"", 0);
-	}
-
 }
 
 void GEngine::Tick()
@@ -65,5 +47,8 @@ void GEngine::Tick()
 void GEngine::Destroy()
 {
 	// TODO: 정리 로직
+
+	// TODO: GObjects의 모든 UObject를 정리할 것
+
 	Renderer.Shutdown();
 }
