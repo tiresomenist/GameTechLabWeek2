@@ -17,3 +17,7 @@ UGizmo::UGizmo(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
 	: UObject{ InUUID, InInternalIndex, InClassType }
 {
 }
+
+void UGizmo::Create(FRenderer& renderer)
+{
+}
