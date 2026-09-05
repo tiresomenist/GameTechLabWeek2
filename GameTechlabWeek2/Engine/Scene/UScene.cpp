@@ -12,3 +12,26 @@ void UScene::CreateMainCamera()
 {
     MainCamera = SpawnObject<UCameraComponent*>(UCameraComponent::GetClass());
 }
+
+void UScene::Destroy(UObject* Object)
+{
+    for (int i = 0; i < Objects.Num(); i++)
+    {
+        if (Objects[i] == Object)
+        {
+            delete Object;
+            Objects.RemoveAt(i);
+            break;
+        }
+    }
+}
+
+UScene::~UScene()
+{
+    for (auto Item : Objects)
+    {
+        delete Item;
+    }
+
+    Objects.Empty();
+}

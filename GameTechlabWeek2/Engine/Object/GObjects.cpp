@@ -1,5 +1,6 @@
 #include "GObjects.h"
-#include "UObject.h"
+#include "Engine/Object/UObject.h"
+
 #include <iostream>
 
 void GObjects::AddObject(UObject* Object)
@@ -26,4 +27,6 @@ void GObjects::Release()
 			delete Item;
 		}
 	}
+
+	GUObjectArray.Empty();
 }

@@ -8,12 +8,10 @@ class UPrimitiveComponent;
 
 class UScene : public UObject
 {
-protected:
-	UScene(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
+
+	UCLASS(UScene, "Scene", UObject)
 
 public:
-	static FClassType* GetClass();
-
 	virtual void BeginPlay();
 
     virtual void Tick(float DeltaTime);
@@ -28,7 +26,10 @@ public:
 	template <typename T>
 	T SpawnObject(FClassType* Type)
 	{
-		return Cast<T>(FObjectFactory::ConstructObject(Type));
+		UObject* Object = FObjectFactory::ConstructObject(Type);
+		Objects.Add(Object);
+
+		return Cast<T>(Object);
 	}
 
 	template <typename T>
@@ -37,6 +38,10 @@ public:
 		T Ptr = static_cast<T>(Object);
 		return Ptr;
 	}
+
+	void Destroy(UObject* Object);
+
+	virtual ~UScene();
 
 private:
 
