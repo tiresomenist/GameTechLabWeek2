@@ -1,6 +1,7 @@
 #include "UScene.h"
 #include "Primitive/UPrimitiveComponent.h"
 #include "Primitive/USphereComp.h"
+#include "FObjectFactory.h"
 
 void UScene::Update(float DeltaTime)
 {
@@ -15,14 +16,14 @@ const TArray<UPrimitiveComponent*>& UScene::GetPrimitiveComponents() const
     return PrimitiveComponents;
 }
 
-template<typename T>
-T* UScene::SpawnPrimitive()
-{
-    T* NewPrimitive = new T();
-    PrimitiveComponents.Add(NewPrimitive);
-
-    return NewPrimitive;
-}
+//template<typename T>
+//T* UScene::SpawnPrimitive()
+//{
+//    T* NewPrimitive = new T();
+//    PrimitiveComponents.Add(NewPrimitive);
+//
+//    return NewPrimitive;
+//}
 
 
 //////////////////
@@ -30,9 +31,15 @@ T* UScene::SpawnPrimitive()
 //////////////////
 void UMainScene::Initialize()
 {
-    UPrimitiveComponent* TestSphere = SpawnPrimitive<USpherePrimitive>();
+//    UPrimitiveComponent* TestSphere = SpawnPrimitive<USpherePrimitive>();
+    // @Check
+    USpherePrimitive* SpherePrimitive = static_cast<USpherePrimitive*>(
+        FObjectFactory::ConstructObject(USpherePrimitive::GetClass())
+        );
 
-    SelectedPrimitives.Add(TestSphere);
+    SelectedPrimitives.Add(SpherePrimitive);
+    // Scene의 Primitive 목록에도 등록 (렌더링 순회 대상이 되려면 필요)
+    PrimitiveComponents.Add(SpherePrimitive);
 }
 
 void UMainScene::Update(float DeltaTime)

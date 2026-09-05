@@ -2,8 +2,9 @@
 #include "../USceneComponent.h"
 #include <d3d11.h>
 #include <DirectXcollision.h>
+#include "../FClassType.h"
 
-// 파일 분리 고려.. 순환참조가 두려움..
+// 파일 분리 고려..
 struct FPrimitiveRenderData
 {
     ID3D11Buffer* VertexBuffer = nullptr;
@@ -17,6 +18,7 @@ struct FPrimitiveRenderData
 class UPrimitiveComponent : public USceneComponent
 {
 public:
+    static FClassType* GetClass();
     ~UPrimitiveComponent();
 
     void InitGeometry(ID3D11Buffer* InVB, ID3D11Buffer* InIB, uint32 InStride, uint32 InCount);
@@ -31,12 +33,13 @@ protected:
     UPrimitiveComponent(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
         : USceneComponent(InUUID, InInternalIndex, InClassType) {}
 
-private:
+protected:
     // GPU Buffers
     ID3D11Buffer* VertexBuffer = nullptr;
     ID3D11Buffer* IndexBuffer = nullptr;
     uint32 VertexStride = 0;
     uint32 IndexCount = 0;
+
     D3D_PRIMITIVE_TOPOLOGY Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
     // For Picking & Culling (Local)

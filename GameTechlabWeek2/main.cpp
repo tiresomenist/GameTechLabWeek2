@@ -17,31 +17,7 @@
 //렌더러 헤더파일
 #include "Engine/FRenderer.h"
 #include "Engine/GEngine.h"
-
-extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
-// 각종 메시지를 처리할 함수
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-    if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
-    {
-        return true;
-    }
-    switch (message)
-    {
-    case WM_DESTROY:
-        // Signal that the app should quit
-        PostQuitMessage(0);
-        break;
-    case WM_SIZE:
-        // Handle window size changes
-        break;
-    default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
-    }
-
-    return 0;
-}
+#include "Engine/Editor/InputManger/WndProc.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {

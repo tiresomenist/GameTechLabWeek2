@@ -1,14 +1,27 @@
-#include "UDevice.h"
+#include "GDevice.h"
 
-void UDevice::Initialize(HWND hWindow, uint32 InWidth, uint32 InHeight)
+GDevice* GDevice::GetInstance()
+{
+    static GDevice* Device = new GDevice();
+    return Device;
+}
+
+void GDevice::Initialize(HWND hWindow, uint32 InWidth, uint32 InHeight)
 {
     CreateDeviceAndSwapChain(hWindow);
     CreateFrameBuffer();
-    CreateRasterizerState();
     CreateDepthStencilBuffer(static_cast<int32>(ViewportInfo.Width), static_cast<int32>(ViewportInfo.Height));
 }
 
-void UDevice::CreateDeviceAndSwapChain(HWND hWindow)
+void GDevice::Release()
+{
+}
+
+void GDevice::OnResize(uint32 Width, uint32 Height)
+{
+}
+
+void GDevice::CreateDeviceAndSwapChain(HWND hWindow)
 {
     // 지원하는 Direct3D 기능 레벨을 정의
     D3D_FEATURE_LEVEL featurelevels[] = { D3D_FEATURE_LEVEL_11_0 };
@@ -39,7 +52,7 @@ void UDevice::CreateDeviceAndSwapChain(HWND hWindow)
 }
 
 
-void UDevice::ReleaseDeviceAndSwapChain()
+void GDevice::ReleaseDeviceAndSwapChain()
 {
     if (DeviceContext)
     {
@@ -65,7 +78,7 @@ void UDevice::ReleaseDeviceAndSwapChain()
     }
 }
 
-void UDevice::CreateFrameBuffer()
+void GDevice::CreateFrameBuffer()
 {
     // 스왑 체인으로부터 백 버퍼 텍스처 가져오기
     SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&FrameBuffer);
@@ -78,7 +91,7 @@ void UDevice::CreateFrameBuffer()
     Device->CreateRenderTargetView(FrameBuffer, &framebufferRTVdesc, &FrameBufferRTV);
 }
 
-void UDevice::ReleaseFrameBuffer()
+void GDevice::ReleaseFrameBuffer()
 {
     if (FrameBuffer)
     {
@@ -93,7 +106,7 @@ void UDevice::ReleaseFrameBuffer()
     }
 }
 
-bool UDevice::CreateDepthStencilBuffer(int32 InWidth, int32 inHeight)
+bool GDevice::CreateDepthStencilBuffer(int32 InWidth, int32 inHeight)
 {
     HRESULT hr;
 
@@ -132,7 +145,7 @@ bool UDevice::CreateDepthStencilBuffer(int32 InWidth, int32 inHeight)
     return true;
 }
 
-void UDevice::ReleaseDepthStencilBuffer()
+void GDevice::ReleaseDepthStencilBuffer()
 {
     if (DepthStencilBuffer)
     {
@@ -146,7 +159,7 @@ void UDevice::ReleaseDepthStencilBuffer()
     }
 }
 
-ID3D11Buffer* UDevice::CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidth)
+ID3D11Buffer* GDevice::CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidth)
 {
     D3D11_BUFFER_DESC vertexbufferdesc = {};
     vertexbufferdesc.ByteWidth = byteWidth;
@@ -162,7 +175,7 @@ ID3D11Buffer* UDevice::CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidt
     return vertexBuffer;
 };
 
-ID3D11Buffer* UDevice::CreateVertexBuffer(FVertexTest* vertices, UINT byteWidth)
+ID3D11Buffer* GDevice::CreateVertexBuffer(FVertexTest* vertices, UINT byteWidth)
 {
     D3D11_BUFFER_DESC vertexbufferdesc = {};
     vertexbufferdesc.ByteWidth = byteWidth;
@@ -178,7 +191,7 @@ ID3D11Buffer* UDevice::CreateVertexBuffer(FVertexTest* vertices, UINT byteWidth)
     return vertexBuffer;
 }
 
-void UDevice::ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer)
+void GDevice::ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer)
 {
     if (vertexBuffer)
     {
@@ -186,7 +199,7 @@ void UDevice::ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer)
     }
 }
 
-ID3D11Buffer* UDevice::CreateIndexBuffer(uint32_t* indices, UINT byteWidth)
+ID3D11Buffer* GDevice::CreateIndexBuffer(uint32_t* indices, UINT byteWidth)
 {
     ID3D11Buffer* indexBuffer = nullptr;
 
@@ -209,7 +222,7 @@ ID3D11Buffer* UDevice::CreateIndexBuffer(uint32_t* indices, UINT byteWidth)
 }
 
 
-void UDevice::SwapBuffer()
+void GDevice::SwapBuffer()
 {
     SwapChain->Present(1, 0); // 1: VSync 활성화
 }

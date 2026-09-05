@@ -1,4 +1,16 @@
 #include "UPrimitiveComponent.h"
+#include "../FObjectFactory.h"
+
+FClassType* UPrimitiveComponent::GetClass()
+{
+    static auto CreateObject = [](uint32 UUID, uint32 InternalIndex, FClassType* InClassType)
+        {
+            return new UPrimitiveComponent(UUID, InternalIndex, InClassType);
+        };
+
+    static FClassType Type{ "UPrimitiveComponent", CreateObject, USceneComponent::GetClass() };
+    return &Type;
+}
 
 UPrimitiveComponent::~UPrimitiveComponent()
 {

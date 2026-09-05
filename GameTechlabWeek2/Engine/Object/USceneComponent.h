@@ -4,7 +4,7 @@
 #include "Engine/Core.h"
 #include "FVector.h"
 #include "../../Matrix.h"
-
+#include "FClassType.h"
 
 class USceneComponent : public UObject
 {

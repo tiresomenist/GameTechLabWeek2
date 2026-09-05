@@ -1,5 +1,6 @@
 #include "UObject.h"
 #include "Engine/Object/GObjects.h"
+#include "FObjectFactory.h"
 
 FClassType* UObject::GetClass()
 {

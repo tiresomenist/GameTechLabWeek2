@@ -16,11 +16,11 @@ public:
 	UCameraComponent* GetCamera() const { return MainCamera; }
 	void SetCamera(UCameraComponent* InCamera) { MainCamera = InCamera; }
 
-	template<typename T>
-	T* SpawnPrimitive();
+	//template<typename T>
+	//T* SpawnPrimitive();
 	//T* SpawnActor()
 
-private:
+protected:
 	TArray<UPrimitiveComponent*> PrimitiveComponents {};
 	UCameraComponent* MainCamera = nullptr;
 };

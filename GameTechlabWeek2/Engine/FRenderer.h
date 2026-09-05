@@ -12,33 +12,21 @@
 #include <d3dcompiler.h>
 
 //#include "UEngine"
-#include "UDevice.h"
+#include "GDevice.h"
 #include "../Matrix.h"
-#include "../FVertexSimple.h"
+//#include "../FVertexSimple.h"
 
-struct FVertexSimple;
+//struct FVertexSimple;
 struct FConstants
 {
 	FMatrix MVP;
 };
 class UScene;
-//struct FPrimitiveRenderData;
+struct FPrimitiveRenderData;
 
 #include <cmath>
 
 // @TEST >>
-
-struct FPrimitiveRenderData
-{
-	ID3D11Buffer* VertexBuffer;
-	ID3D11Buffer* IndexBuffer;
-	UINT                Stride;
-	UINT                IndexCount;
-	D3D11_PRIMITIVE_TOPOLOGY Topology;
-
-	ID3D11ShaderResourceView* Material;       // VS/PS, 텍스처 SRV 등을 들고 있는 객체
-	const FMatrix* WorldMatrix;    // 컴포넌트가 소유한 월드행렬 가리키기
-};
 
 using namespace DirectX;
 namespace Matrix4x4
@@ -168,7 +156,7 @@ namespace Matrix4x4
 class FRenderer
 {
 public:
-	UDevice* Device;
+	GDevice* Device;
 	ID3D11DeviceContext* DeviceContext;
 	ID3D11Device* D3DDevice;
 
@@ -183,13 +171,13 @@ public:
 
     unsigned int Stride;
 
-	std::vector<FVertexTest> SphereVertices{};
-	std::vector<uint32_t> SphereIndices{};
-	ID3D11Buffer* SphereVertexBuffer = nullptr;
-	ID3D11Buffer* SphereIndexBuffer = nullptr;
+	//std::vector<FVertexTest> SphereVertices{};
+	//std::vector<uint32_t> SphereIndices{};
+	//ID3D11Buffer* SphereVertexBuffer = nullptr;
+	//ID3D11Buffer* SphereIndexBuffer = nullptr;
 
 
-    void Create(UDevice* InDevice);					// 렌더러 초기화 함수
+    void Create(GDevice* InDevice);					// 렌더러 초기화 함수
 
     void Shutdown();                                // 렌더러에 사용된 모든 리소스를 해제하는 함수
 
@@ -205,16 +193,19 @@ public:
 	void ReleaseConstantBuffer();								// 상수 버퍼 소멸 함수
 	void UpdateConstantBuffer(const FMatrix& WorldMatrix);      // 상수 버퍼 업데이트 함수
 
+	void CreateRasterizerState();
+	void ReleaseRasterizerState();
+
 	void BeginFrame();
 	void EndFrame();
 
 	void Render(UScene* Scene);
 	void RenderPrimitive(const FPrimitiveRenderData& Data);
 
-	// @TEST >>
-	void Render();
-	ID3D11Buffer* CreateIndexBuffer(uint32_t* indices, UINT byteWidth);
-	ID3D11Buffer* CreateVertexBuffer(FVertexTest* vertices, UINT byteWidth);
+	//// @TEST >>
+	//void Render();
+	//ID3D11Buffer* CreateIndexBuffer(uint32_t* indices, UINT byteWidth);
+	//ID3D11Buffer* CreateVertexBuffer(FVertexTest* vertices, UINT byteWidth);
 	void UpdateConstantBuffer(const XMMATRIX& MVP);
-	// @TEST <<
+	//// @TEST <<
 };

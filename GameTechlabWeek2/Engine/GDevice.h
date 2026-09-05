@@ -15,9 +15,11 @@ struct FVertexTest;
 
 // Device 생성 → Renderer/ResourceManager 생성 → (역순으로) Renderer/ResourceManager 소멸 → Device 소멸
 
-class UDevice
+class GDevice
 {
 public:
+    static GDevice* GetInstance();
+
     void Initialize(HWND hWnd, uint32 Width, uint32 Height);
     void Release();
     void OnResize(uint32 Width, uint32 Height);
@@ -26,8 +28,6 @@ public:
     void ReleaseDeviceAndSwapChain();               // Direct3D 장치 및 스왑 체인을 해제하는 함수
     void CreateFrameBuffer();                       // 프레임 버퍼를 생성하는 함수
     void ReleaseFrameBuffer();                      // 프레임 버퍼를 해제하는 함수
-    void CreateRasterizerState();                   // 래스터라이저 상태를 생성하는 함수
-    void ReleaseRasterizerState();                  // 래스터라이저 상태를 해제하는 함수
     bool CreateDepthStencilBuffer(int32 InWidth, int32 InHeight); // 깊이 스텐실 버퍼를 생성하는 함수
     void ReleaseDepthStencilBuffer();               // 깊이 스텐실 버퍼를 해제하는 함수
 
@@ -56,4 +56,9 @@ private:
     ID3D11DepthStencilView* DepthStencilView;
 
     D3D11_VIEWPORT ViewportInfo;
+
+    GDevice() = default;
+    ~GDevice() = default;
+    GDevice(const GDevice&) = delete;
+    GDevice& operator=(const GDevice&) = delete;
 };

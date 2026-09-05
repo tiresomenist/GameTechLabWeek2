@@ -1,8 +1,10 @@
 #pragma once
 #include "FRenderer.h"
-#include "UDevice.h"
+#include "GDevice.h"
 #include "../Matrix.h"
 #include "../FVertexSimple.h"
+#include "Object/Primitive/UPrimitiveComponent.h"
+#include "Object/UScene.h"
 
 void GenerateSphere(float Radius, int Slices, int Stacks, std::vector<FVertexTest>& OutVertices, std::vector<uint32_t>& OutIndices)
 {
@@ -66,34 +68,36 @@ void GenerateSphere(float Radius, int Slices, int Stacks, std::vector<FVertexTes
     }
 }
 
-void FRenderer::Create(UDevice* InDevice)
+void FRenderer::Create(GDevice* InDevice)
 {
     Device = InDevice;
     DeviceContext = InDevice->GetContext();
     D3DDevice = InDevice->GetDevice();
-
-    // @TEST >>
-    GenerateSphere(1.0f, 30, 30, SphereVertices, SphereIndices);
+    CreateRasterizerState();
     CreateShader();
     CreateConstantBuffer();
-    const UINT vertexByteWidth = static_cast<UINT>(SphereVertices.size() * sizeof(FVertexTest));
-    SphereVertexBuffer = CreateVertexBuffer(SphereVertices.data(), vertexByteWidth);
-    const UINT indexByteWidth = static_cast<UINT>(SphereIndices.size() * sizeof(uint32_t));
-    SphereIndexBuffer = CreateIndexBuffer(SphereIndices.data(), indexByteWidth);
+
+    // @TEST >>
+    //GenerateSphere(1.0f, 30, 30, SphereVertices, SphereIndices);
+    //const UINT vertexByteWidth = static_cast<UINT>(SphereVertices.size() * sizeof(FVertexTest));
+    //SphereVertexBuffer = CreateVertexBuffer(SphereVertices.data(), vertexByteWidth);
+    //const UINT indexByteWidth = static_cast<UINT>(SphereIndices.size() * sizeof(uint32_t));
+    //SphereIndexBuffer = CreateIndexBuffer(SphereIndices.data(), indexByteWidth);
     // @TEST <<
 }
 
 void FRenderer::Shutdown()
 {
-    ReleaseVertexBuffer(SphereVertexBuffer);
-    SphereVertexBuffer = nullptr;
-    if (SphereIndexBuffer)
-    {
-        SphereIndexBuffer->Release();
-        SphereIndexBuffer = nullptr;
-    }
+    //ReleaseVertexBuffer(SphereVertexBuffer);
+    //SphereVertexBuffer = nullptr;
+    //if (SphereIndexBuffer)
+    //{
+    //    SphereIndexBuffer->Release();
+    //    SphereIndexBuffer = nullptr;
+    //}
     ReleaseConstantBuffer();
     ReleaseShader();
+    ReleaseRasterizerState();
 
     // 렌더 타겟을 초기화
     DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
@@ -179,7 +183,7 @@ void FRenderer::PrepareShader()
     }
 }
 
-    ID3D11Buffer* FRenderer::CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidth)
+ID3D11Buffer* FRenderer::CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidth)
 {
     D3D11_BUFFER_DESC vertexbufferdesc = {};
     vertexbufferdesc.ByteWidth = byteWidth;
@@ -195,23 +199,23 @@ void FRenderer::PrepareShader()
     return vertexBuffer;
 }
 
-    ID3D11Buffer* FRenderer::CreateVertexBuffer(FVertexTest* vertices, UINT byteWidth)
-{
-    D3D11_BUFFER_DESC vertexbufferdesc = {};
-    vertexbufferdesc.ByteWidth = byteWidth;
-    vertexbufferdesc.Usage = D3D11_USAGE_IMMUTABLE; // will never be updated
-    vertexbufferdesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+//ID3D11Buffer* FRenderer::CreateVertexBuffer(FVertexTest* vertices, UINT byteWidth)
+//{
+//    D3D11_BUFFER_DESC vertexbufferdesc = {};
+//    vertexbufferdesc.ByteWidth = byteWidth;
+//    vertexbufferdesc.Usage = D3D11_USAGE_IMMUTABLE; // will never be updated
+//    vertexbufferdesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+//
+//    D3D11_SUBRESOURCE_DATA vertexbufferSRD = { vertices };
+//
+//    ID3D11Buffer* vertexBuffer;
+//
+//    D3DDevice->CreateBuffer(&vertexbufferdesc, &vertexbufferSRD, &vertexBuffer);
+//
+//    return vertexBuffer;
+//}
 
-    D3D11_SUBRESOURCE_DATA vertexbufferSRD = { vertices };
-
-    ID3D11Buffer* vertexBuffer;
-
-    D3DDevice->CreateBuffer(&vertexbufferdesc, &vertexbufferSRD, &vertexBuffer);
-
-    return vertexBuffer;
-}
-
-    void FRenderer::ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer)
+void FRenderer::ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer)
 {
     if (vertexBuffer)
     {
@@ -239,6 +243,24 @@ void FRenderer::ReleaseConstantBuffer()
     }
 }
 
+void FRenderer::CreateRasterizerState()
+{
+    D3D11_RASTERIZER_DESC rasterizerdesc = {};
+    rasterizerdesc.FillMode = D3D11_FILL_SOLID; // 채우기 모드
+    rasterizerdesc.CullMode = D3D11_CULL_BACK;  // 백 페이스 컬링
+
+    D3DDevice->CreateRasterizerState(&rasterizerdesc, &RasterizerState);
+}
+
+void FRenderer::ReleaseRasterizerState()
+{
+    if (RasterizerState)
+    {
+        RasterizerState->Release();
+        RasterizerState = nullptr;
+    }
+}
+
 void FRenderer::BeginFrame()
 {
     Prepare();
@@ -249,54 +271,54 @@ void FRenderer::EndFrame()
 {
 }
 
-// @TEST >>
-//void FRenderer::Render(UScene* Scene)
-//{
-//    //BeginFrame();
-//
-//    UCameraComponent* Camera = Scene->GetCamera();
-//    FMatrix ViewProjMatrix = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
-//
-//    for (UPrimitiveComponent* Prim : Scene->GetPrimitiveComponents())
-//    {
-//        FPrimitiveRenderData Data = Prim->GetRenderData();
-//
-//        FMatrix MVP = (*Data.WorldMatrix) * ViewProjMatrix;
-//
-//        UpdateConstantBuffer(MVP);
-//        RenderPrimitive(Data);
-//    }
-//
-//    //EndFrame();
-//}
-
 void FRenderer::Render(UScene* Scene)
 {
-}
-// @TEST <<
+    //BeginFrame();
 
-void FRenderer::Render()
-{
-    BeginFrame();
-
-    XMMATRIX View = XMMatrixLookAtLH({ 0.0f, 0.0f, -5.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f });
+    //UCameraComponent* Camera = Scene->GetCamera();
+    //FMatrix ViewProjMatrix = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
     const float AspectRatio = ViewportInfo.Width / ViewportInfo.Height;
+    XMMATRIX View = XMMatrixLookAtLH({ 0.0f, 0.0f, -5.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f });
     XMMATRIX Proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, AspectRatio, 0.1f, 100.0f);
-    XMMATRIX WorldMat = XMMatrixIdentity();
-    XMMATRIX MVP = WorldMat * View * Proj;
+    XMMATRIX ViewProjMatrix = View * Proj;
 
-    FPrimitiveRenderData Data{};
-    Data.VertexBuffer = SphereVertexBuffer;
-    Data.IndexBuffer = SphereIndexBuffer;
-    Data.IndexCount = static_cast<UINT>(SphereIndices.size());
-    Data.Stride = sizeof(FVertexTest);
-    Data.Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+    for (UPrimitiveComponent* Prim : Scene->GetPrimitiveComponents())
+    {
+        FPrimitiveRenderData Data = Prim->GetRenderData();
 
-    UpdateConstantBuffer(MVP);
-    RenderPrimitive(Data);
+        //FMatrix MVP = (*Data.WorldMatrix) * ViewProjMatrix;
+        XMMATRIX temp = XMMATRIX(&(Data.WorldMatrix->M[0][0]));
+        XMMATRIX MVP = temp * ViewProjMatrix;
 
-    EndFrame();
+        UpdateConstantBuffer(MVP);
+        RenderPrimitive(Data);
+    }
+
+    //EndFrame();
 }
+
+//void FRenderer::Render()
+//{
+//    BeginFrame();
+//
+//    XMMATRIX View = XMMatrixLookAtLH({ 0.0f, 0.0f, -5.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f });
+//    const float AspectRatio = ViewportInfo.Width / ViewportInfo.Height;
+//    XMMATRIX Proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, AspectRatio, 0.1f, 100.0f);
+//    XMMATRIX WorldMat = XMMatrixIdentity();
+//    XMMATRIX MVP = WorldMat * View * Proj;
+//
+//    FPrimitiveRenderData Data{};
+//    Data.VertexBuffer = SphereVertexBuffer;
+//    Data.IndexBuffer = SphereIndexBuffer;
+//    Data.IndexCount = static_cast<UINT>(SphereIndices.size());
+//    Data.VertexStride = sizeof(FVertexTest);
+//    Data.Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+//
+//    UpdateConstantBuffer(MVP);
+//    RenderPrimitive(Data);
+//
+//    EndFrame();
+//}
 
 void FRenderer::UpdateConstantBuffer(const XMMATRIX& MVP)
 {
@@ -318,8 +340,8 @@ void FRenderer::UpdateConstantBuffer(const FMatrix& MVP)
         D3D11_MAPPED_SUBRESOURCE constantbufferMSR;
 
         DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR);
-        FConstants* constants = (FConstants*)constantbufferMSR.pData;
-        constants->MVP = MVP.Transpose();
+        //FConstants* constants = (FConstants*)constantbufferMSR.pData;
+        //constants->MVP = MVP.Transpose(); 그냥 Shader에서 row_major 키워드 넣기로 함
         DeviceContext->Unmap(ConstantBuffer, 0);
     }
 }
@@ -330,7 +352,7 @@ void FRenderer::RenderPrimitive(const FPrimitiveRenderData& Data)
 
     // 지오메트리 바인딩
     UINT Offset = 0;
-    DeviceContext->IASetVertexBuffers(0, 1, &Data.VertexBuffer, &Data.Stride, &Offset);
+    DeviceContext->IASetVertexBuffers(0, 1, &Data.VertexBuffer, &Data.VertexStride, &Offset);
     DeviceContext->IASetIndexBuffer(Data.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
     DeviceContext->IASetPrimitiveTopology(Data.Topology);
 

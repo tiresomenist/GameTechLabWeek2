@@ -55,7 +55,7 @@ void GEngine::Tick()
 	// 게임 화면을 렌더링합니다.
 	// UScene* CurrentScene = GSceneManager->GetScene();
 	// FRenderer.Render(CurrentScene);
-	Renderer.Render();
+	//Renderer.Render();
 }
 
 void GEngine::Destroy()

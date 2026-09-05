@@ -38,5 +38,6 @@ public:
 	auto begin() { return Array.begin(); }
 	auto end() { return Array.end(); }
 
-	
+	auto begin() const { return Array.begin(); }
+	auto end() const { return Array.end(); }
 };
