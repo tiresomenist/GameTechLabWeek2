@@ -1,13 +1,16 @@
 #pragma once
 
 #include "Core.h"
-#include "Object/UObject.h"
 
 class UEngineStatics
 {
 public:
-	static constexpr float Epsilon = 1.0e-6f;
+	static uint32 GenUUID()
+	{
+		return NextUUID++;
+	};
 
-	inline static unsigned int NextUUID = 1;
-	static uint32 GenUUID();
+	static constexpr float Epsilon = 1.0e-7f;
+
+	inline static uint32 NextUUID = 0;
 };

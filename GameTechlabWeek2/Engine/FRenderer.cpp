@@ -1,6 +1,6 @@
 #include "FRenderer.h"
-#include "Matrix.h"
-#include "FVertexSimple.h"
+#include "../Matrix.h"
+#include "../FVertexSimple.h"
 
 void FRenderer::Create(HWND hWindow, uint32 InWidth, uint32 InHeight)
 {
