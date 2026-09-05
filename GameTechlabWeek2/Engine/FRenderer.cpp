@@ -70,18 +70,17 @@ void FRenderer::Create(HWND hWindow, uint32 InWidth, uint32 InHeight)
     CreateDeviceAndSwapChain(hWindow);
     CreateFrameBuffer();
     CreateRasterizerState();
-    CreateDepthStencilBuffer(
-        static_cast<int32>(ViewportInfo.Width),
-        static_cast<int32>(ViewportInfo.Height));
+    CreateDepthStencilBuffer(static_cast<int32>(ViewportInfo.Width), static_cast<int32>(ViewportInfo.Height));
+    
+    // @TEST >>
     GenerateSphere(1.0f, 30, 30, SphereVertices, SphereIndices);
     CreateShader();
     CreateConstantBuffer();
-
     const UINT vertexByteWidth = static_cast<UINT>(SphereVertices.size() * sizeof(FVertex));
     SphereVertexBuffer = CreateVertexBuffer(SphereVertices.data(), vertexByteWidth);
-
     const UINT indexByteWidth = static_cast<UINT>(SphereIndices.size() * sizeof(uint32_t));
     SphereIndexBuffer = CreateIndexBuffer(SphereIndices.data(), indexByteWidth);
+    // @TEST <<
 }
 
 void FRenderer::CreateDeviceAndSwapChain(HWND hWindow)
@@ -152,7 +151,6 @@ void FRenderer::CreateFrameBuffer()
 
     Device->CreateRenderTargetView(FrameBuffer, &framebufferRTVdesc, &FrameBufferRTV);
 }
-
 
 void FRenderer::ReleaseFrameBuffer()
 {
@@ -345,10 +343,9 @@ void FRenderer::PrepareShader()
 
 ID3D11Buffer* FRenderer::CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidth)
 {
-    // 2. Create a vertex buffer
     D3D11_BUFFER_DESC vertexbufferdesc = {};
     vertexbufferdesc.ByteWidth = byteWidth;
-    vertexbufferdesc.Usage = D3D11_USAGE_IMMUTABLE; // will never be updated
+    vertexbufferdesc.Usage = D3D11_USAGE_IMMUTABLE;
     vertexbufferdesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
     D3D11_SUBRESOURCE_DATA vertexbufferSRD = { vertices };
@@ -362,7 +359,6 @@ ID3D11Buffer* FRenderer::CreateVertexBuffer(FVertexSimple* vertices, UINT byteWi
 
 ID3D11Buffer* FRenderer::CreateVertexBuffer(FVertex* vertices, UINT byteWidth)
 {
-    // 2. Create a vertex buffer
     D3D11_BUFFER_DESC vertexbufferdesc = {};
     vertexbufferdesc.ByteWidth = byteWidth;
     vertexbufferdesc.Usage = D3D11_USAGE_IMMUTABLE; // will never be updated
@@ -405,6 +401,7 @@ void FRenderer::ReleaseConstantBuffer()
     }
 }
 
+// @TEST >>
 //void FRenderer::Render(UScene* Scene)
 //{
 //    //BeginFrame();
@@ -424,6 +421,11 @@ void FRenderer::ReleaseConstantBuffer()
 //
 //    //EndFrame();
 //}
+
+void FRenderer::Render(UScene* Scene)
+{
+}
+// @TEST <<
 
 ID3D11Buffer* FRenderer::CreateIndexBuffer(uint32_t* indices, UINT byteWidth)
 {
@@ -446,10 +448,6 @@ ID3D11Buffer* FRenderer::CreateIndexBuffer(uint32_t* indices, UINT byteWidth)
     }
 
     return indexBuffer;
-}
-
-void FRenderer::Render(UScene* Scene)
-{
 }
 
 void FRenderer::Render()

@@ -20,7 +20,7 @@ GEngine* GEngine::GetInstance()
 	return Engine;
 }
 
-void GEngine::Initialize(HWND d)
+void GEngine::Initialize(HWND InHwnd)
 {
 	LastTickTime = GetTime();
 
@@ -32,17 +32,18 @@ void GEngine::Initialize(HWND d)
 	SceneComponent->RelativeRotation = FVector{ 1.0f, 2.0f, 3.0f };
 	SceneComponent->RelativeScale3D = FVector{ 1.0f, 1.0f, 1.0f };
 
-	r.Create(d, 1024, 1024);
-
+	Renderer.Create(InHwnd, 1024, 1024);
 }
 
 void GEngine::Tick()
 {
 	float DeltaTime = GetTime() - LastTickTime;
-	r.Prepare();
-	r.PrepareShader();
-	r.Render();
-	r.SwapBuffer();
+
+	Renderer.Prepare();
+	Renderer.PrepareShader();
+	Renderer.Render();
+	Renderer.SwapBuffer();
+
 	// 게임 로직을 수행합니다.
 	// GSceneManager.Update(DeltaTime);
 
@@ -53,5 +54,5 @@ void GEngine::Tick()
 
 void GEngine::Destroy()
 {
-	r.Shutdown();
+	Renderer.Shutdown();
 }

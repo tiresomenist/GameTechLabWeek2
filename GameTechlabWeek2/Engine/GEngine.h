@@ -9,7 +9,7 @@ class GEngine
 public:
 	static GEngine* GetInstance();
 
-	void Initialize(HWND d);
+	void Initialize(HWND InHwnd);
 
 	void Tick();
 
@@ -18,7 +18,7 @@ public:
 private:
 	float LastTickTime = 0;
 	
-	FRenderer r;
+	FRenderer Renderer;
 
 	// 싱글톤
 	GEngine() = default;

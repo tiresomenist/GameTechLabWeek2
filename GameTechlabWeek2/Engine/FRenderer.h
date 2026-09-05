@@ -23,7 +23,7 @@ class UScene;
 
 #include <cmath>
 
-// 사용하시는 정점 구조체에 맞게 수정하세요.
+// @TEST >>
 struct FVertex
 {
 	float x, y, z;      // Position
@@ -42,7 +42,6 @@ struct FPrimitiveRenderData
 	ID3D11ShaderResourceView* Material;       // VS/PS, 텍스처 SRV 등을 들고 있는 객체
 	const FMatrix* WorldMatrix;    // 컴포넌트가 소유한 월드행렬 가리키기
 };
-
 
 using namespace DirectX;
 namespace Matrix4x4
@@ -167,7 +166,7 @@ namespace Matrix4x4
 		return(xmf4x4Result);
 	}
 }
-
+// @TEST <<
 
 class FRenderer
 {
@@ -223,14 +222,17 @@ public:
 	void ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer);
 
 
-	void CreateConstantBuffer();                    // 상수 버퍼 생성 함수
-	void ReleaseConstantBuffer();                   // 상수 버퍼 소멸 함수
+	void CreateConstantBuffer();								// 상수 버퍼 생성 함수
+	void ReleaseConstantBuffer();								// 상수 버퍼 소멸 함수
 	void UpdateConstantBuffer(const FMatrix& WorldMatrix);      // 상수 버퍼 업데이트 함수
 
 	void Render(UScene* Scene);
+	void RenderPrimitive(const FPrimitiveRenderData& Data);
+
+	// @TEST >>
 	void Render();
 	ID3D11Buffer* CreateIndexBuffer(uint32_t* indices, UINT byteWidth);
-	void UpdateConstantBuffer(const XMMATRIX& MVP);
 	ID3D11Buffer* CreateVertexBuffer(FVertex* vertices, UINT byteWidth);
-	void RenderPrimitive(const FPrimitiveRenderData& Data);
+	void UpdateConstantBuffer(const XMMATRIX& MVP);
+	// @TEST <<
 };
