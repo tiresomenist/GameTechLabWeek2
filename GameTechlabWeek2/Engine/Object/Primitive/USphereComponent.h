@@ -2,7 +2,7 @@
 
 #include "UPrimitiveComponent.h"
 
-class UCubeComp : public UPrimitiveComponent
+class USphereComponent : public UPrimitiveComponent
 {
 };
 

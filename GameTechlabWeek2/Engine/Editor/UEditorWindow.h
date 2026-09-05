@@ -5,14 +5,14 @@
 #include <Windows.h>
 
 
-class UEditor : public GEngine
+class UEditorWindow
 {
 public:
-	UEditor() = default;
-	~UEditor() = default;
+	UEditorWindow() = default;
+	virtual ~UEditorWindow() = default;
 
 	void startEditor(HWND Hwnd, ID3D11Device* device, ID3D11DeviceContext* device_context);
-	void updateEditor(FRenderer &renderer);
+	virtual void updateEditor(FRenderer &renderer) = 0;
 	void endEditor();
 };
 
