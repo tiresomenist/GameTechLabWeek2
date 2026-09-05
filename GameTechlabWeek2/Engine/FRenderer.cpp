@@ -278,6 +278,10 @@ void FRenderer::Render(UScene* Scene)
 
     //UCameraComponent* Camera = Scene->GetCamera();
     //FMatrix ViewProjMatrix = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
+    // @TEST
+    static float Angle = 0.0f;
+    Angle += 0.01f;
+
     const float AspectRatio = ViewportInfo.Width / ViewportInfo.Height;
     XMMATRIX View = XMMatrixLookAtLH({ 0.0f, 0.0f, -5.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f });
     XMMATRIX Proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, AspectRatio, 0.1f, 100.0f);
@@ -289,7 +293,8 @@ void FRenderer::Render(UScene* Scene)
 
         //FMatrix MVP = (*Data.WorldMatrix) * ViewProjMatrix;
         XMMATRIX temp = XMMATRIX(&(Data.WorldMatrix->M[0][0]));
-        XMMATRIX MVP = temp * ViewProjMatrix;
+        XMMATRIX Rotation = XMMatrixRotationY(Angle); // @TEST
+        XMMATRIX MVP = Rotation* temp * ViewProjMatrix;
 
         UpdateConstantBuffer(MVP);
         RenderPrimitive(Data);
