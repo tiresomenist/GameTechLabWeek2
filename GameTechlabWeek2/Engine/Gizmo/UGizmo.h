@@ -14,8 +14,8 @@ struct FGizmoVertex
 
 class UGizmo : public FEditor
 {
-private:
-	UGizmo(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
+protected:
+    UGizmo(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
 public:
 	virtual ~UGizmo() = default;
 
