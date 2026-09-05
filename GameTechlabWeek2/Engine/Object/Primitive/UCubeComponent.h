@@ -4,14 +4,14 @@
 #include "../../GResourceManager.h"
 #include "../FClassType.h"
 
-class USpherePrimitive : public UPrimitiveComponent
+class UCubeComponent : public UPrimitiveComponent
 {
 public:
     static FClassType* GetClass();
-    ~USpherePrimitive() {};
+    ~UCubeComponent() {};
 
 protected:
-    USpherePrimitive(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
+    UCubeComponent(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
         : UPrimitiveComponent(InUUID, InInternalIndex, InClassType) {
         Mesh = GResourceManager::GetInstance()->GetOrCreatePrimitive(type);
 
@@ -22,5 +22,5 @@ protected:
     };
 
     FMeshResource* Mesh = nullptr;
-    std::string type = "Sphere";
+    std::string type = "Cube";
 };

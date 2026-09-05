@@ -2,18 +2,7 @@
 #include "../USceneComponent.h"
 #include <d3d11.h>
 #include <DirectXcollision.h>
-#include "../FClassType.h"
-
-// 파일 분리 고려..
-struct FPrimitiveRenderData
-{
-    ID3D11Buffer* VertexBuffer = nullptr;
-    ID3D11Buffer* IndexBuffer = nullptr;
-    uint32 VertexStride = 0;
-    uint32 IndexCount = 0;
-    D3D11_PRIMITIVE_TOPOLOGY Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-    const FMatrix* WorldMatrix = nullptr;
-};
+#include "Engine/Renderer/FPrimitiveRenderData.h"
 
 class UPrimitiveComponent : public USceneComponent
 {

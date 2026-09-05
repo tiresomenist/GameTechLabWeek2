@@ -5,7 +5,7 @@
 
 class UCameraComponent : public USceneComponent
 {
-private:
+protected:
     UCameraComponent(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
 
 public:

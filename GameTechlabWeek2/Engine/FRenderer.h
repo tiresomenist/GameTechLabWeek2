@@ -12,6 +12,7 @@
 #include <d3dcompiler.h>
 
 //#include "UEngine"
+#include "Engine/Renderer/FPrimitiveRenderData.h"
 #include "GDevice.h"
 #include "../Matrix.h"
 //#include "../FVertexSimple.h"

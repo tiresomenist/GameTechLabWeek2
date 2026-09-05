@@ -10,10 +10,15 @@ FClassType* UCameraComponent::GetClass()
 {
 	static auto CreateObject = [](uint32 UUID, uint32 InternalIndex, FClassType* InClassType)
 		{
-			// @BuildErrer
 			return new UCameraComponent(UUID, InternalIndex, InClassType);
 		};
 
-	static FClassType Type{ "CameraComponent", CreateObject, UObject::GetClass() };
+	static FClassType Type
+	{
+		.Name = "CameraComponent",
+		.ClassConstructor = CreateObject,
+		.ParentClassType = USceneComponent::GetClass(),
+	};
+
 	return &Type;
 }
