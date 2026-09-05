@@ -7,6 +7,7 @@
 #include "../../ImGui/imgui_impl_win32.h"
 #include <Windows.h>
 
+// Todo : FEditor에서 해야할 작업 관련 함수들 이므로 옮겨야함    
 void UEditorWindow::startEditor(HWND Hwnd,ID3D11Device* device, ID3D11DeviceContext* device_context)
 {
 	IMGUI_CHECKVERSION();
@@ -22,18 +23,13 @@ void UEditorWindow::startEditor(HWND Hwnd,ID3D11Device* device, ID3D11DeviceCont
 void UEditorWindow::updateEditor(FRenderer &renderer)
 {
 
-	//Todo : Update 3 panel info
 
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 	
-	//Todo : Set Ui
-	ImGui::Begin("Jungle Property Window");
-	{
-		ImGui::Text("Hello Jungle World!");
-	}
-	ImGui::End();
+
+	//ui update
 
 
 	ImGui::Render();
