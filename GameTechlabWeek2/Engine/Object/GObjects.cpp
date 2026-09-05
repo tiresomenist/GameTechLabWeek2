@@ -1,4 +1,5 @@
 #include "GObjects.h"
+#include "UObject.h"
 #include <iostream>
 
 void GObjects::AddObject(UObject* Object)
@@ -8,9 +9,6 @@ void GObjects::AddObject(UObject* Object)
 
 void GObjects::DestoryObject(uint32 InternalIndex)
 {
-	UObject* Object = GUObjectArray[InternalIndex];
-	delete Object;
-
 	GUObjectArray[InternalIndex] = nullptr;
 }
 

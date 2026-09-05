@@ -25,7 +25,7 @@ class UScene;
 #include <cmath>
 
 // @TEST >>
-struct FVertex
+struct FVertexTest
 {
 	float x, y, z;      // Position
 	float nx, ny, nz;   // Normal (빛 테스트용)
@@ -188,14 +188,14 @@ public:
     FLOAT                   ClearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
     D3D11_VIEWPORT          ViewportInfo;               // 렌더링 영역을 정의하는 뷰포트 정보
 
-    ID3D11VertexShader* SimpleVertexShader;
-    ID3D11PixelShader* SimplePixelShader;
-    ID3D11InputLayout* SimpleInputLayout;
+    ID3D11VertexShader* SimpleVertexShader = nullptr;
+    ID3D11PixelShader* SimplePixelShader = nullptr;
+    ID3D11InputLayout* SimpleInputLayout = nullptr;
 
     unsigned int Stride;
 
-	std::vector<FVertex> SphereVertices;
-	std::vector<uint32_t> SphereIndices;
+	std::vector<FVertexTest> SphereVertices{};
+	std::vector<uint32_t> SphereIndices{};
 	ID3D11Buffer* SphereVertexBuffer = nullptr;
 	ID3D11Buffer* SphereIndexBuffer = nullptr;
 
@@ -222,10 +222,12 @@ public:
     ID3D11Buffer* CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidth);
     void ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer);
 
-
 	void CreateConstantBuffer();								// 상수 버퍼 생성 함수
 	void ReleaseConstantBuffer();								// 상수 버퍼 소멸 함수
 	void UpdateConstantBuffer(const FMatrix& WorldMatrix);      // 상수 버퍼 업데이트 함수
+
+	void BeginFrame();
+	void EndFrame();
 
 	void Render(UScene* Scene);
 	void RenderPrimitive(const FPrimitiveRenderData& Data);
@@ -233,7 +235,7 @@ public:
 	// @TEST >>
 	void Render();
 	ID3D11Buffer* CreateIndexBuffer(uint32_t* indices, UINT byteWidth);
-	ID3D11Buffer* CreateVertexBuffer(FVertex* vertices, UINT byteWidth);
+	ID3D11Buffer* CreateVertexBuffer(FVertexTest* vertices, UINT byteWidth);
 	void UpdateConstantBuffer(const XMMATRIX& MVP);
 	// @TEST <<
 };
