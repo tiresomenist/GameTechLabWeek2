@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../GEngine.h"
-#include "../../URenderer.h"
+#include "../FRenderer.h"
 #include <Windows.h>
 
 
@@ -12,7 +12,7 @@ public:
 	~UEditorWindow() = default;
 
 	void startEditor(HWND Hwnd, ID3D11Device* device, ID3D11DeviceContext* device_context);
-	void updateEditor(URenderer &renderer);
+	void updateEditor(FRenderer &renderer);
 	void endEditor();
 };
 

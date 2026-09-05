@@ -1,5 +1,10 @@
+<<<<<<< HEAD:GameTechlabWeek2/Engine/Editor/UEditorWindow.cpp
 #include "UEditorWindow.h"
 #include "../../URenderer.h"
+=======
+#include "UEditor.h"
+#include "../FRenderer.h"
+>>>>>>> main:GameTechlabWeek2/Engine/Editor/UEditor.cpp
 #include "../../ImGui/imgui.h"
 #include "../../ImGui/imgui_internal.h"
 #include "../../ImGui/imgui_impl_dx11.h"
@@ -18,7 +23,11 @@ void UEditorWindow::startEditor(HWND Hwnd,ID3D11Device* device, ID3D11DeviceCont
 	ImGui_ImplWin32_Init(Hwnd);
 	ImGui_ImplDX11_Init(device, device_context);
 }
+<<<<<<< HEAD:GameTechlabWeek2/Engine/Editor/UEditorWindow.cpp
 void UEditorWindow::updateEditor(URenderer &renderer)
+=======
+void UEditor::updateEditor(FRenderer &renderer)
+>>>>>>> main:GameTechlabWeek2/Engine/Editor/UEditor.cpp
 {
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();

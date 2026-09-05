@@ -1,5 +1,6 @@
 #pragma once
 
+<<<<<<< HEAD
 #include "../FEditor.h"
 #include "../../Matrix.h"
 #include "../../URenderer.h"
@@ -27,4 +28,11 @@ protected :
 	ID3D11Buffer* vertexBuffer = nullptr;
 	uint32 VertexCount = 0;
 	bool bVisible = true;
+=======
+#include "../Object/UObject.h"
+
+class UGizmo : public UObject
+{
+
+>>>>>>> main
 };
