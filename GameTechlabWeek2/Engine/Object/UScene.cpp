@@ -9,7 +9,21 @@ void UScene::Update(float DeltaTime)
     //}
 }
 
-const std::vector<UPrimitiveComponent*>& UScene::GetPrimitiveComponents() const
+const TArray<UPrimitiveComponent*>& UScene::GetPrimitiveComponents() const
 {
     return PrimitiveComponents;
 }
+
+template<typename T>
+T* UScene::SpawnPrimitive()
+{
+    T* NewPrimitive = new T();
+    PrimitiveComponents.Add(NewPrimitive);
+
+    return NewPrimitive;
+}
+
+
+//////////////////
+// UEditorScene //
+//////////////////

@@ -188,14 +188,14 @@ public:
     FLOAT                   ClearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
     D3D11_VIEWPORT          ViewportInfo;               // 렌더링 영역을 정의하는 뷰포트 정보
 
-    ID3D11VertexShader* SimpleVertexShader;
-    ID3D11PixelShader* SimplePixelShader;
-    ID3D11InputLayout* SimpleInputLayout;
+    ID3D11VertexShader* SimpleVertexShader = nullptr;
+    ID3D11PixelShader* SimplePixelShader = nullptr;
+    ID3D11InputLayout* SimpleInputLayout = nullptr;
 
     unsigned int Stride;
 
-	std::vector<FVertexTest> SphereVertices;
-	std::vector<uint32_t> SphereIndices;
+	std::vector<FVertexTest> SphereVertices{};
+	std::vector<uint32_t> SphereIndices{};
 	ID3D11Buffer* SphereVertexBuffer = nullptr;
 	ID3D11Buffer* SphereIndexBuffer = nullptr;
 
