@@ -13,6 +13,7 @@ public:
     static UObject* CreateObject(uint32 UUID, uint32 InternalIndex, FClassType* InClassType);
     static FClassType* GetClass();
 
+    //World기준 상대위치,회전각,스케일
     FVector RelativeLocation;
     FVector RelativeRotation;
     FVector RelativeScale3D;

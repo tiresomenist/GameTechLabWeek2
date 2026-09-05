@@ -14,9 +14,12 @@
 class UObject
 {
 public:
+    //오브젝트 생성
     static UObject* CreateObject(uint32 UUID, uint32 InternalIndex, FClassType* InClassType);
+    //RTTI
     static FClassType* GetClass();
 
+    //클래스타입 게터
     FClassType* GetClassType();
 
     UObject(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);

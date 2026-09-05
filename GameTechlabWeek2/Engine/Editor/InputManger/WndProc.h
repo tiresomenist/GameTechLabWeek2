@@ -4,4 +4,4 @@
 
 //Apply Input at WindowScreen and Imgui
 //ToDo : Check Error about Applying input at WindowScreen and Imgui at the same time.
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+LRESULT WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

@@ -5,6 +5,8 @@
 #include <algorithm>
 #include "Engine/UEngineStatics.h"
 
+struct FVector4; // 전방 선언
+
 struct FVector
 {
 	//거의 동일한 값 비교, 디비전 바이 제로 처리 안됨
@@ -41,6 +43,7 @@ struct FVector
 	FVector GetNormalized() const;
 	void Normalize();
 	FVector(float _x = 0.0f, float _y = 0.0f, float _z = 0.0f) : X(_x), Y(_y), Z(_z) {}
+	explicit  FVector(const FVector4& InVector4);
 
 };
 
@@ -56,4 +59,7 @@ struct FVector4
 	float LengthSquared3()const;
 	float Length3()const;
 	FVector4(float _x = 0.0f, float _y = 0.0f, float _z = 0.0f, float _w = 0.0f) : X(_x), Y(_y), Z(_z), W(_w) {}
+	explicit  FVector4(const FVector& InVector, float _w);
+	FVector getXYZ()const;
+
 };

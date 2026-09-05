@@ -117,6 +117,10 @@ void FVector::Normalize()
 	}
 }
 
+FVector::FVector(const FVector4& InVector4):X(InVector4.X), Y(InVector4.Y), Z(InVector4.Z)
+{
+}
+
 float FVector4::Dot(const FVector4& Other)const
 {
 	return X * Other.X + Y * Other.Y + Z * Other.Z + W * Other.W;
@@ -141,4 +145,13 @@ float FVector4::LengthSquared3()const
 float FVector4::Length3()const
 {
 	return sqrtf(LengthSquared3());
+}
+
+FVector4::FVector4(const FVector& InVector, float _w):X(InVector.X), Y(InVector.Y), Z(InVector.Z),W(_w)
+{
+}
+
+FVector FVector4::getXYZ() const
+{
+	return FVector(X, Y, Z);
 }
