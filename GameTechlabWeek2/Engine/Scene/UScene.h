@@ -39,11 +39,12 @@ public:
 		return Ptr;
 	}
 
+	TArray<UPrimitiveComponent*> GetPrimitiveComponents() const;
 	void Destroy(UObject* Object);
 
 	virtual ~UScene();
 
-private:
+protected:
 
 	/// <summary>
 	/// Scene에 종속된 "모든" UObject를 담는 멤버 변수
@@ -54,4 +55,6 @@ private:
 	/// Scene의 렌더링을 담당할 MainCamera를 담는 멤버 변수
 	/// </summary>
 	UCameraComponent* MainCamera = nullptr;
+
+	TArray<UPrimitiveComponent*> PrimitiveComponets;
 };

@@ -1,5 +1,6 @@
 #include "USceneComponent.h"
 #include "Engine/Object/UObject.h"
+#include "FObjectFactory.h"
 
 void USceneComponent::SetRelativeLocation(const FVector& Location)
 {
