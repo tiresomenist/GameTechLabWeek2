@@ -55,12 +55,11 @@ void GEngine::Tick()
 	Renderer.Prepare();
 	Renderer.PrepareShader();
 	Renderer.Render();
-	Renderer.SwapBuffer();
 
 	// UScene* CurrentScene = GSceneManager->GetScene();
 	// FRenderer.Render(CurrentScene);
 
-	Renderer.Render();
+	//Renderer.Render();
 }
 
 // 엔진의 자원을 정리합니다.
