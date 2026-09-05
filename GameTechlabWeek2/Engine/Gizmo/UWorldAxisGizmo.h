@@ -4,6 +4,8 @@
 
 class UWorldAxisGizmo : public UGizmo
 {
+
 	UCLASS(UWorldAxisGizmo, "WorldAxisGizmo", UGizmo)
+
 };
 

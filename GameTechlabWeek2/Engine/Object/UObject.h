@@ -3,10 +3,6 @@
 #include "Engine/Object/FClassType.h"
 #include "Engine/Core.h"
 #include "Container/FString.h"
-#include "FClassType.h"
-
-#include <cstdlib>
-#include <string>
 
 ///////////////////////////////////////////////////////////////////////////////
 #define UCLASS(ClassName, SerializeName, ParentName)                          \

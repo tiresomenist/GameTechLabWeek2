@@ -1,11 +1,14 @@
 #pragma once
 #include "FRenderer.h"
-#include "GDevice.h"
-#include "../Matrix.h"
-#include "../FVertexSimple.h"
-#include "Object/Primitive/UPrimitiveComponent.h"
-#include "Scene/UScene.h"
-#include "GDevice.h"
+#include "Matrix.h"
+#include "FVertexSimple.h"
+#include "Engine/GDevice.h"
+#include "Engine/Scene/UScene.h"
+#include "Engine/Renderer/RenderUtil.h"
+#include "Engine/Core.h"
+#include "Engine/Object/UCameraComponent.h"
+
+#include <format>
 
 void GenerateSphere(float Radius, int Slices, int Stacks, std::vector<FVertexTest>& OutVertices, std::vector<uint32_t>& OutIndices)
 {
@@ -276,28 +279,43 @@ void FRenderer::Render(UScene* Scene)
 {
     BeginFrame();
 
-    //UCameraComponent* Camera = Scene->GetCamera();
+    UCameraComponent* Camera = Scene->GetMainCamera();
     //FMatrix ViewProjMatrix = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
     // @TEST
     static float Angle = 0.0f;
     Angle += 0.01f;
 
     const float AspectRatio = ViewportInfo.Width / ViewportInfo.Height;
-    XMMATRIX View = XMMatrixLookAtLH({ 0.0f, 0.0f, -5.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f });
+
+    XMVECTOR EyePosition = 
+    {
+        Camera->GetRelativeLocation().X,
+        Camera->GetRelativeLocation().Y,
+        Camera->GetRelativeLocation().Z,
+    };
+
+    XMVECTOR LookAt = 
+    {
+        Camera->GetRelativeLocation().X + 15.0f,
+        Camera->GetRelativeLocation().Y,
+        Camera->GetRelativeLocation().Z,
+    };
+
+    XMMATRIX View = XMMatrixLookAtLH(EyePosition, LookAt, {0.0f, 1.0f, 0.0f});
     XMMATRIX Proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, AspectRatio, 0.1f, 100.0f);
     XMMATRIX ViewProjMatrix = View * Proj;
 
-    for (UPrimitiveComponent* Prim : Scene->GetPrimitiveComponents())
+    TArray<FPrimitiveRenderData> RenderList = RenderUtil::GetRenderList(Scene);
+    
+    for (auto& Item: RenderList)
     {
-        FPrimitiveRenderData Data = Prim->GetRenderData();
-
         //FMatrix MVP = (*Data.WorldMatrix) * ViewProjMatrix;
-        XMMATRIX temp = XMMATRIX(&(Data.WorldMatrix->M[0][0]));
+        XMMATRIX temp = XMMATRIX(&(Item.WorldMatrix->M[0][0]));
         XMMATRIX Rotation = XMMatrixRotationY(Angle); // @TEST
         XMMATRIX MVP = Rotation* temp * ViewProjMatrix;
 
         UpdateConstantBuffer(MVP);
-        RenderPrimitive(Data);
+        RenderPrimitive(Item);
     }
 
     GDevice::GetInstance()->SwapBuffer();

@@ -55,10 +55,8 @@ void GEngine::Tick()
 	SceneManager->Tick(DeltaTime);
 
 	// 게임 화면을 렌더링합니다.
-
 	UScene* CurrentScene = SceneManager->GetScene();
 	Renderer.Render(CurrentScene);
-	//Renderer.Render();
 }
 
 // 엔진의 자원을 정리합니다.
@@ -71,7 +69,7 @@ void GEngine::Destroy()
 	// GObjects 정리 
 	GObjects::Release();
 
-	//Renderer.Shutdown();
+	Renderer.Shutdown();
 	
 	// 콘솔 정리
 	delete Console;

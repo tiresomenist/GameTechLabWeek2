@@ -16,6 +16,4 @@ public:
 
 	virtual void EndPlay() override;
 
-private:
-	UPrimitiveComponent* TestPrimitive = nullptr; // Actor
 };
