@@ -63,7 +63,7 @@ public:
 
 	int Size()
 	{
-		Array.size();
+		return Array.size();
 	}
 
 	auto begin() { return Array.begin(); }

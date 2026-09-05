@@ -8,23 +8,23 @@
 
 void UConsoleWindow::AddDebugText()
 {
-
+	//FConsole에 AddDebugText 요청
 }
 void UConsoleWindow::AddDebugError()
 {
-
+	//FConsole에 AddDebugError 요청
 }
 void UConsoleWindow::Clear(uint32 displaystartindex)
 {
-	displayStartIndex = displaystartindex;
+	displayStartIndex = displaystartindex; //실제 로그파일의 내용은 유지하면서 현재까지 읽은 내용 이후 부터 읽음
 }
 void UConsoleWindow::Copy()
 {
-
+	//FConsole에 Copy 요청
 }
 void UConsoleWindow::Option()
 {
-
+	//과제 시연 영상에는 있었는데 뭐하는지는 모르는 함수
 }
 void UConsoleWindow::UpdateEditorWindow(const FConsole& console)
 {
