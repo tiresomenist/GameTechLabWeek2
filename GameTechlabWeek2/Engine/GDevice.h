@@ -24,7 +24,7 @@ public:
     void Release();
     void OnResize(uint32 Width, uint32 Height);
 
-    void CreateDeviceAndSwapChain(HWND hWindow);    // Direct3D 장치 및 스왑 체인을 생성하는 함수
+    void CreateDeviceAndSwapChain(HWND hWindow, uint32 Width, uint32 Height);    // Direct3D 장치 및 스왑 체인을 생성하는 함수
     void ReleaseDeviceAndSwapChain();               // Direct3D 장치 및 스왑 체인을 해제하는 함수
     void CreateFrameBuffer();                       // 프레임 버퍼를 생성하는 함수
     void ReleaseFrameBuffer();                      // 프레임 버퍼를 해제하는 함수
@@ -42,6 +42,7 @@ public:
     ID3D11DeviceContext* GetContext() const { return DeviceContext; };
     ID3D11RenderTargetView* GetFrameBufferRTV() const { return FrameBufferRTV; };
     ID3D11DepthStencilView* GetDepthStencilView() const { return DepthStencilView; };
+    const D3D11_VIEWPORT& GetViewport() const { return ViewportInfo; };
 
 private:
     ID3D11Device* Device;

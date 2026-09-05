@@ -4,7 +4,8 @@
 #include "../Matrix.h"
 #include "../FVertexSimple.h"
 #include "Object/Primitive/UPrimitiveComponent.h"
-#include "Object/UScene.h"
+#include "Scene/UScene.h"
+#include "GDevice.h"
 
 void GenerateSphere(float Radius, int Slices, int Stacks, std::vector<FVertexTest>& OutVertices, std::vector<uint32_t>& OutIndices)
 {
@@ -73,6 +74,7 @@ void FRenderer::Create(GDevice* InDevice)
     Device = InDevice;
     DeviceContext = InDevice->GetContext();
     D3DDevice = InDevice->GetDevice();
+    ViewportInfo = InDevice->GetViewport();
     CreateRasterizerState();
     CreateShader();
     CreateConstantBuffer();
@@ -119,13 +121,12 @@ void FRenderer::CreateShader()
     D3D11_INPUT_ELEMENT_DESC layout[] =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
 
     D3DDevice->CreateInputLayout(layout, ARRAYSIZE(layout), vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(), &SimpleInputLayout);
 
-    Stride = sizeof(FVertexTest);
+    Stride = sizeof(FVertexSimple);
 
     vertexshaderCSO->Release();
     pixelshaderCSO->Release();
@@ -273,7 +274,7 @@ void FRenderer::EndFrame()
 
 void FRenderer::Render(UScene* Scene)
 {
-    //BeginFrame();
+    BeginFrame();
 
     //UCameraComponent* Camera = Scene->GetCamera();
     //FMatrix ViewProjMatrix = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
@@ -294,7 +295,8 @@ void FRenderer::Render(UScene* Scene)
         RenderPrimitive(Data);
     }
 
-    //EndFrame();
+    GDevice::GetInstance()->SwapBuffer();
+    EndFrame();
 }
 
 //void FRenderer::Render()
@@ -352,7 +354,7 @@ void FRenderer::RenderPrimitive(const FPrimitiveRenderData& Data)
 
     // 지오메트리 바인딩
     UINT Offset = 0;
-    DeviceContext->IASetVertexBuffers(0, 1, &Data.VertexBuffer, &Data.VertexStride, &Offset);
+    DeviceContext->IASetVertexBuffers(0, 1, &Data.VertexBuffer, &Data.Stride, &Offset);
     DeviceContext->IASetIndexBuffer(Data.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
     DeviceContext->IASetPrimitiveTopology(Data.Topology);
 

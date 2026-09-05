@@ -3,6 +3,7 @@
 #include "Engine/GEngine.h"
 #include "Engine/Core.h"
 #include "Engine/InputManager/GInputManager.h"
+#include "../Object/Primitive/USphereComponent.h"
 #include <format>
 
 //////////////////
@@ -34,6 +35,12 @@ FClassType* UMainScene::GetClass()
 void UMainScene::BeginPlay()
 {
     //UScene::BeginPlay();
+
+	USphereComponent* SphereComponent = static_cast<USphereComponent*>(
+		FObjectFactory::ConstructObject(USphereComponent::GetClass())
+		);
+
+	PrimitiveComponets.Add(SphereComponent);
 
     CreateMainCamera();
     TestPrimitive = SpawnObject<USphereComponent*>(USphereComponent::GetClass());

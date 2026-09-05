@@ -8,8 +8,7 @@ cbuffer constants : register(b0)
 struct VS_INPUT
 {
     float4 position : POSITION;
-    float3 normal : NORMAL;
-    float2 uv : TEXCOORD;
+    float4 color : COLOR;
 };
 
 struct PS_INPUT
@@ -25,7 +24,7 @@ PS_INPUT mainVS(VS_INPUT input)
     //MVP행렬 곱으로 위치 변환
     output.position = mul(float4(input.position.xyz, 1.0f), MVP);
     
-    output.color = float4(abs(input.normal), 1.0f);
+    output.color = input.color;
     
     return output;
 }

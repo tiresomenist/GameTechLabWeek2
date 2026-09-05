@@ -8,7 +8,7 @@ GDevice* GDevice::GetInstance()
 
 void GDevice::Initialize(HWND hWindow, uint32 InWidth, uint32 InHeight)
 {
-    CreateDeviceAndSwapChain(hWindow);
+    CreateDeviceAndSwapChain(hWindow, InWidth, InHeight);
     CreateFrameBuffer();
     CreateDepthStencilBuffer(static_cast<int32>(ViewportInfo.Width), static_cast<int32>(ViewportInfo.Height));
 }
@@ -21,15 +21,15 @@ void GDevice::OnResize(uint32 Width, uint32 Height)
 {
 }
 
-void GDevice::CreateDeviceAndSwapChain(HWND hWindow)
+void GDevice::CreateDeviceAndSwapChain(HWND hWindow, uint32 Width, uint32 Height)
 {
     // 지원하는 Direct3D 기능 레벨을 정의
     D3D_FEATURE_LEVEL featurelevels[] = { D3D_FEATURE_LEVEL_11_0 };
 
     // 스왑 체인 설정 구조체 초기화
     DXGI_SWAP_CHAIN_DESC swapchaindesc = {};
-    swapchaindesc.BufferDesc.Width = 0;                             // 창 크기에 맞게 자동으로 설정
-    swapchaindesc.BufferDesc.Height = 0;                            // 창 크기에 맞게 자동으로 설정
+    swapchaindesc.BufferDesc.Width = Width;
+    swapchaindesc.BufferDesc.Height = Height;
     swapchaindesc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;   // 색상 포맷
     swapchaindesc.SampleDesc.Count = 1;                             // 멀티 샘플링 비활성화
     swapchaindesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;    // 렌더 타겟으로 사용

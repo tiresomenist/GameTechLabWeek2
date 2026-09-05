@@ -12,15 +12,18 @@ void GResourceManager::Initialize(GDevice* InDevice)
 {
 	Device = InDevice;
 
-    std::vector<FVertexTest> Vertices;
-    std::vector<uint32_t> Indices;
-
     FMeshResource* MeshResource = new FMeshResource;
     UINT VertexCount = sizeof(sphere_vertices) / sizeof(sphere_vertices[0]);
+    std::vector<uint32_t> Indices(VertexCount);
+    for (uint32_t Index = 0; Index < VertexCount; ++Index)
+    {
+        Indices[Index] = Index;
+    }
+
     MeshResource->VertexBuffer = Device->CreateVertexBuffer(sphere_vertices, sizeof(FVertexSimple) * VertexCount);
-    MeshResource->IndexBuffer = nullptr;
+    MeshResource->IndexBuffer = Device->CreateIndexBuffer(Indices.data(), sizeof(uint32_t) * VertexCount);
     MeshResource->VertexCount = VertexCount;
-    MeshResource->IndexCount = 0;
+    MeshResource->IndexCount = VertexCount;
     MeshResource->Stride = sizeof(FVertexSimple);
     PrimitiveCache["Sphere"] = MeshResource;
 }
