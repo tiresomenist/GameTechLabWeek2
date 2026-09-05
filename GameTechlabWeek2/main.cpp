@@ -17,16 +17,19 @@
 //렌더러 헤더파일
 #include "Engine/FRenderer.h"
 #include "Engine/GEngine.h"
+#include "Engine/InputManager/WndProc.h"
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // 각종 메시지를 처리할 함수
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    // ImGUI 메세지는 ImGUI가 처리
     if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
     {
         return true;
     }
+
     switch (message)
     {
     case WM_DESTROY:
@@ -37,7 +40,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         // Handle window size changes
         break;
     default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
+        return HandleInput(hWnd, message, wParam, lParam);
     }
 
     return 0;

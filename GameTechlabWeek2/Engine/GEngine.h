@@ -2,7 +2,8 @@
 #include "Windows.h"
 #include "FRenderer.h"
 
-#include "Core.h"
+#include <chrono>
+
 
 class FConsole;
 
@@ -19,8 +20,12 @@ public:
 
 	FConsole* GetConsole() const { return Console; };
 
+	// 게임 시작 이후 얼마나 흘렀는지 반환합니다.
+	float GetTime();
+
 private:
 	float LastTickTime = 0;
+	float StartTime = 0;
 
 	FRenderer Renderer;
 	FConsole* Console;

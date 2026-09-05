@@ -11,7 +11,7 @@ FPrimitiveRenderData UPrimitiveComponent::GetRenderData() const
     FPrimitiveRenderData Data;
     Data.VertexBuffer = VertexBuffer;
     Data.IndexBuffer = IndexBuffer;
-    Data.VertexStride = VertexStride;
+    Data.Stride = VertexStride;
     Data.IndexCount = IndexCount;
     Data.Topology = Topology;
     Data.WorldMatrix = &GetWorldMatrix();
