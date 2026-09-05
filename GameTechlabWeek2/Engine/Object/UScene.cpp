@@ -1,5 +1,6 @@
 #include "UScene.h"
 #include "Primitive/UPrimitiveComponent.h"
+#include "Primitive/USphereComp.h"
 
 void UScene::Update(float DeltaTime)
 {
@@ -29,7 +30,7 @@ T* UScene::SpawnPrimitive()
 //////////////////
 void UMainScene::Initialize()
 {
-    UPrimitiveComponent* TestSphere = SpawnPrimitive<USphereComponent>();
+    UPrimitiveComponent* TestSphere = SpawnPrimitive<USpherePrimitive>();
 
     SelectedPrimitives.Add(TestSphere);
 }

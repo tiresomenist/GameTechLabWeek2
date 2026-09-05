@@ -70,6 +70,7 @@ void FRenderer::Create(UDevice* InDevice)
 {
     Device = InDevice;
     DeviceContext = InDevice->GetContext();
+    D3DDevice = InDevice->GetDevice();
 
     // @TEST >>
     GenerateSphere(1.0f, 30, 30, SphereVertices, SphereIndices);
@@ -93,14 +94,9 @@ void FRenderer::Shutdown()
     }
     ReleaseConstantBuffer();
     ReleaseShader();
-    ReleaseRasterizerState();
 
     // 렌더 타겟을 초기화
     DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
-
-    ReleaseDepthStencilBuffer();
-    ReleaseFrameBuffer();
-    ReleaseDeviceAndSwapChain();
 }
 
 void FRenderer::CreateShader()
@@ -110,11 +106,11 @@ void FRenderer::CreateShader()
 
     D3DCompileFromFile(L"GameTechlabWeek2/ShaderW0.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &vertexshaderCSO, nullptr);
 
-    Device->CreateVertexShader(vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(), nullptr, &SimpleVertexShader);
+    D3DDevice->CreateVertexShader(vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(), nullptr, &SimpleVertexShader);
 
     D3DCompileFromFile(L"GameTechlabWeek2/ShaderW0.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &pixelshaderCSO, nullptr);
 
-    Device->CreatePixelShader(pixelshaderCSO->GetBufferPointer(), pixelshaderCSO->GetBufferSize(), nullptr, &SimplePixelShader);
+    D3DDevice->CreatePixelShader(pixelshaderCSO->GetBufferPointer(), pixelshaderCSO->GetBufferSize(), nullptr, &SimplePixelShader);
 
     D3D11_INPUT_ELEMENT_DESC layout[] =
     {
@@ -123,7 +119,7 @@ void FRenderer::CreateShader()
         { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
 
-    Device->CreateInputLayout(layout, ARRAYSIZE(layout), vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(), &SimpleInputLayout);
+    D3DDevice->CreateInputLayout(layout, ARRAYSIZE(layout), vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(), &SimpleInputLayout);
 
     Stride = sizeof(FVertexTest);
 
@@ -194,7 +190,7 @@ void FRenderer::PrepareShader()
 
     ID3D11Buffer* vertexBuffer;
 
-    Device->CreateBuffer(&vertexbufferdesc, &vertexbufferSRD, &vertexBuffer);
+    D3DDevice->CreateBuffer(&vertexbufferdesc, &vertexbufferSRD, &vertexBuffer);
 
     return vertexBuffer;
 }
@@ -210,7 +206,7 @@ void FRenderer::PrepareShader()
 
     ID3D11Buffer* vertexBuffer;
 
-    Device->CreateBuffer(&vertexbufferdesc, &vertexbufferSRD, &vertexBuffer);
+    D3DDevice->CreateBuffer(&vertexbufferdesc, &vertexbufferSRD, &vertexBuffer);
 
     return vertexBuffer;
 }
@@ -231,7 +227,7 @@ void FRenderer::CreateConstantBuffer()
     constantbufferdesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     constantbufferdesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
-    Device->CreateBuffer(&constantbufferdesc, nullptr, &ConstantBuffer);
+    D3DDevice->CreateBuffer(&constantbufferdesc, nullptr, &ConstantBuffer);
 }
 
 void FRenderer::ReleaseConstantBuffer()
