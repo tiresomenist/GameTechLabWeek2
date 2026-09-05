@@ -1,6 +1,9 @@
 #include "GAllocator.h"
 #include "Core.h"
 #include <format>
+#include "Core.h"
+
+
 
 void* GAllocator::Allocate(uint32 Size)
 {
@@ -20,6 +23,8 @@ void GAllocator::Free(void* Ptr, uint32 Size)
 {
 	TotalAllocationBytes -= Size;
 	--TotalAllocationCount;
+
+	UE_LOG("Delete!! ");
 
 	::operator delete(Ptr);
 }

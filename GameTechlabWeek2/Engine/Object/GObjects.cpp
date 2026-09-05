@@ -9,8 +9,9 @@ void GObjects::AddObject(UObject* Object)
 void GObjects::DestoryObject(uint32 InternalIndex)
 {
 	UObject* Object = GUObjectArray[InternalIndex];
-	GUObjectArray.RemoveAt(InternalIndex);
 	delete Object;
+
+	GUObjectArray[InternalIndex] = nullptr;
 }
 
 uint32 GObjects::GetNextIndex()
@@ -20,5 +21,11 @@ uint32 GObjects::GetNextIndex()
 
 void GObjects::Release()
 {
-	
+	for (auto& Item : GUObjectArray)
+	{
+		if (Item != nullptr)
+		{
+			delete Item;
+		}
+	}
 }

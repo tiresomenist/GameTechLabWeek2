@@ -2,7 +2,7 @@
 
 #include "GEngine.h"
 
-class FEditor : public GEngine
+class FEditor
 {
 
 };

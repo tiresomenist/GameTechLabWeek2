@@ -1,6 +1,7 @@
 #include "GEngine.h"
 #include "Windows.h"
 #include "Object/FObjectFactory.h"
+#include "Object/GObjects.h"
 #include "Object/UObject.h"
 #include "Object/USceneComponent.h"
 #include "Object/UCameraComponent.h"
@@ -55,6 +56,8 @@ void GEngine::Destroy()
 	// TODO: 정리 로직
 
 	// TODO: GObjects의 모든 UObject를 정리할 것
+	
+	GObjects::Release();
 
 	delete Console;
 
