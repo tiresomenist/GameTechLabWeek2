@@ -10,7 +10,7 @@
 class UConsoleWindow : public UEditorWindow
 {
 private:
-	FWideString Filter;
+	FString Filter;
 	uint32 prevLogIndex = 0;
 	uint32 displayStartIndex = 0;
 public:

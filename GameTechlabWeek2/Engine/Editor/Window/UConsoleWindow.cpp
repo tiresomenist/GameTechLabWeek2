@@ -28,6 +28,7 @@ void UConsoleWindow::Option()
 }
 void UConsoleWindow::UpdateEditorWindow(const FConsole& console)
 {
+	TArray<FString> logs = console.Get(Filter);
 	ImGui::Begin("Example: Console");
 	{
 		ImGui::Text("This example implements a console with basic coloring, completion (TAB key) and history (Up/Down keys), A more elaborate implementation may want to store entries along with extra data such as timestamp, emitter, etc.");
@@ -45,7 +46,7 @@ void UConsoleWindow::UpdateEditorWindow(const FConsole& console)
 		ImGui::SameLine();
 		ImGui::Button("Clear");
 		{
-			Clear(10); // Todo : console에서 로그를 받는 방식 확정시키고 수정하기
+			Clear(logs.Size());
 		}
 		ImGui::Button("Copy");
 		{
@@ -63,30 +64,18 @@ void UConsoleWindow::UpdateEditorWindow(const FConsole& console)
 		ImGui::Separator();
 
 		ImGui::BeginChild("##consoleLogArea",ImVec2(0,0),true);
-		if (Filter.size() <= 0) 
+
+		bool bWasAtBottom = ImGui::GetScrollY() >= ImGui::GetScrollMaxY();
+
+		for (int i = displayStartIndex; i < logs.Size(); i++)
 		{
-			/*
-			const auto& logs = console.GetLogs();
-			bool bWasAtBottom = ImGui::GetScrollY() >= ImGui::GetScrollMaxY();
-
-			for (int i = displayStartIndex; i < logs.size(); i++)
-			{
-				uint32 temp = 0;
-				FWString.
-				for(int k = 0; k < logs[i].size(); k++)
-				{
-					if(lo
-				}
-				ImGui::TextUnformatted(logs[i].c_str());
-			}
-			if (logs.size() > PreviousLogCount && !bWasAtBottom)
-			{
-				ImGui::SetScrollHereY(1.0f);
-			}
-
-			PreviousLogCount = logs.size();
-			*/
+			ImGui::TextUnformatted(logs[i].c_str());
 		}
+		if (logs.Size() > prevLogIndex && !bWasAtBottom)
+		{
+			ImGui::SetScrollHereY(1.0f);
+		}
+		prevLogIndex = logs.Size();
 	}
 	ImGui::End();
 }

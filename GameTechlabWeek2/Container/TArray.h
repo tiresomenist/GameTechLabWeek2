@@ -61,6 +61,11 @@ public:
 		std::sort(Array.begin(), Array.end(), Compare);
 	}
 
+	int Size()
+	{
+		Array.size();
+	}
+
 	auto begin() { return Array.begin(); }
 	auto end() { return Array.end(); }
 
