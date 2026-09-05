@@ -9,6 +9,10 @@ project "GameTechlabWeek2"
 	
 	targetdir "bin/%{cfg.buildcfg}"
 	
+	-- include를 상대 경로 대신 절대 경로로 쓸 수 있도록 수정
+	-- ex. #include "../../GEngine.h" -> #include "Engine/GEngine.h"
+	includedirs { "./GameTechlabWeek2/" } 
+	
 	files {
 		"**.h",
 		"**.cpp",

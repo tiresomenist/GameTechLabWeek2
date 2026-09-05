@@ -1,4 +1,5 @@
-#include "UEditor.h"
+
+#include "UEditorWindow.h"
 #include "../FRenderer.h"
 #include "../../ImGui/imgui.h"
 #include "../../ImGui/imgui_internal.h"
@@ -6,7 +7,7 @@
 #include "../../ImGui/imgui_impl_win32.h"
 #include <Windows.h>
 
-void UEditor::startEditor(HWND Hwnd,ID3D11Device* device, ID3D11DeviceContext* device_context)
+void UEditorWindow::startEditor(HWND Hwnd,ID3D11Device* device, ID3D11DeviceContext* device_context)
 {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -18,13 +19,16 @@ void UEditor::startEditor(HWND Hwnd,ID3D11Device* device, ID3D11DeviceContext* d
 	ImGui_ImplWin32_Init(Hwnd);
 	ImGui_ImplDX11_Init(device, device_context);
 }
-void UEditor::updateEditor(FRenderer &renderer)
+void UEditorWindow::updateEditor(FRenderer &renderer)
 {
+
+	//Todo : Update 3 panel info
+
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 	
-	// here
+	//Todo : Set Ui
 	ImGui::Begin("Jungle Property Window");
 	{
 		ImGui::Text("Hello Jungle World!");
@@ -36,7 +40,7 @@ void UEditor::updateEditor(FRenderer &renderer)
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 	renderer.SwapBuffer();
 }
-void UEditor::endEditor()
+void UEditorWindow::endEditor()
 {
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();

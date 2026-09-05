@@ -1,4 +1,7 @@
 #pragma once
+
+#include "Engine/Core.h"
+#include "Engine/Object/USceneComponent.h"
 #include "../../Matrix.h"
 #include "USceneComponent.h"
 
@@ -37,6 +40,7 @@ public:
     EProjectionMode ProjectionMode = EProjectionMode::Perspective;
     
 
+    static FClassType* GetClass();
     UCameraComponent(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
 
 private:
@@ -46,4 +50,6 @@ private:
     float OrthoHeight = 10.0f;         //직교 투영의 전체 세로 범위 (월드 단위)
     float FarZ = 1000.0f;
 
+protected:
+    UCameraComponent(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
 };
