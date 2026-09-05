@@ -36,7 +36,9 @@ void UMainScene::BeginPlay()
     //UScene::BeginPlay();
 
     CreateMainCamera();
+    MainCamera->SetRelativeLocation(FVector(-5.0f, 0.0f, 0.0f));
     TestPrimitive = SpawnObject<USphereComponent*>(USphereComponent::GetClass());
+
 }
 
 void UMainScene::Tick(float DeltaTime)
@@ -47,24 +49,29 @@ void UMainScene::Tick(float DeltaTime)
 	GInputManager& Input = *GInputManager::GetInstance();
 
 	float Time = Engine.GetTime();
-
+	float ForwardInput = 0.0f;
+	float RightInput = 0.0f;
 	if (Input.GetKey(GInputManager::EI_W))
 	{
 		UE_LOG(std::format("[{}] W키 누름", Time));
+		ForwardInput += 1.0f;
 	}
 	if (Input.GetKey(GInputManager::EI_A))
 	{
 		UE_LOG(std::format("[{}] A키 누름", Time));
+		RightInput -= 1.0f;
 	}
 	if (Input.GetKey(GInputManager::EI_S))
 	{
 		UE_LOG(std::format("[{}] S키 누름", Time));
+		ForwardInput -= 1.0f;
 	}
 	if (Input.GetKey(GInputManager::EI_D))
 	{
 		UE_LOG(std::format("[{}] D키 누름", Time));
+		RightInput += 1.0f;
 	}
-
+	MainCamera->MoveCamera(ForwardInput,RightInput,DeltaTime);
     FVector Rotation = TestPrimitive->GetRelativeRotation();
     Rotation.Y += 0.5f * DeltaTime;
     TestPrimitive->SetRelativeRotation(Rotation);

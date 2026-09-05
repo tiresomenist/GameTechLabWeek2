@@ -25,7 +25,6 @@ protected:
     USceneComponent(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
 
     static UObject* CreateObject(uint32 UUID, uint32 InternalIndex, FClassType* InClassType);
-    static FClassType* GetClass();
 
     // 로컬 트랜스폼
     FVector RelativeLocation;

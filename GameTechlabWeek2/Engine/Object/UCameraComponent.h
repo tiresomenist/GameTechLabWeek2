@@ -36,17 +36,18 @@ public:
 
     void SetFOVByRadian(const float& InRadian);
     void SetFOVByDegree(const float& InDegree);
-
+    
     void SetAspectRatio(const float& InRatio);
+
+    void MoveCamera(const float& InForward,const float& InRight, const float& InDeltaTime);
 
     //카메라가 원하는 지점을 바라보도록 하는 함수
     void LookAt(const FVector& InTargetPosition);
     EProjectionMode ProjectionMode = EProjectionMode::Perspective;
     
 
-    UCameraComponent(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
-
 private:
+    float MoveSpeed = 5.0f;            // 카메라 이동속력
     float FOV = 60.0f * PI / 180.0f;   //세로 시야각. 저장단위 라디안
     float AspectRatio = 1.0f;          //뷰포트 가로/세로 비율
     float NearZ = 0.1f;

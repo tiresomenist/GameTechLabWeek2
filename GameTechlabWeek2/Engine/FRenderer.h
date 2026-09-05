@@ -222,7 +222,6 @@ public:
 	void RenderPrimitive(const FPrimitiveRenderData& Data);
 
 	// @TEST >>
-	void Render();
 	ID3D11Buffer* CreateIndexBuffer(uint32_t* indices, UINT byteWidth);
 	ID3D11Buffer* CreateVertexBuffer(FVertexTest* vertices, UINT byteWidth);
 	void UpdateConstantBuffer(const XMMATRIX& MVP);

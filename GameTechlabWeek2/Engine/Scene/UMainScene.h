@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Scene/UScene.h"
+#include "Engine/Object/UCameraComponent.h"
 
 ////////////////
 // UMainScene //

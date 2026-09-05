@@ -45,20 +45,16 @@ void GEngine::Initialize(HWND InHwnd)
 // 엔진의 메인 게임 루프를 실행합니다.
 void GEngine::Tick()
 {
-	float DeltaTime = GetTime() - LastTickTime;
-
+	const float CurrentTime = GetTime();
+	const float DeltaTime = CurrentTime - LastTickTime;
+	LastTickTime = CurrentTime;
 	// 게임 로직을 수행합니다.
 	GSceneManager* SceneManager = GSceneManager::GetInstance();
 	SceneManager->Tick(DeltaTime);
 
 	// 게임 화면을 렌더링합니다.
-	Renderer.Prepare();
-	Renderer.PrepareShader();
-	Renderer.Render();
-
-	// UScene* CurrentScene = GSceneManager->GetScene();
-	// FRenderer.Render(CurrentScene);
-
+	Renderer.Render(SceneManager->GetCurrentScene());
+	
 	//Renderer.Render();
 }
 

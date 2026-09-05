@@ -10,7 +10,7 @@ class UScene : public UObject
 {
 protected:
 	UScene(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
-
+	UCameraComponent* MainCamera = nullptr;
 public:
 	static FClassType* GetClass();
 
@@ -48,5 +48,4 @@ private:
 	/// <summary>
 	/// Scene의 렌더링을 담당할 MainCamera를 담는 멤버 변수
 	/// </summary>
-	UCameraComponent* MainCamera = nullptr;
 };

@@ -3,7 +3,8 @@
 #include <cstdint>
 #include "Container/FString.h"
 
-#define PI 3.141592
+#define EPSILON 1.0e-6f
+#define PI 3.141592653
 typedef int int32;
 typedef unsigned int uint32;
 

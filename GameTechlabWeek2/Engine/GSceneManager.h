@@ -14,6 +14,8 @@ public:
 	void Tick(float DeltaTime);
 
 	void ChangeLevel(UScene* InNextScene);
+	UScene* GetCurrentScene();
+
 
 private:
 

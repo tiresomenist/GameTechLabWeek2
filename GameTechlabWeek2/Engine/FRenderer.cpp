@@ -2,13 +2,14 @@
 #include "FRenderer.h"
 #include "../Matrix.h"
 #include "../FVertexSimple.h"
+#include "Engine/Scene/UScene.h"
+#include "Engine/Object/UCameraComponent.h"
 
 void GenerateSphere(float Radius, int Slices, int Stacks, std::vector<FVertexTest>& OutVertices, std::vector<uint32_t>& OutIndices)
 {
     OutVertices.clear();
     OutIndices.clear();
 
-    const float PI = 3.141592654f;
 
     // 1. 정점(Vertex) 데이터 생성
     for (int i = 0; i <= Stacks; ++i)
@@ -433,9 +434,6 @@ void FRenderer::EndFrame()
 //    //EndFrame();
 //}
 
-void FRenderer::Render(UScene* Scene)
-{
-}
 // @TEST <<
 
 ID3D11Buffer* FRenderer::CreateIndexBuffer(uint32_t* indices, UINT byteWidth)
@@ -460,15 +458,24 @@ ID3D11Buffer* FRenderer::CreateIndexBuffer(uint32_t* indices, UINT byteWidth)
     return indexBuffer;
 }
 
-void FRenderer::Render()
+void FRenderer::Render(UScene* Scene)
 {
+    if (!Scene || ViewportInfo.Width <= 0.0f || ViewportInfo.Height <= 0.0f)
+    {
+        return;
+    }
+
+    UCameraComponent* Camera = Scene->GetMainCamera();
+    if (!Camera)
+    {
+        return;
+    }
+
+    Camera->SetAspectRatio(ViewportInfo.Width / ViewportInfo.Height);
     BeginFrame();
 
-    XMMATRIX View = XMMatrixLookAtLH({ 0.0f, 0.0f, -5.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f });
-    const float AspectRatio = ViewportInfo.Width / ViewportInfo.Height;
-    XMMATRIX Proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, AspectRatio, 0.1f, 100.0f);
-    XMMATRIX WorldMat = XMMatrixIdentity();
-    XMMATRIX MVP = WorldMat * View * Proj;
+    // The renderer-owned test sphere has an identity world transform.
+    const FMatrix MVP = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
 
     FPrimitiveRenderData Data{};
     Data.VertexBuffer = SphereVertexBuffer;
@@ -504,7 +511,8 @@ void FRenderer::UpdateConstantBuffer(const FMatrix& MVP)
 
         DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR);
         FConstants* constants = (FConstants*)constantbufferMSR.pData;
-        constants->MVP = MVP.Transpose();
+        // ShaderW0 uses row_major storage and mul(position, MVP).
+        constants->MVP = MVP;
         DeviceContext->Unmap(ConstantBuffer, 0);
     }
 }

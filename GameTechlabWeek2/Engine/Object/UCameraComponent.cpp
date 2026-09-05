@@ -99,6 +99,14 @@ void UCameraComponent::SetAspectRatio(const float& InRatio)
 	AspectRatio = InRatio;
 }
 
+void UCameraComponent::MoveCamera(const float& InForward, const float& InRight,const float& InDeltaTime)
+{
+	FVector InVelocity = GetForward() * InForward + GetRight() * InRight;
+	if (InVelocity.Length() < EPSILON) return;
+	InVelocity.Normalize();
+	RelativeLocation += InVelocity * MoveSpeed * InDeltaTime;
+}
+
 void UCameraComponent::LookAt(const FVector& InTargetPosition)
 {
 	FVector Forward = (InTargetPosition - RelativeLocation);
@@ -119,10 +127,6 @@ void UCameraComponent::LookAt(const FVector& InTargetPosition)
 
 }
 
-UCameraComponent::UCameraComponent(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType):USceneComponent(InUUID,InInternalIndex,InClassType)
-{
-
-}
 
 float UCameraComponent::GetOrthoHeight() const
 {

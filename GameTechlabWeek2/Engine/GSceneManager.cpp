@@ -52,3 +52,8 @@ void GSceneManager::ChangeLevel(UScene* InNextScene)
 {
 	NextScene = InNextScene;
 }
+
+UScene* GSceneManager::GetCurrentScene()
+{
+	return CurrentScene;
+}
