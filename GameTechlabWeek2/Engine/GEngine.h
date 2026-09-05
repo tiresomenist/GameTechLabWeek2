@@ -4,6 +4,8 @@
 
 #include "Core.h"
 
+class FConsole;
+
 class GEngine
 {
 public:
@@ -15,10 +17,13 @@ public:
 
 	void Destroy();
 
+	FConsole* GetConsole() const { return Console; };
+
 private:
 	float LastTickTime = 0;
 
 	FRenderer Renderer;
+	FConsole* Console;
 
 	// 싱글톤
 	GEngine() = default;

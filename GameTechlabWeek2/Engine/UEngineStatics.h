@@ -14,4 +14,5 @@ public:
 	static constexpr float Epsilon = 1.0e-7f;
 
 	inline static uint32 NextUUID = 0;
+
 };

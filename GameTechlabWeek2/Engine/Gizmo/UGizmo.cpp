@@ -8,7 +8,13 @@ FClassType* UGizmo::GetClass()
 			return new UGizmo(UUID, InternalIndex, InClassType);
 		};
 
-	static FClassType Type{ "Gizmo", CreateObject, UObject::GetClass() };
+	static FClassType Type
+	{
+		.Name = "Gizmo",
+		.ClassConstructor = CreateObject,
+		.ParentClassType = UObject::GetClass(),
+	};
+
 	return &Type;
 }
 

@@ -15,6 +15,9 @@ class UObject
 protected:
     UObject(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
 
+    void* operator new(size_t Size);
+    void operator delete(void* Ptr);
+
 public:
     static FClassType* GetClass();
 

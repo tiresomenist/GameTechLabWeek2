@@ -1,5 +1,6 @@
 #include "UObject.h"
 #include "Engine/Object/GObjects.h"
+#include "Engine/GAllocator.h"
 
 FClassType* UObject::GetClass()
 {
@@ -8,7 +9,12 @@ FClassType* UObject::GetClass()
 			return new UObject(UUID, InternalIndex, InClassType);
 		};
 
-	static FClassType Type{ "Object", CreateObject };
+	static FClassType Type
+	{
+		.Name = "Object",
+		.ClassConstructor = CreateObject,
+	};
+
     return &Type;
 }
 
@@ -35,4 +41,17 @@ bool UObject::IsA(FClassType* InClassType) const
 	}
 
 	return false;
+}
+
+void* UObject::operator new(size_t Size)
+{
+	void* RawPtr = GAllocator::Allocate(Size);
+	return RawPtr;
+}
+
+// TODO: delete에 Size를 0으로 두면 안됨
+// 이 부분은 GAllocator의 구조를 다시 수정할 것
+void UObject::operator delete(void* Ptr)
+{
+	GAllocator::Free(Ptr, 0);
 }

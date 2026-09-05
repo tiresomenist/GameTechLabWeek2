@@ -13,6 +13,12 @@ FClassType* UCameraComponent::GetClass()
 			return new UCameraComponent(UUID, InternalIndex, InClassType);
 		};
 
-	static FClassType Type{ "CameraComponent", CreateObject, UObject::GetClass() };
+	static FClassType Type
+	{
+		.Name = "CameraComponent",
+		.ClassConstructor = CreateObject,
+		.ParentClassType = UObject::GetClass(),
+	};
+
 	return &Type;
 }
