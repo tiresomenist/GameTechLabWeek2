@@ -49,17 +49,13 @@ void GEngine::Tick()
 {
 	float DeltaTime = GetTime() - LastTickTime;
 
-	Renderer.Prepare();
-	Renderer.PrepareShader();
-	Renderer.Render();
-	Renderer.SwapBuffer();
-
 	// 게임 로직을 수행합니다.
 	// GSceneManager.Update(DeltaTime);
 
 	// 게임 화면을 렌더링합니다.
 	// UScene* CurrentScene = GSceneManager->GetScene();
 	// FRenderer.Render(CurrentScene);
+	Renderer.Render();
 }
 
 void GEngine::Destroy()
