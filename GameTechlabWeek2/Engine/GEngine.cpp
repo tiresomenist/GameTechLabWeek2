@@ -1,11 +1,11 @@
 #include "GEngine.h"
 #include "Windows.h"
-#include "Object/FObjectFactory.h"
-#include "Object/GObjects.h"
-#include "Object/UObject.h"
-#include "Object/USceneComponent.h"
-#include "Object/UCameraComponent.h"
 
+#include "Engine/Object/FObjectFactory.h"
+#include "Engine/Object/GObjects.h"
+#include "Engine/Object/UObject.h"
+
+#include "Engine/GSceneManager.h"
 #include "Engine/FConsole.h"
 
 #include <format>
@@ -24,45 +24,55 @@ GEngine* GEngine::GetInstance()
 	return Engine;
 }
 
+// 엔진을 초기 상태로 초기화합니다.
 void GEngine::Initialize(HWND InHwnd)
 {
+	// 콘솔 초기화
 	Console = new FConsole();
 	Console->Initialize();
 
+	// 씬 매니저 초기화
+	GSceneManager* SceneManager = GSceneManager::GetInstance();
+	SceneManager->Initialize();
+
 	Renderer.Create(InHwnd, 1024, 1024);
 
-	UObject* Object = FObjectFactory::ConstructObject(UObject::GetClass());
-	UObject* SceneObject = FObjectFactory::ConstructObject(USceneComponent::GetClass());
 	LastTickTime = GetTime();
 }
 
+// 엔진의 메인 게임 루프를 실행합니다.
 void GEngine::Tick()
 {
 	float DeltaTime = GetTime() - LastTickTime;
 
+	// 게임 로직을 수행합니다.
+	GSceneManager* SceneManager = GSceneManager::GetInstance();
+	SceneManager->Tick(DeltaTime);
+
+	// 게임 화면을 렌더링합니다.
 	Renderer.Prepare();
 	Renderer.PrepareShader();
 	Renderer.Render();
 	Renderer.SwapBuffer();
 
-	// 게임 로직을 수행합니다.
-	// GSceneManager.Update(DeltaTime);
-
-	// 게임 화면을 렌더링합니다.
 	// UScene* CurrentScene = GSceneManager->GetScene();
 	// FRenderer.Render(CurrentScene);
+
 	Renderer.Render();
 }
 
+// 엔진의 자원을 정리합니다.
 void GEngine::Destroy()
 {
-	// TODO: 정리 로직
-
-	// TODO: GObjects의 모든 UObject를 정리할 것
+	// 씬 매니저 정리
+	GSceneManager* SceneManager = GSceneManager::GetInstance();
+	SceneManager->Release();
 	
+	// GObjects 정리 
 	GObjects::Release();
 
-	delete Console;
-
 	//Renderer.Shutdown();
+	
+	// 콘솔 정리
+	delete Console;
 }

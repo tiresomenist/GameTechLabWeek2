@@ -9,16 +9,16 @@ public:
 	static GSceneManager* GetInstance();
 
 	void Initialize();
+	void Release();
 
-	void Start();
-	void Tick();
-	void End();
+	void Tick(float DeltaTime);
 
-	void ChangeLevel();
+	void ChangeLevel(UScene* InNextScene);
 
 private:
 
 	UScene* CurrentScene = nullptr;
+	UScene* NextScene = nullptr;
 
 	// 싱글톤
 	GSceneManager() = default;

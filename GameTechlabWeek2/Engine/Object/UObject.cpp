@@ -55,3 +55,8 @@ void UObject::operator delete(void* Ptr)
 {
 	GAllocator::Free(Ptr, 0);
 }
+
+UObject::~UObject()
+{
+	GObjects::DestoryObject(InternalIndex);
+}

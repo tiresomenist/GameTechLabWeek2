@@ -44,3 +44,8 @@ void UMainScene::Tick(float DeltaTime)
     Rotation.Y += 0.5f * DeltaTime;
     TestPrimitive->SetRelativeRotation(Rotation);
 }
+
+void UMainScene::EndPlay()
+{
+	//UScene::EndPlay();
+}
