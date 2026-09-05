@@ -6,7 +6,7 @@
 
 class USceneComponent : public UObject
 {
-private:
+protected:
     FVector RelativeLocation;
     FVector RelativeRotation;
     FVector RelativeScale3D;
