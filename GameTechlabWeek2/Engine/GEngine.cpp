@@ -29,6 +29,8 @@ void GEngine::Initialize(HWND InHwnd)
 	Console = new FConsole();
 	Console->Initialize();
 
+	Renderer.Create(InHwnd, 1024, 1024);
+
 	UObject* Object = FObjectFactory::ConstructObject(UObject::GetClass());
 	UObject* SceneObject = FObjectFactory::ConstructObject(USceneComponent::GetClass());
 	LastTickTime = GetTime();
