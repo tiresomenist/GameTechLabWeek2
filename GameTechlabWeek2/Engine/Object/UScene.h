@@ -26,11 +26,14 @@ private:
 };
 
 
-//////////////////
-// UEditorScene //
-//////////////////
-class UEditorScene : public UScene
+////////////////
+// UMainScene //
+////////////////
+class UMainScene : public UScene
 {
+public:
+	virtual void Initialize() override;
+
 private:
 	TArray<UPrimitiveComponent*> SelectedPrimitives; // Actor
 };

@@ -27,3 +27,24 @@ T* UScene::SpawnPrimitive()
 //////////////////
 // UEditorScene //
 //////////////////
+void UMainScene::Initialize()
+{
+    UPrimitiveComponent* TestSphere = SpawnPrimitive<USphereComponent>();
+
+    SelectedPrimitives.Add(TestSphere);
+}
+
+void UMainScene::Update(float DeltaTime)
+{
+    UScene::Update(DeltaTime);
+
+    for (UPrimitiveComponent* Prim : SelectedPrimitives)
+    {
+        if (Prim)
+        {
+            FVector Rot = Prim->GetRelativeRotation();
+            Rot.Y += 0.5f * DeltaTime;
+            Prim->SetRelativeRotation(Rot);
+        }
+    }
+}
