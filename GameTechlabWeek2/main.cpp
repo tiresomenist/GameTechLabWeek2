@@ -15,9 +15,7 @@
 #include "Triangle.h"
 
 //렌더러 헤더파일
-#include "FRenderer.h"
-
-
+#include "Engine/FRenderer.h"
 #include "Engine/GEngine.h"
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -67,7 +65,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     // 엔진을 초기화합니다.
     GEngine* Engine = GEngine::GetInstance();
-    Engine->Initialize();
+    Engine->Initialize(hWnd);
 
     // Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
     bool bIsExit = false;

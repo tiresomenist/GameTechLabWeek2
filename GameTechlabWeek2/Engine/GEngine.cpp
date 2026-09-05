@@ -16,14 +16,21 @@ GEngine* GEngine::GetInstance()
 	return Engine;
 }
 
-void GEngine::Initialize()
+void GEngine::Initialize(HWND InHwnd)
 {
 	LastTickTime = GetTime();
+
+	Renderer.Create(InHwnd, 1024, 1024);
 }
 
 void GEngine::Tick()
 {
 	float DeltaTime = GetTime() - LastTickTime;
+
+	Renderer.Prepare();
+	Renderer.PrepareShader();
+	Renderer.Render();
+	Renderer.SwapBuffer();
 
 	// 게임 로직을 수행합니다.
 	// GSceneManager.Update(DeltaTime);
@@ -36,4 +43,5 @@ void GEngine::Tick()
 void GEngine::Destroy()
 {
 	// TODO: 정리 로직
+	Renderer.Shutdown();
 }

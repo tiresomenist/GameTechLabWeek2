@@ -1,39 +1,36 @@
 // ShaderW0.hlsl
-
-typedef matrix FMatrix;
-
-cbuffer Constants : register(b0)
+cbuffer constants : register(b0)
 {
-     FMatrix MVP;
+    row_major float4x4 MVP;
 }
+
 
 struct VS_INPUT
 {
-    float4 position : POSITION; // Input position from vertex buffer
-    float4 color : COLOR; // Input color from vertex buffer
+    float4 position : POSITION;
+    float3 normal : NORMAL;
+    float2 uv : TEXCOORD;
 };
 
 struct PS_INPUT
 {
-    float4 position : SV_POSITION; // Transformed position to pass to the pixel shader
-    float4 color : COLOR; // Color to pass to the pixel shader
+    float4 position : SV_POSITION;
+    float4 color : COLOR;
 };
 
 PS_INPUT mainVS(VS_INPUT input)
 {
     PS_INPUT output;
     
-    // 상수버퍼를 통해 넘겨 받은 Offset을 더해서 버텍스를 이동 시켜 픽셀쉐이더로 넘김
-    output.position = mul(input.position, MVP);
+    //MVP행렬 곱으로 위치 변환
+    output.position = mul(float4(input.position.xyz, 1.0f), MVP);
     
-    // Pass the color to the pixel shader
-    output.color = input.color;
+    output.color = float4(abs(input.normal), 1.0f);
     
     return output;
 }
 
 float4 mainPS(PS_INPUT input) : SV_TARGET
 {
-    // Output the color directly
     return input.color;
 }
