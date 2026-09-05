@@ -12,14 +12,14 @@ struct FGizmoVertex
 };
 #include "Engine/Object/UObject.h"
 
-class UGizmo : public FEditor
+class UGizmo : public UObject
 {
 protected:
     UGizmo(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
 public:
 	virtual ~UGizmo() = default;
 
-	void Create(FRenderer& renderer);
+	virtual void Create(FRenderer& renderer);
 	void Render(FRenderer& renderer);
 	void Release();
 

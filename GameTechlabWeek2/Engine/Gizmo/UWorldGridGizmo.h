@@ -11,7 +11,7 @@ public:
 
 public:
     virtual void Create(
-        URenderer& Renderer
+        FRenderer& Renderer
     ) override;
 
 
