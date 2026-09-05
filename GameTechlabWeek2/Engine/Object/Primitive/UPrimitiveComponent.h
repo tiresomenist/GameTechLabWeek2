@@ -6,9 +6,9 @@
 
 class UPrimitiveComponent : public USceneComponent
 {
+    UCLASS(UPrimitiveComponent, "PrimitiveComponent", USceneComponent)
+
 public:
-    UPrimitiveComponent(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
-        : USceneComponent(InUUID, InInternalIndex, InClassType) {}
     ~UPrimitiveComponent();
 
     FPrimitiveRenderData GetRenderData() const;

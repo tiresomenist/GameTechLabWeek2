@@ -8,9 +8,10 @@
 
 class USceneComponent : public UObject
 {
-public:
-    static FClassType* GetClass();
 
+    UCLASS(USceneComponent, "SceneComponent", UObject)
+
+public:
     FVector& GetRelativeLocation() { return RelativeLocation; };
     FVector& GetRelativeRotation() { return RelativeRotation; };
     FVector& GetRelativeScale3D() { return RelativeScale3D; };
@@ -22,8 +23,6 @@ public:
     const FMatrix& GetWorldMatrix() const;
 
 protected:
-    USceneComponent(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
-
     // 로컬 트랜스폼
     FVector RelativeLocation;
     FVector RelativeRotation;

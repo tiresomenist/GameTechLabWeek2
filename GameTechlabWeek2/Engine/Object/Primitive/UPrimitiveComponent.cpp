@@ -1,5 +1,6 @@
 #include "UPrimitiveComponent.h"
 
+
 UPrimitiveComponent::~UPrimitiveComponent()
 {
 	if (VertexBuffer) { VertexBuffer->Release(); VertexBuffer = nullptr; }

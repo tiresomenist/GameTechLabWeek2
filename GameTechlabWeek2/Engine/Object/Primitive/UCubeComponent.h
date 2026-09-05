@@ -4,5 +4,6 @@
 
 class UCubeComponent : public UPrimitiveComponent
 {
+	UCLASS(UCubeComponent, "Cube", UPrimitiveComponent)
 };
 

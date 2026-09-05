@@ -7,12 +7,9 @@
 ////////////////
 class UMainScene : public UScene
 {
-protected:
-	UMainScene(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
+    UCLASS(UMainScene, "MainScene", UScene)
 
 public:
-	static FClassType* GetClass();
-
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;

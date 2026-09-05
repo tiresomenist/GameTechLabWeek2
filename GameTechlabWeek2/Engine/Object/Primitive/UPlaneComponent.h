@@ -4,5 +4,6 @@
 
 class UPlaneComponent : public UPrimitiveComponent
 {
+	UCLASS(UPlaneComponent, "Plane", UPrimitiveComponent)
 };
 

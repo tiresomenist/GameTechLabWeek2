@@ -8,29 +8,6 @@
 //////////////////
 //  UMainScene  //
 //////////////////
-UMainScene::UMainScene(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
-    : UScene{ InUUID, InInternalIndex, InClassType }
-{
-}
-
-FClassType* UMainScene::GetClass()
-{
-	static auto CreateObject = [](uint32 UUID, uint32 InternalIndex, FClassType* InClassType)
-		{
-			return new UMainScene(UUID, InternalIndex, InClassType);
-		};
-
-	static FClassType Type
-	{
-		.Name = "MainScene",
-		.ClassConstructor = CreateObject,
-		.ParentClassType = UScene::GetClass(),
-	};
-
-	return &Type;
-}
-
-
 void UMainScene::BeginPlay()
 {
     //UScene::BeginPlay();
