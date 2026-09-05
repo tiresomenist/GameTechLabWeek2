@@ -21,6 +21,18 @@ UObject::UObject(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
 
 bool UObject::IsA(FClassType* InClassType) const
 {
-	// 두 포인터 비교
-	return InClassType == ClassType;
+	const FClassType* CurrentType = ClassType;
+
+	// 포인터 노드를 순회하며 타입을 검색합니다.
+	while (CurrentType != nullptr)
+	{
+		if (CurrentType == InClassType)
+		{
+			return true;
+		}
+
+		CurrentType = CurrentType->ParentClassType;
+	}
+
+	return false;
 }

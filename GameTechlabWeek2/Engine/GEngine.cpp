@@ -3,6 +3,7 @@
 #include "Object/FObjectFactory.h"
 #include "Object/UObject.h"
 #include "Object/USceneComponent.h"
+#include "Object/UCameraComponent.h"
 
 #include <format>
 
@@ -30,15 +31,17 @@ void GEngine::Initialize()
 
 	if (SceneObject->IsA(UObject::GetClass()))
 	{
-		USceneComponent* SceneComponent = reinterpret_cast<USceneComponent*>(SceneObject);
-		SceneComponent->SetRelativeLocation(FVector{ 1.0f, 2.0f, 3.0f });
-		SceneComponent->SetRelativeRotation(FVector{ 1.0f, 2.0f, 3.0f });
-		SceneComponent->SetRelativeScale3D(FVector{ 1.0f, 1.0f, 1.0f });
+		MessageBox(nullptr, std::format(L"[RTTI Test] SceneObject는 UObject입니다.").c_str(), L"", 0);
+	}
 
-		MessageBox(nullptr, std::format(L"테스트입니다 {} {} {}",
-			SceneComponent->GetRelativeLocation().X,
-			SceneComponent->GetRelativeLocation().Y,
-			SceneComponent->GetRelativeLocation().Z).c_str(), L"", 0);
+	if (SceneObject->IsA(USceneComponent::GetClass()))
+	{
+		MessageBox(nullptr, std::format(L"[RTTI Test] SceneObject는 USceneComponent입니다.").c_str(), L"", 0);
+	}
+
+	if (SceneObject->IsA(UCameraComponent::GetClass()))
+	{
+		MessageBox(nullptr, std::format(L"[RTTI Test] SceneObject는 UCameraComponent입니다.").c_str(), L"", 0);
 	}
 
 }
