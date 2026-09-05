@@ -5,11 +5,11 @@
 #include <Windows.h>
 
 
-class UEditor : public GEngine
+class UEditorWindow
 {
 public:
-	UEditor() = default;
-	~UEditor() = default;
+	UEditorWindow() = default;
+	~UEditorWindow() = default;
 
 	void startEditor(HWND Hwnd, ID3D11Device* device, ID3D11DeviceContext* device_context);
 	void updateEditor(URenderer &renderer);
