@@ -5,6 +5,8 @@
 #include "Object/USceneComponent.h"
 #include "Object/UCameraComponent.h"
 
+#include "Engine/FConsole.h"
+
 #include <format>
 
 float GetTime()
@@ -23,18 +25,22 @@ GEngine* GEngine::GetInstance()
 
 void GEngine::Initialize(HWND InHwnd)
 {
-	LastTickTime = GetTime();
+	Console = new FConsole();
+	Console->Initialize();
 
+	UObject* Object = FObjectFactory::ConstructObject(UObject::GetClass());
+	UObject* SceneObject = FObjectFactory::ConstructObject(USceneComponent::GetClass());
+	LastTickTime = GetTime();
 }
 
 void GEngine::Tick()
 {
 	float DeltaTime = GetTime() - LastTickTime;
 
-	Renderer.Prepare();
-	Renderer.PrepareShader();
-	Renderer.Render();
-	Renderer.SwapBuffer();
+	//Renderer.Prepare();
+	//Renderer.PrepareShader();
+	//Renderer.Render();
+	//Renderer.SwapBuffer();
 
 	// 게임 로직을 수행합니다.
 	// GSceneManager.Update(DeltaTime);
@@ -50,5 +56,7 @@ void GEngine::Destroy()
 
 	// TODO: GObjects의 모든 UObject를 정리할 것
 
-	Renderer.Shutdown();
+	delete Console;
+
+	//Renderer.Shutdown();
 }
