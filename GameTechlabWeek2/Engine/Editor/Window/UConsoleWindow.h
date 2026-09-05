@@ -14,7 +14,6 @@ private:
 	uint32 prevLogIndex = 0;
 	uint32 displayStartIndex = 0;
 public:
-	UConsoleWindow();
 	~UConsoleWindow() = default;
 
 	void AddDebugText();

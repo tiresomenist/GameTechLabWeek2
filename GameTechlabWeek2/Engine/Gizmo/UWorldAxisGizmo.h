@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Core.h"
-#include "../FEditor.h"
-#include "UGizmo.h"
+#include "Engine/Core.h"
+#include "Engine/FEditor.h"
+#include "Engine/Gizmo/UGizmo.h"
 #include "Engine/Object/UObject.h"
 
 FGizmoVertex Vertices[] =
@@ -20,15 +20,15 @@ FGizmoVertex Vertices[] =
 
 class UWorldAxisGizmo : public UGizmo
 {
+protected:
+    UWorldAxisGizmo(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
+
 public:
-    UWorldAxisGizmo(uint32 InUUID,uint32 InInternalIndex,FClassType* InClassType);
-
-    ~UWorldAxisGizmo() override = default;
-
     static FClassType* GetClass();
 
-    void Create(FRenderer& renderer) override;
-    void Render(FRenderer& renderer) override;
-    void Release() override;
+
+    void Create(FRenderer& renderer);
+    //void Render(FRenderer& renderer);
+    //void Release();
 };
 

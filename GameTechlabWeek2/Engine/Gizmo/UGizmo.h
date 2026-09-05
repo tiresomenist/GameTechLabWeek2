@@ -17,11 +17,11 @@ class UGizmo : public UObject
 {
 protected:
 	UGizmo(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
+
 public:
-	virtual ~UGizmo() = default;
 	static FClassType* GetClass();
 
-	virtual void Create(FRenderer& renderer) = 0;
-	virtual void Render(FRenderer& renderer) = 0;
-	virtual void Release() = 0;
+	virtual void Create(FRenderer& renderer);
+	//virtual void Render(FRenderer& renderer);
+	//virtual void Release();
 };

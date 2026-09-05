@@ -1,5 +1,6 @@
 #include "UGizmo.h"
 #include "Engine/Object/UObject.h"
+#include "Engine/Object/FClassType.h"
 
 FClassType* UGizmo::GetClass()
 {

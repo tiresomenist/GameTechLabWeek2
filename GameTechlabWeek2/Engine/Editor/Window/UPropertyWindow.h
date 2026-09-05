@@ -6,7 +6,6 @@
 class UPropertyWindow : public UEditorWindow
 {
 public:
-	UPropertyWindow() = default;
 	~UPropertyWindow() = default;
 
 	void UpdateEditorWindow(FVector& translation, FVector& rotation, FVector& scale);

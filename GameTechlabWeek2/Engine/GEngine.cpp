@@ -8,6 +8,11 @@
 #include "Engine/GSceneManager.h"
 #include "Engine/FConsole.h"
 
+#include "Engine/Editor/Window/UConsoleWindow.h"
+#include "Engine/Editor/Window/UDetailsWindow.h"
+#include "Engine/Editor/Window/UPropertyWindow.h"
+#include "Engine/Editor/Window/USceneWindow.h"
+
 #include <format>
 
 float GetTime()
@@ -49,16 +54,24 @@ void GEngine::Tick()
 	GSceneManager* SceneManager = GSceneManager::GetInstance();
 	SceneManager->Tick(DeltaTime);
 
+	TArray<UEditorWindow*> Windows;
+
+	Windows.Add(new UConsoleWindow());
+	Windows.Add(new UDetailsWindow());
+	Windows.Add(new UPropertyWindow());
+	Windows.Add(new UPropertyWindow());
+
 	// 게임 화면을 렌더링합니다.
 	Renderer.Prepare();
 	Renderer.PrepareShader();
 	Renderer.Render();
+	Renderer.RenderUI(Windows);
 	Renderer.SwapBuffer();
 
 	// UScene* CurrentScene = GSceneManager->GetScene();
 	// FRenderer.Render(CurrentScene);
 
-	Renderer.Render();
+	//Renderer.Render();
 }
 
 // 엔진의 자원을 정리합니다.

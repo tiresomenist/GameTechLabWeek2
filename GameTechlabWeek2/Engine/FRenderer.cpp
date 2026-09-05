@@ -2,6 +2,11 @@
 #include "FRenderer.h"
 #include "../Matrix.h"
 #include "../FVertexSimple.h"
+#include "Engine/Editor/Window/UEditorWindow.h"
+
+#include "ImGui/imgui.h"
+#include "ImGui/imgui_impl_dx11.h"
+#include "ImGui/imgui_impl_win32.h"
 
 void GenerateSphere(float Radius, int Slices, int Stacks, std::vector<FVertexTest>& OutVertices, std::vector<uint32_t>& OutIndices)
 {
@@ -81,6 +86,24 @@ void FRenderer::Create(HWND hWindow, uint32 InWidth, uint32 InHeight)
     const UINT indexByteWidth = static_cast<UINT>(SphereIndices.size() * sizeof(uint32_t));
     SphereIndexBuffer = CreateIndexBuffer(SphereIndices.data(), indexByteWidth);
     // @TEST <<
+
+
+    //////////////////////////
+    /// 임시 테스트 코드    //
+    //////////////////////////
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplWin32_Init(hWindow);
+    ImGui_ImplDX11_Init(Device, DeviceContext);
+
+    //////////////////////////
+    /// 임시 테스트 코드    //
+    //////////////////////////
 }
 
 void FRenderer::CreateDeviceAndSwapChain(HWND hWindow)
@@ -251,6 +274,12 @@ void FRenderer::Shutdown()
     ReleaseShader();
     ReleaseRasterizerState();
 
+    // 테스트 코드
+    ImGui_ImplDX11_Shutdown();
+    ImGui_ImplWin32_Shutdown();
+    ImGui::DestroyContext();
+    // 테스트 코드
+
     // 렌더 타겟을 초기화
     DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
 
@@ -261,6 +290,8 @@ void FRenderer::Shutdown()
 
 void FRenderer::SwapBuffer()
 {
+    ImGui::Render();
+    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
     SwapChain->Present(1, 0); // 1: VSync 활성화
 }
 
@@ -315,6 +346,10 @@ void FRenderer::ReleaseShader()
 
 void FRenderer::Prepare()
 {
+    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+
     DeviceContext->ClearRenderTargetView(FrameBufferRTV, ClearColor);
     DeviceContext->ClearDepthStencilView(DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
@@ -436,6 +471,17 @@ void FRenderer::EndFrame()
 void FRenderer::Render(UScene* Scene)
 {
 }
+
+void FRenderer::RenderUI(TArray<UEditorWindow*>& WindowArray)
+{
+    for (auto item : WindowArray)
+    {
+        item->UpdateEditorWindow();
+    }
+
+    ImGui::ShowDemoWindow();
+}
+
 // @TEST <<
 
 ID3D11Buffer* FRenderer::CreateIndexBuffer(uint32_t* indices, UINT byteWidth)
@@ -462,7 +508,7 @@ ID3D11Buffer* FRenderer::CreateIndexBuffer(uint32_t* indices, UINT byteWidth)
 
 void FRenderer::Render()
 {
-    BeginFrame();
+    //BeginFrame();
 
     XMMATRIX View = XMMatrixLookAtLH({ 0.0f, 0.0f, -5.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f });
     const float AspectRatio = ViewportInfo.Width / ViewportInfo.Height;
@@ -480,7 +526,7 @@ void FRenderer::Render()
     UpdateConstantBuffer(MVP);
     RenderPrimitive(Data);
 
-    EndFrame();
+    //EndFrame();
 }
 
 void FRenderer::UpdateConstantBuffer(const XMMATRIX& MVP)

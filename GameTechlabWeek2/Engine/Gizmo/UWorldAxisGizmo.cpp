@@ -6,26 +6,26 @@ FClassType* UWorldAxisGizmo::GetClass()
 {
 	static auto CreateObject = [](uint32 UUID, uint32 InternalIndex, FClassType* InClassType)
 		{
-			return new UGizmo(UUID, InternalIndex, InClassType);
+			return new UWorldAxisGizmo(UUID, InternalIndex, InClassType);
 		};
 
 	static FClassType Type
 	{
 		.Name = "WorldAxisGizmo",
 		.ClassConstructor = CreateObject,
-		.ParentClassType = UObject::GetClass(),
+		.ParentClassType = UGizmo::GetClass(),
 	};
 
 	return &Type;
 }
 
-UWorldAxisGizmo::UGizmo(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
-	: UObject{ InUUID, InInternalIndex, InClassType }
+UWorldAxisGizmo::UWorldAxisGizmo(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
+	: UGizmo{ InUUID, InInternalIndex, InClassType }
 {
 
 }
 
-void UWorldAxisUGizmo::Create(FRenderer& renderer)
+void UWorldAxisGizmo::Create(FRenderer& renderer)
 {
 
 }

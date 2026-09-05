@@ -8,15 +8,16 @@
 
 class USceneWindow : public UEditorWindow
 {
+
+
 private:
 	uint32 NumberOfSpawn = 0;
 	uint32 SelectedIndex = 0;
 	FClassType SelectedClass;
 	FWideString SceneName = L"Default";
-	UPrimitiveComponent SpawnPrimitive; // Todo : default를 Sphere로 
+	UPrimitiveComponent SelectedPrimitive; // Todo : default를 Sphere로 
 
 public:
-	USceneWindow() = default;
 	~USceneWindow() = default;
 
 	void SpawnPrimitive();
