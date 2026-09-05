@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Core.h"
-#include "../../Container/FString.h"
-#include "FClassType.h"
+#include "Engine/Object/FClassType.h"
+#include "Engine/Core.h"
+#include "Container/FString.h"
 
 #include <cstdlib>
 #include <string>

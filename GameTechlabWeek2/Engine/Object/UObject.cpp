@@ -1,5 +1,5 @@
 #include "UObject.h"
-#include "GObjects.h"
+#include "Engine/Object/GObjects.h"
 
 UObject* UObject::CreateObject(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
 {

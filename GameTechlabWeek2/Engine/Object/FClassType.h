@@ -1,8 +1,8 @@
 #pragma once
 
 #include <functional>
-#include "../Core.h"
-#include "../../Container/FString.h"
+#include "Engine/Core.h"
+#include "Container/FString.h"
 
 class UObject;
 struct FClassType;

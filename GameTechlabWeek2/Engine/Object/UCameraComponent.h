@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Core.h"
-#include "USceneComponent.h"
+#include "Engine/Core.h"
+#include "Engine/Object/USceneComponent.h"
 
 class UCameraComponent : public USceneComponent
 {

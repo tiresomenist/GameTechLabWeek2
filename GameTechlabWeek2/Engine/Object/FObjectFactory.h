@@ -2,12 +2,10 @@
 
 #include <stdexcept>
 
-#include <type_traits>
-
-#include "FClassType.h"
-#include "UObject.h"
-#include "GObjects.h"
-#include "../UEngineStatics.h"
+#include "Engine/Object/FClassType.h"
+#include "Engine/Object/UObject.h"
+#include "Engine/Object/GObjects.h"
+#include "Engine/UEngineStatics.h"
 
 class FObjectFactory
 {
