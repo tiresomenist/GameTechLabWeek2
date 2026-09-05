@@ -21,7 +21,7 @@ public:
 
     const FMatrix& GetWorldMatrix() const;
 
-private:
+protected:
     USceneComponent(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
 
     // 로컬 트랜스폼

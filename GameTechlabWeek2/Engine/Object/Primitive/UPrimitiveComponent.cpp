@@ -6,6 +6,17 @@ UPrimitiveComponent::~UPrimitiveComponent()
 	if (IndexBuffer) { IndexBuffer->Release(); IndexBuffer = nullptr; }
 }
 
+void UPrimitiveComponent::InitGeometry(ID3D11Buffer* InVB, ID3D11Buffer* InIB, uint32 InStride, uint32 InCount)
+{
+    if (VertexBuffer) VertexBuffer->Release();
+    if (IndexBuffer) IndexBuffer->Release();
+
+    VertexBuffer = InVB;
+    IndexBuffer = InIB;
+    VertexStride = InStride;
+    IndexCount = InCount;
+}
+
 FPrimitiveRenderData UPrimitiveComponent::GetRenderData() const
 {
     FPrimitiveRenderData Data;

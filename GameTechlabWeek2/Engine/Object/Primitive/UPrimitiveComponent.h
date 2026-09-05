@@ -17,15 +17,19 @@ struct FPrimitiveRenderData
 class UPrimitiveComponent : public USceneComponent
 {
 public:
-    UPrimitiveComponent(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
-        : USceneComponent(InUUID, InInternalIndex, InClassType) {}
     ~UPrimitiveComponent();
+
+    void InitGeometry(ID3D11Buffer* InVB, ID3D11Buffer* InIB, uint32 InStride, uint32 InCount);
 
     FPrimitiveRenderData GetRenderData() const;
     //DirectX::BoundingBox GetWorldBoundingBox() const;
 
     // @RTTI
     void UpdateGeometry(ID3D11Buffer* NewVB, ID3D11Buffer* NewIB, uint32 InStride, uint32 InIndexCount);
+
+protected:
+    UPrimitiveComponent(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
+        : USceneComponent(InUUID, InInternalIndex, InClassType) {}
 
 private:
     // GPU Buffers

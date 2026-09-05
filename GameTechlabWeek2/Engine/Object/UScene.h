@@ -33,6 +33,7 @@ class UMainScene : public UScene
 {
 public:
 	virtual void Initialize() override;
+	virtual void Update(float DeltaTime) override;
 
 private:
 	TArray<UPrimitiveComponent*> SelectedPrimitives; // Actor
