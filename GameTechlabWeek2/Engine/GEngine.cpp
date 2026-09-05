@@ -4,18 +4,19 @@
 #include "Engine/Object/FObjectFactory.h"
 #include "Engine/Object/GObjects.h"
 #include "Engine/Object/UObject.h"
+#include "Engine/Core.h"
 
 #include "Engine/GSceneManager.h"
 #include "Engine/FConsole.h"
 
-#include <format>
+#include <chrono>
 
-float GetTime()
+float GEngine::GetTime()
 {
-	LARGE_INTEGER currentTime;
-	QueryPerformanceCounter(&currentTime);
+	static auto Start = std::chrono::steady_clock::now();
+	auto Now = std::chrono::steady_clock::now();
 
-	return static_cast<float>(currentTime.QuadPart);
+	return std::chrono::duration<float>(Now - Start).count();
 }
 
 GEngine* GEngine::GetInstance()
@@ -37,6 +38,7 @@ void GEngine::Initialize(HWND InHwnd)
 
 	Renderer.Create(InHwnd, 1024, 1024);
 
+	StartTime = GetTime();
 	LastTickTime = GetTime();
 }
 
