@@ -8,7 +8,7 @@ UObject* UObject::CreateObject(uint32 InUUID, uint32 InInternalIndex, FClassType
 
 FClassType* UObject::GetClass()
 {
-	static FClassType Type{ FString{"Object"}, UObject::CreateObject, FClassType::ECT_UObject };
+	static FClassType Type{ FString{"Object"}, UObject::CreateObject };
     return &Type;
 }
 
@@ -17,4 +17,10 @@ UObject::UObject(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
 	, InternalIndex{ InInternalIndex }
 	, ClassType{ InClassType }
 {
+}
+
+bool UObject::IsA(FClassType* InClassType) const
+{
+	// 두 포인터 비교
+	return InClassType == ClassType;
 }

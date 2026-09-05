@@ -1,8 +1,8 @@
 #include "FClassType.h"
 
-FClassType::FClassType(const FString& InName, const Constructor InClassConstructor, const EType InType)
+FClassType::FClassType(const FString& InName, const Constructor InClassConstructor, const FClassType* InParentClassType)
 	: Name{ InName }
 	, ClassConstructor{ InClassConstructor }
-	, Type{ InType }
+	, ParentClassType{ InParentClassType }
 {
 }

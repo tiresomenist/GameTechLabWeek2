@@ -24,6 +24,8 @@ public:
     uint32 UUID;
     uint32 InternalIndex;
 
+    bool IsA(FClassType* InClassType) const;
+
 private:
     FClassType* ClassType;
 };

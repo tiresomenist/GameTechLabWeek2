@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core.h"
+#include "Engine/Object/UObject.h"
 
 class UEngineStatics
 {

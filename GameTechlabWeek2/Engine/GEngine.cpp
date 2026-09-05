@@ -28,15 +28,18 @@ void GEngine::Initialize()
 	UObject* Object = FObjectFactory::ConstructObject(UObject::GetClass());
 	UObject* SceneObject = FObjectFactory::ConstructObject(USceneComponent::GetClass());
 
-	USceneComponent* SceneComponent = reinterpret_cast<USceneComponent*>(SceneObject);
-	SceneComponent->RelativeLocation = FVector{ 1.0f, 2.0f, 3.0f };
-	SceneComponent->RelativeRotation = FVector{ 1.0f, 2.0f, 3.0f };
-	SceneComponent->RelativeScale3D = FVector{ 1.0f, 1.0f, 1.0f };
+	if (SceneObject->IsA(UObject::GetClass()))
+	{
+		USceneComponent* SceneComponent = reinterpret_cast<USceneComponent*>(SceneObject);
+		SceneComponent->SetRelativeLocation(FVector{ 1.0f, 2.0f, 3.0f });
+		SceneComponent->SetRelativeRotation(FVector{ 1.0f, 2.0f, 3.0f });
+		SceneComponent->SetRelativeScale3D(FVector{ 1.0f, 1.0f, 1.0f });
 
-	MessageBox(nullptr, std::format(L"테스트입니다 {} {} {}",
-		SceneComponent->RelativeLocation.X,
-		SceneComponent->RelativeLocation.Y,
-		SceneComponent->RelativeLocation.Z).c_str(), L"", 0);
+		MessageBox(nullptr, std::format(L"테스트입니다 {} {} {}",
+			SceneComponent->GetRelativeLocation().X,
+			SceneComponent->GetRelativeLocation().Y,
+			SceneComponent->GetRelativeLocation().Z).c_str(), L"", 0);
+	}
 
 }
 
