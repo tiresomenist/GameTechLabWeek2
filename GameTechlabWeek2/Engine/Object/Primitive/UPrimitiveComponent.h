@@ -5,6 +5,6 @@
 class UPrimitiveComponent : public USceneComponent
 {
 public:
-    ~UPrimitiveComponent() override = default;
+    ~UPrimitiveComponent();
 };
 

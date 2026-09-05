@@ -1,4 +1,7 @@
 #pragma	once
+#include <vector>
+#include <stdexcept>
+
 
 #include <vector>
 #include <stdexcept>
@@ -13,8 +16,11 @@ public:
 	{
 		Array.push_back(Element);
 	}
+
 	void Empty() { Array.clear(); }
+
 	bool IsEmpty() const { return Array.empty(); }
+
 	T Pop() {
 		if (Array.empty()) throw std::runtime_error("Stack empty");
 		T Top = Array.back();

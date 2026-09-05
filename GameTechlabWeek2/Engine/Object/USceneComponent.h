@@ -1,10 +1,28 @@
 #pragma once
 
-#include "UObject.h"
+#include "Engine/Object/UObject.h"
+#include "Engine/Core.h"
+#include "FVector.h"
 
 class USceneComponent : public UObject
 {
+private:
+    FVector RelativeLocation;
+    FVector RelativeRotation;
+    FVector RelativeScale3D;
+
+    USceneComponent(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
+
 public:
-    ~USceneComponent() override = default;
+
+    static FClassType* GetClass();
+
+    FVector& GetRelativeLocation() { return RelativeLocation; };
+    FVector& GetRelativeRotation() { return RelativeRotation; };
+    FVector& GetRelativeScale3D() { return RelativeScale3D; };
+
+    void SetRelativeLocation(const FVector& Location);
+    void SetRelativeRotation(const FVector& Rotation);
+    void SetRelativeScale3D(const FVector& Scale3D);
 };
 

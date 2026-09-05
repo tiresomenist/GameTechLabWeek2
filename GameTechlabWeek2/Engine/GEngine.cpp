@@ -1,5 +1,11 @@
 #include "GEngine.h"
 #include "Windows.h"
+#include "Object/FObjectFactory.h"
+#include "Object/UObject.h"
+#include "Object/USceneComponent.h"
+#include "Object/UCameraComponent.h"
+
+#include <format>
 
 float GetTime()
 {
@@ -8,7 +14,6 @@ float GetTime()
 
 	return static_cast<float>(currentTime.QuadPart);
 }
-
 
 GEngine* GEngine::GetInstance()
 {
@@ -20,7 +25,24 @@ void GEngine::Initialize(HWND InHwnd)
 {
 	LastTickTime = GetTime();
 
-	Renderer.Create(InHwnd, 1024, 1024);
+	UObject* Object = FObjectFactory::ConstructObject(UObject::GetClass());
+	UObject* SceneObject = FObjectFactory::ConstructObject(USceneComponent::GetClass());
+
+	if (SceneObject->IsA(UObject::GetClass()))
+	{
+		MessageBox(nullptr, std::format(L"[RTTI Test] SceneObject는 UObject입니다.").c_str(), L"", 0);
+	}
+
+	if (SceneObject->IsA(USceneComponent::GetClass()))
+	{
+		MessageBox(nullptr, std::format(L"[RTTI Test] SceneObject는 USceneComponent입니다.").c_str(), L"", 0);
+	}
+
+	if (SceneObject->IsA(UCameraComponent::GetClass()))
+	{
+		MessageBox(nullptr, std::format(L"[RTTI Test] SceneObject는 UCameraComponent입니다.").c_str(), L"", 0);
+	}
+
 }
 
 void GEngine::Tick()

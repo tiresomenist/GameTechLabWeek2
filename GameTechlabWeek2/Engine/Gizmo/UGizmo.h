@@ -1,8 +1,13 @@
 #pragma once
 
-#include "../Object/UObject.h"
+#include "Engine/Object/UObject.h"
 
 class UGizmo : public UObject
 {
+private:
+    UGizmo(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
 
+public:
+
+    static FClassType* GetClass();
 };
