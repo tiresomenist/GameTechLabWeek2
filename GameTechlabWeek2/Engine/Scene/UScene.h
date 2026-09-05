@@ -20,8 +20,8 @@ public:
 
 	virtual void EndPlay();
 
-	UCameraComponent* GetCamera() const { return MainCamera; }
-	void SetCamera(UCameraComponent* InCamera) { MainCamera = InCamera; }
+	UCameraComponent* GetMainCamera() const { return MainCamera; }
+	void SetMainCamera(UCameraComponent* InCamera) { MainCamera = InCamera; }
 
 	void CreateMainCamera();
 
