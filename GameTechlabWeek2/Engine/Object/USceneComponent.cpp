@@ -2,48 +2,28 @@
 #include "Engine/Object/UObject.h"
 #include "FObjectFactory.h"
 
-FClassType* USceneComponent::GetClass()
-{
-	static auto CreateObject = [](uint32 UUID, uint32 InternalIndex, FClassType* InClassType)
-		{
-			return new USceneComponent(UUID, InternalIndex, InClassType);
-		};
-
-	static FClassType Type
-	{
-		.Name = "SceneComponent",
-		.ClassConstructor = CreateObject,
-		.ParentClassType = UObject::GetClass(),
-	};
-
-	return &Type;
-}
-
 void USceneComponent::SetRelativeLocation(const FVector& Location)
 {
 	RelativeLocation = Location;
+    UpdateWorldTransform();
 }
 
 void USceneComponent::SetRelativeRotation(const FVector& Rotation)
 {
 	RelativeRotation = Rotation;
+    UpdateWorldTransform();
 }
 
 void USceneComponent::SetRelativeScale3D(const FVector& Scale3D)
 {
 	RelativeScale3D = Scale3D;
+    UpdateWorldTransform();
 }
 
 const FMatrix& USceneComponent::GetWorldMatrix() const
 {
     //if (bWorldMatrixDirty)
-    UpdateWorldTransform();
     return CachedWorldMatrix;
-}
-
-USceneComponent::USceneComponent(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
-	: UObject{ InUUID, InInternalIndex, InClassType }
-{
 }
 
 void USceneComponent::UpdateWorldTransform() const
@@ -52,15 +32,17 @@ void USceneComponent::UpdateWorldTransform() const
         * FMatrix::MakeRotationMatrix(RelativeRotation)
         * FMatrix::MakeTranslationMatrix(RelativeLocation);
 
+    CachedWorldMatrix = LocalSRTMatrix;
+
     // 부모가 있으면 부모의 월드 행렬과 곱함
-    if (AttachParent)
-    {
-        CachedWorldMatrix = LocalSRTMatrix * AttachParent->GetWorldMatrix();
-    }
-    else
-    {
-        CachedWorldMatrix = LocalSRTMatrix;
-    }
+    //if (AttachParent)
+    //{
+    //    CachedWorldMatrix = LocalSRTMatrix * AttachParent->GetWorldMatrix();
+    //}
+    //else
+    //{
+    //    CachedWorldMatrix = LocalSRTMatrix;
+    //}
 
     //bWorldMatrixDirty = false;
 }

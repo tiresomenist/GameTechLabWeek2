@@ -6,21 +6,11 @@
 
 class USphereComponent : public UPrimitiveComponent
 {
+    
+	UCLASS(USphereComponent, "Sphere", UPrimitiveComponent)
+
 public:
-    static FClassType* GetClass();
-    ~USphereComponent() {};
 
-protected:
-    USphereComponent(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
-        : UPrimitiveComponent(InUUID, InInternalIndex, InClassType) {
-        Mesh = GResourceManager::GetInstance()->GetOrCreatePrimitive(type);
+	virtual FPrimitiveRenderData GetRenderData(FStringView Type = "") override;
 
-        VertexBuffer = Mesh->VertexBuffer;
-        IndexBuffer = Mesh->IndexBuffer;
-        VertexStride = Mesh->Stride;
-        IndexCount = Mesh->IndexCount;
-    };
-
-    FMeshResource* Mesh = nullptr;
-    std::string type = "Sphere";
 };

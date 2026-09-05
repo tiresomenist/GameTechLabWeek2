@@ -4,6 +4,8 @@
 #include <string>
 #include "GDevice.h"
 
+#include "Container/FString.h"
+
 struct FMeshResource
 {
 	ID3D11Buffer* VertexBuffer = nullptr;
@@ -34,7 +36,7 @@ public:
 	void Shutdown();
 
 	// ---- Geometry ----
-	FMeshResource* GetOrCreatePrimitive(std::string Type);
+	FMeshResource* GetOrCreatePrimitive(const FString& Type);
 
 	// ---- Shader ----
 	FShaderResource* GetOrCreateShader(const std::wstring& FilePath,
@@ -50,6 +52,7 @@ private:
 	GResourceManager& operator=(const GResourceManager&) = delete;
 
 	GDevice* Device = nullptr;
+
 	std::unordered_map<std::string, FMeshResource*> PrimitiveCache;
 	//std::unordered_map<std::string, FShaderResource*> ShaderCache;	// 일단 Renderer에서 - 셰이더 무조건 하나만 쓰니까..
 	//std::map<std::pair<D3D11_FILL_MODE, D3D11_CULL_MODE>, ID3D11RasterizerState*> RasterizerStateCache;

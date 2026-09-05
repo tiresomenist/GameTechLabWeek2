@@ -4,8 +4,9 @@
 
 class UWorldGridGizmo : public UGizmo
 {
+    UCLASS(UWorldGridGizmo, "WorldGridGizmo", UGizmo)
+
 public:
-    UWorldGridGizmo() = default;
     virtual ~UWorldGridGizmo() = default;
 
 

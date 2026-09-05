@@ -1,18 +1,7 @@
 #include "USphereComponent.h"
+#include "Engine/GResourceManager.h"
 
-FClassType* USphereComponent::GetClass()
+FPrimitiveRenderData USphereComponent::GetRenderData(FStringView Type)
 {
-	static auto CreateObject = [](uint32 UUID, uint32 InternalIndex, FClassType* InClassType)
-		{
-			return new USphereComponent(UUID, InternalIndex, InClassType);
-		};
-
-	static FClassType Type
-	{
-		.Name = "USphereComponent",
-		.ClassConstructor = CreateObject,
-		.ParentClassType = UPrimitiveComponent::GetClass(),
-	};
-
-	return &Type;
+	return Super::GetRenderData("Sphere");
 }

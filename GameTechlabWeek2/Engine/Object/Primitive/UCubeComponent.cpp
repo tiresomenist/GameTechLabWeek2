@@ -1,18 +1,7 @@
 #include "UCubeComponent.h"
+#include "Engine/GResourceManager.h"
 
-FClassType* UCubeComponent::GetClass()
+FPrimitiveRenderData UCubeComponent::GetRenderData(FStringView Type)
 {
-	static auto CreateObject = [](uint32 UUID, uint32 InternalIndex, FClassType* InClassType)
-		{
-			return new UCubeComponent(UUID, InternalIndex, InClassType);
-		};
-
-	static FClassType Type
-	{
-		.Name = "UCubeComponent",
-		.ClassConstructor = CreateObject,
-		.ParentClassType = UPrimitiveComponent::GetClass(),
-	};
-
-	return &Type;
+	return Super::GetRenderData("Cube");
 }

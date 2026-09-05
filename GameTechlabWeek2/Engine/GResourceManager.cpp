@@ -52,11 +52,18 @@ void GResourceManager::Shutdown()
     //RasterizerStateCache.clear();
 }
 
-FMeshResource* GResourceManager::GetOrCreatePrimitive(std::string Type)
+FMeshResource* GResourceManager::GetOrCreatePrimitive(const FString& Type)
 {
-    auto it = PrimitiveCache.find(Type);
-    if (it != PrimitiveCache.end())
-        return it->second;
+    auto Item = PrimitiveCache.find(Type);
+
+    if (Item != PrimitiveCache.end())
+    {
+        return Item->second;
+    }
+    else
+    {
+        return nullptr;
+    }
 }
 
 FShaderResource* GResourceManager::GetOrCreateShader(const std::wstring& FilePath, const std::string& VSEntry, const std::string& PSEntry, const D3D11_INPUT_ELEMENT_DESC* Layout, UINT LayoutCount)

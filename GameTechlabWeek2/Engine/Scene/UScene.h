@@ -2,18 +2,17 @@
 #include "Container/TArray.h"
 #include "Engine/Object/UObject.h"
 #include "Engine/Object/FObjectFactory.h"
+#include "Engine/Renderer/RenderUtil.h"
 
-class UCameraComponent;
-class UPrimitiveComponent;
+struct FPrimitiveRenderData;
+struct UCameraComponent;
 
 class UScene : public UObject
 {
-protected:
-	UScene(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
+
+	UCLASS(UScene, "Scene", UObject)
 
 public:
-	static FClassType* GetClass();
-
 	virtual void BeginPlay();
 
     virtual void Tick(float DeltaTime);
@@ -28,7 +27,10 @@ public:
 	template <typename T>
 	T SpawnObject(FClassType* Type)
 	{
-		return Cast<T>(FObjectFactory::ConstructObject(Type));
+		UObject* Object = FObjectFactory::ConstructObject(Type);
+		Objects.Add(Object);
+
+		return Cast<T>(Object);
 	}
 
 	template <typename T>
@@ -38,7 +40,9 @@ public:
 		return Ptr;
 	}
 
-	TArray<UPrimitiveComponent*> GetPrimitiveComponents() const;
+	void Destroy(UObject* Object);
+
+	virtual ~UScene();
 
 protected:
 
@@ -52,5 +56,6 @@ protected:
 	/// </summary>
 	UCameraComponent* MainCamera = nullptr;
 
-	TArray<UPrimitiveComponent*> PrimitiveComponets;
+public:
+	friend TArray<FPrimitiveRenderData> RenderUtil::GetRenderList(UScene* Scene);
 };

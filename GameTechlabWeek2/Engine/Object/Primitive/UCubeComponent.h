@@ -1,26 +1,14 @@
 #pragma once
 
-#include "UPrimitiveComponent.h"
-#include "../../GResourceManager.h"
-#include "../FClassType.h"
+#include "Engine/Object/Primitive/UPrimitiveComponent.h"
 
 class UCubeComponent : public UPrimitiveComponent
 {
+
+	UCLASS(UCubeComponent, "Cube", UPrimitiveComponent)
+
 public:
-    static FClassType* GetClass();
-    ~UCubeComponent() {};
 
-protected:
-    UCubeComponent(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
-        : UPrimitiveComponent(InUUID, InInternalIndex, InClassType) {
-        Mesh = GResourceManager::GetInstance()->GetOrCreatePrimitive(type);
+	virtual FPrimitiveRenderData GetRenderData(FStringView Type = "") override;
 
-        VertexBuffer = Mesh->VertexBuffer;
-        IndexBuffer = Mesh->IndexBuffer;
-        VertexStride = Mesh->Stride;
-        IndexCount = Mesh->IndexCount;
-    };
-
-    FMeshResource* Mesh = nullptr;
-    std::string type = "Cube";
 };

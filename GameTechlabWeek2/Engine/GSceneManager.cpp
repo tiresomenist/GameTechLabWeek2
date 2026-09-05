@@ -24,7 +24,9 @@ void GSceneManager::Release()
 	if (CurrentScene)
 	{
 		CurrentScene->EndPlay();
+
 		delete CurrentScene;
+		CurrentScene = nullptr;
 	}
 }
 
@@ -40,10 +42,14 @@ void GSceneManager::Tick(float DeltaTime)
 		if (CurrentScene)
 		{
 			CurrentScene->EndPlay();
+
+			delete CurrentScene;
 			CurrentScene = nullptr;
 		}
 
 		CurrentScene = NextScene;
+		NextScene = nullptr;
+
 		CurrentScene->BeginPlay();
 	}
 }
