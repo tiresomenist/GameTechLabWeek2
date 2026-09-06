@@ -8,10 +8,22 @@ void USceneComponent::SetRelativeLocation(const FVector& Location)
     UpdateWorldTransform();
 }
 
-void USceneComponent::SetRelativeRotation(const FVector& Rotation)
+void USceneComponent::SetRelativeRotation(const FQuaternion& Rotation)
 {
 	RelativeRotation = Rotation;
+    RelativeRotation.Normalize();
     UpdateWorldTransform();
+}
+
+void USceneComponent::AddLocalRotation(const FQuaternion& Delta)
+{
+    SetRelativeRotation(RelativeRotation * Delta);
+}
+
+void USceneComponent::AddWorldRotation(const FQuaternion& Delta)
+{
+    // Components currently have no implemented parent-transform composition.
+    SetRelativeRotation(Delta * RelativeRotation);
 }
 
 void USceneComponent::SetRelativeScale3D(const FVector& Scale3D)
@@ -29,7 +41,7 @@ const FMatrix& USceneComponent::GetWorldMatrix() const
 void USceneComponent::UpdateWorldTransform() const
 {
     FMatrix LocalSRTMatrix = FMatrix::MakeScaleMatrix(RelativeScale3D)
-        * FMatrix::MakeRotationMatrix(RelativeRotation)
+        * RelativeRotation.ToRotationMatrix()
         * FMatrix::MakeTranslationMatrix(RelativeLocation);
 
     CachedWorldMatrix = LocalSRTMatrix;

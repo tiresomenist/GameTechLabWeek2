@@ -8,6 +8,8 @@
 //벡터, 행렬 구조체 선언
 
 
+struct FQuaternion;
+
 struct FMatrix
 {
 	//==================
@@ -22,6 +24,7 @@ struct FMatrix
 	static FMatrix MakeTranslationMatrix(const FVector& Location);
 	static FMatrix MakeScaleMatrix(const FVector& Scale);
 
+    // Angle-based compatibility helpers convert through FQuaternion.
 	static FMatrix MakeRotationXMatrix(float Radian);
 	static FMatrix MakeRotationYMatrix(float Radian);
 	static FMatrix MakeRotationZMatrix(float Radian);
@@ -29,7 +32,7 @@ struct FMatrix
 	static FMatrix MakeRotationMatrix(const FVector& Rotation);
 	static FMatrix MakeModelMatrix(
 		const FVector& Location,
-		const FVector& Rotation,
+		const FQuaternion& Rotation,
 		const FVector& Scale);
 
 	//모델 행렬을 넣어서 법선 행렬을 만드는 함수

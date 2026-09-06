@@ -66,7 +66,7 @@ void GEngine::Initialize(HWND InHwnd)
 void GEngine::Tick()
 {
 	float DeltaTime = GetTime() - LastTickTime;
-
+	LastTickTime = GetTime();
 	// 게임 로직을 수행합니다.
 	GSceneManager* SceneManager = GSceneManager::GetInstance();
 	SceneManager->Tick(DeltaTime);
