@@ -2,7 +2,17 @@
 #include "FVertexSimple.h"
 #include "Engine/Object/UObject.h"
 
-void UGizmo::Create(FRenderer& renderer)
+void UGizmo::Initialize(FEditor* InEditor)
+{
+	Editor = InEditor;
+}
+
+TArray<FPrimitiveRenderData> UGizmo::GetRenderData()
+{
+	return TArray<FPrimitiveRenderData>();
+}
+
+void UGizmo::RenderImGUI()
 {
 }
 
