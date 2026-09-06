@@ -4,6 +4,7 @@
 #include "Engine/InputManager/GInputManager.h"
 #include "Engine/Object/Primitive/USphereComponent.h"
 #include "Engine/Object/UCameraComponent.h"
+#include "Engine/Gizmo/UWorldAxisGizmo.h"
 
 #include <format>
 
@@ -15,52 +16,52 @@ void UMainScene::BeginPlay()
     //UScene::BeginPlay();
 
     CreateMainCamera();
+    // Temporary world-axis display. Remove this spawn to disable it.
+    SpawnObject<UWorldAxisGizmo*>(UWorldAxisGizmo::GetClass());
+    CameraController.SetCamera(GetMainCamera());
 	GetMainCamera()->SetRelativeLocation(FVector(-5.0f, 0.0f, 0.0f));
 
 	USphereComponent* Sphere1 = SpawnObject<USphereComponent*>(USphereComponent::GetClass());
-	Sphere1->SetRelativeLocation(FVector(0.0f, 0.5f, 0.0f));
+	Sphere1->SetRelativeLocation(FVector(0.0f, 0.5f, 1.0f));
 
 	USphereComponent* Sphere2 = SpawnObject<USphereComponent*>(USphereComponent::GetClass());
 	Sphere2->SetRelativeLocation(FVector(0.0f, -0.5f, 0.0f));
+
+	USphereComponent* Sphere3 = SpawnObject<USphereComponent*>(USphereComponent::GetClass());
+	Sphere3->SetRelativeLocation(FVector(-5.0f, -0.5f, -6.0f));
+
+	USphereComponent* Sphere4 = SpawnObject<USphereComponent*>(USphereComponent::GetClass());
+	Sphere4->SetRelativeLocation(FVector(-10.0f, -0.5f, 0.0f));
+
 }
 
 void UMainScene::Tick(float DeltaTime)
 {
     //UScene::Tick(DeltaTime);
 
+
 	GEngine& Engine = *GEngine::GetInstance();
 	GInputManager& Input = *GInputManager::GetInstance();
 
 	float Time = Engine.GetTime();
+	if (Input.GetKey(GInputManager::EI_LMOUSE)) {
+		//UE_LOG(std::format("[{}] 좌클릭 좌표:{}, {}", Time,
+		//	Input.GetLeftCursorX(),
+		//	Input.GetLeftCursorY()));
 
-	UCameraComponent* Camera = GetMainCamera();
-	FVector CameraLocation = Camera->GetRelativeLocation();
+	}
+	if (Input.GetKey(GInputManager::EI_RMOUSE)) {
+		//UE_LOG(std::format("[{}] 우클릭 좌표:{}, {}", Time,
+		//	GInputManager::GetInstance()->GetRightCursorX(),
+		//	GInputManager::GetInstance()->GetRightCursorY()));
 
-	if (Input.GetKey(GInputManager::EI_W))
-	{
-		UE_LOG(std::format("[{}] W키 누름", Time));
-		CameraLocation.X += 0.05f * DeltaTime;
 	}
-	if (Input.GetKey(GInputManager::EI_A))
-	{
-		UE_LOG(std::format("[{}] A키 누름", Time));
-		CameraLocation.Z += 0.05f * DeltaTime;
-	}
-	if (Input.GetKey(GInputManager::EI_S))
-	{
-		UE_LOG(std::format("[{}] S키 누름", Time));
-		CameraLocation.X -= 0.05f * DeltaTime;
-	}
-	if (Input.GetKey(GInputManager::EI_D))
-	{
-		UE_LOG(std::format("[{}] D키 누름", Time));
-		CameraLocation.Z -= 0.05f * DeltaTime;
-	}
+	CameraController.Tick(DeltaTime);
 
-	GetMainCamera()->SetRelativeLocation(CameraLocation);
 }
 
 void UMainScene::EndPlay()
 {
 	//UScene::EndPlay();
+	CameraController.SetCamera(nullptr);
 }

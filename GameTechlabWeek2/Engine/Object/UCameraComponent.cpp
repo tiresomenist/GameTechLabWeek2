@@ -1,48 +1,28 @@
 #include "UCameraComponent.h"
 #include "Engine/Object/UObject.h"
 
-UCameraComponent::UCameraComponent(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
-	: USceneComponent{ InUUID, InInternalIndex, InClassType }
-{
-}
-
-FClassType* UCameraComponent::GetClass()
-{
-	static auto CreateObject = [](uint32 UUID, uint32 InternalIndex, FClassType* InClassType)
-		{
-			return new UCameraComponent(UUID, InternalIndex, InClassType);
-		};
-	static FClassType Type
-	{
-		.Name = "CameraComponent",
-		.ClassConstructor = CreateObject,
-		.ParentClassType = UObject::GetClass(),
-	};
-
-	return &Type;
-}
 FVector UCameraComponent::GetForward() const
 {
 	FVector4 ForwardVector(1.0f, 0.0f, 0.0f, 0.0f);
 
-	return FVector(ForwardVector * FMatrix::MakeRotationMatrix(FVector(0.0f, RelativeRotation.Y, RelativeRotation.Z)));
+	return FVector(ForwardVector * GetCameraRotationMatrix());
 }
 
 FVector UCameraComponent::GetRight() const
 {
 	FVector4 RightVector(0.0f, 1.0f, 0.0f, 0.0f);
-	return FVector(RightVector * FMatrix::MakeRotationMatrix(FVector(0.0f, RelativeRotation.Y, RelativeRotation.Z)));
+	return FVector(RightVector * GetCameraRotationMatrix());
 }
 
 FVector UCameraComponent::GetUp() const
 {
 	FVector4 UpVector(0.0f, 0.0f, 1.0f, 0.0f);
-	return FVector(UpVector * FMatrix::MakeRotationMatrix(FVector(0.0f, RelativeRotation.Y, RelativeRotation.Z)));
+	return FVector(UpVector * GetCameraRotationMatrix());
 }
 
 FMatrix UCameraComponent::GetViewMatrix() const
 {
-	FMatrix RotationMatrix = FMatrix::MakeRotationMatrix(FVector(0.0f, RelativeRotation.Y, RelativeRotation.Z));
+	FMatrix RotationMatrix = GetCameraRotationMatrix();
 	FMatrix InverseTranslationMatrix = FMatrix::MakeTranslationMatrix(RelativeLocation * -1.0f);
 	return (InverseTranslationMatrix) * (RotationMatrix.Transpose());
 }
@@ -106,24 +86,17 @@ void UCameraComponent::LookAt(const FVector& InTargetPosition)
 		//카메라의 위치를 바라보는 경우
 		return;
 	}
-	Forward.Normalize(); //Forward.X = cosZ*cosY,Forward.Y = sinZ,Forward.Z = -cosZ*sinY
-	float CosZ = std::sqrtf(Forward.X * Forward.X + Forward.Z * Forward.Z);
-	const float RotationZ = atan2(Forward.Y, CosZ);
-	float RotationY = RelativeRotation.Y;
-	if (CosZ > UEngineStatics::Epsilon) {
-		RotationY = std::atan2(-Forward.Z, Forward.X);
-	}	
+	Forward.Normalize();
+    const float HorizontalLength = std::sqrt(Forward.X * Forward.X + Forward.Y * Forward.Y);
+    const float RotationY = std::atan2(-Forward.Z, HorizontalLength);
+    const float RotationZ = HorizontalLength > UEngineStatics::Epsilon
+        ? std::atan2(Forward.Y, Forward.X) : RelativeRotation.Z;
+
 	RelativeRotation.X = 0.0f;
 	RelativeRotation.Y = RotationY;
 	RelativeRotation.Z = RotationZ;
 
 }
-
-UCameraComponent::UCameraComponent(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType):USceneComponent(InUUID,InInternalIndex,InClassType)
-{
-
-}
-
 float UCameraComponent::GetOrthoHeight() const
 {
 	return OrthoHeight;
@@ -173,4 +146,19 @@ FMatrix UCameraComponent::GetPerspectiveProjectionMatrix() const
 		HorizontalScale, 0.0f, 0.0f, 0.0f,
 		0.0f, VerticalScale, 0.0f, 0.0f,
 		0.0f, 0.0f, -NearZ * DepthScale, 0.0f);
+}
+
+void UCameraComponent::MoveCamera(const float& InForward, const float& InRight, const float& InDeltaTime)
+{
+	FVector InVelocity = GetForward() * InForward + GetRight() * InRight;
+	if (InVelocity.Length() < UEngineStatics::Epsilon) return;
+	InVelocity.Normalize();
+	SetRelativeLocation(RelativeLocation + InVelocity * MoveSpeed * InDeltaTime);
+}
+
+FMatrix UCameraComponent::GetCameraRotationMatrix() const
+{
+    // Row vectors: local pitch first, then yaw around world Z.
+    return FMatrix::MakeRotationYMatrix(RelativeRotation.Y)
+        * FMatrix::MakeRotationZMatrix(RelativeRotation.Z);
 }

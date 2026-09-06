@@ -6,6 +6,7 @@
 
 struct FPrimitiveRenderData;
 struct UCameraComponent;
+class FRenderer;
 
 class UScene : public UObject
 {
@@ -41,6 +42,7 @@ public:
 	}
 
 	void Destroy(UObject* Object);
+    void RenderGizmos(FRenderer& Renderer);
 
 	virtual ~UScene();
 

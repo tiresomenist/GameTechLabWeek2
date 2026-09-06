@@ -15,8 +15,6 @@ void GenerateSphere(float Radius, int Slices, int Stacks, std::vector<FVertexTes
     OutVertices.clear();
     OutIndices.clear();
 
-    const float PI = 3.141592654f;
-
     // 1. 정점(Vertex) 데이터 생성
     for (int i = 0; i <= Stacks; ++i)
     {
@@ -280,7 +278,7 @@ void FRenderer::Render(UScene* Scene)
     BeginFrame();
 
     UCameraComponent* Camera = Scene->GetMainCamera();
-    //FMatrix ViewProjMatrix = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
+    FMatrix ViewProjMatrix = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
     // @TEST
     static float Angle = 0.0f;
     Angle += 0.01f;
@@ -301,22 +299,26 @@ void FRenderer::Render(UScene* Scene)
         Camera->GetRelativeLocation().Z,
     };
 
-    XMMATRIX View = XMMatrixLookAtLH(EyePosition, LookAt, {0.0f, 1.0f, 0.0f});
-    XMMATRIX Proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, AspectRatio, 0.1f, 100.0f);
-    XMMATRIX ViewProjMatrix = View * Proj;
+    //XMMATRIX View = XMMatrixLookAtLH(EyePosition, LookAt, {0.0f, 1.0f, 0.0f});
+    //XMMATRIX Proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, AspectRatio, 0.1f, 100.0f);
+    //XMMATRIX ViewProjMatrix = View * Proj;
 
     TArray<FPrimitiveRenderData> RenderList = RenderUtil::GetRenderList(Scene);
     
     for (auto& Item: RenderList)
     {
-        //FMatrix MVP = (*Data.WorldMatrix) * ViewProjMatrix;
-        XMMATRIX temp = XMMATRIX(&(Item.WorldMatrix->M[0][0]));
-        XMMATRIX Rotation = XMMatrixRotationY(Angle); // @TEST
-        XMMATRIX MVP = Rotation* temp * ViewProjMatrix;
+        FMatrix MVP = (*Item.WorldMatrix) * ViewProjMatrix;
+        //XMMATRIX temp = XMMATRIX(&(Item.WorldMatrix->M[0][0]));
+        //XMMATRIX Rotation = XMMatrixRotationY(Angle); // @TEST
+        //XMMATRIX MVP = Rotation* temp * ViewProjMatrix;
 
         UpdateConstantBuffer(MVP);
         RenderPrimitive(Item);
     }
+
+    // Gizmo vertices are already in world space (identity world transform).
+    UpdateConstantBuffer(ViewProjMatrix);
+    Scene->RenderGizmos(*this);
 
     GDevice::GetInstance()->SwapBuffer();
     EndFrame();
@@ -365,8 +367,8 @@ void FRenderer::UpdateConstantBuffer(const FMatrix& MVP)
         D3D11_MAPPED_SUBRESOURCE constantbufferMSR;
 
         DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR);
-        //FConstants* constants = (FConstants*)constantbufferMSR.pData;
-        //constants->MVP = MVP.Transpose(); 그냥 Shader에서 row_major 키워드 넣기로 함
+        FConstants* constants = (FConstants*)constantbufferMSR.pData;
+        constants->MVP = MVP;//.Transpose(); 그냥 Shader에서 row_major 키워드 넣기로 함
         DeviceContext->Unmap(ConstantBuffer, 0);
     }
 }

@@ -17,7 +17,7 @@ class UGizmo : public UObject
     UCLASS(UGizmo, "Gizmo", UObject)
 
 public:
-	virtual ~UGizmo() = default;
+	virtual ~UGizmo();
 
 	virtual void Create(FRenderer& renderer);
 	void Render(FRenderer& renderer);

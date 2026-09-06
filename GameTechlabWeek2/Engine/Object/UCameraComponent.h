@@ -17,7 +17,6 @@ class UCameraComponent : public USceneComponent
     UCLASS(UCameraComponent, "CameraComponent", USceneComponent)
 
 public:
-    static FClassType* GetClass();
     FVector GetForward() const;
     FVector GetRight() const;
     FVector GetUp() const;
@@ -26,6 +25,7 @@ public:
     FMatrix GetProjectionMatrix() const;
     FMatrix GetOrthographicProjectionMatrix() const;
     FMatrix GetPerspectiveProjectionMatrix() const;
+    void MoveCamera(const float& InForward, const float& InRight, const float& InDeltaTime);
     float GetOrthoHeight() const;
     void SetOrthoHeight(float InHeight);
 
@@ -44,13 +44,13 @@ public:
     EProjectionMode ProjectionMode = EProjectionMode::Perspective;
     
 
-    UCameraComponent(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
-
 private:
+    FMatrix GetCameraRotationMatrix() const;
     float FOV = 60.0f * PI / 180.0f;   //세로 시야각. 저장단위 라디안
     float AspectRatio = 1.0f;          //뷰포트 가로/세로 비율
     float NearZ = 0.1f;
     float OrthoHeight = 10.0f;         //직교 투영의 전체 세로 범위 (월드 단위)
     float FarZ = 1000.0f;
+    float MoveSpeed = 5.0f;
 
 };
