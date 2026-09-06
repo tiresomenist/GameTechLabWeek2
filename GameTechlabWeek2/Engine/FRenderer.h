@@ -15,6 +15,7 @@
 #include "Engine/Renderer/FPrimitiveRenderData.h"
 #include "GDevice.h"
 #include "../Matrix.h"
+#include "../FQuaternion.h"
 //#include "../FVertexSimple.h"
 
 #include "../Engine/Editor/Window/UEditorWindow.h"
@@ -85,26 +86,27 @@ namespace Matrix4x4
 		return(xmf4x4Result);
 	}
 
-	inline XMFLOAT4X4 RotateAxis(XMFLOAT3& xmf3Axis, float fAngle)
-	{
-		XMFLOAT4X4 xmf4x4Result;
-		XMStoreFloat4x4(&xmf4x4Result, XMMatrixRotationAxis(XMLoadFloat3(&xmf3Axis), XMConvertToRadians(fAngle)));
-		return(xmf4x4Result);
-	}
+    inline XMFLOAT4X4 Rotate(const FQuaternion& Rotation)
+    {
+        const FMatrix Matrix = Rotation.ToRotationMatrix();
+        return XMFLOAT4X4(&Matrix.M[0][0]);
+    }
 
-	inline XMFLOAT4X4 Rotate(float x, float y, float z)
-	{
-		XMFLOAT4X4 xmf4x4Result;
-		XMStoreFloat4x4(&xmf4x4Result, XMMatrixRotationRollPitchYaw(XMConvertToRadians(x), XMConvertToRadians(y), XMConvertToRadians(z)));
-		return(xmf4x4Result);
-	}
+    inline XMFLOAT4X4 RotateAxis(XMFLOAT3& Axis, float AngleDegrees)
+    {
+        return Rotate(FQuaternion::FromAxisAngle(FVector(Axis.x, Axis.y, Axis.z), XMConvertToRadians(AngleDegrees)));
+    }
 
-	inline XMFLOAT4X4 AffineTransformation(XMFLOAT3& xmf3Scaling, XMFLOAT3& xmf3RotateOrigin, XMFLOAT3& xmf3Rotation, XMFLOAT3& xmf3Translation)
-	{
-		XMFLOAT4X4 xmf4x4Result;
-		XMStoreFloat4x4(&xmf4x4Result, XMMatrixAffineTransformation(XMLoadFloat3(&xmf3Scaling), XMLoadFloat3(&xmf3RotateOrigin), XMQuaternionRotationRollPitchYaw(XMConvertToRadians(xmf3Rotation.x), XMConvertToRadians(xmf3Rotation.y), XMConvertToRadians(xmf3Rotation.z)), XMLoadFloat3(&xmf3Translation)));
-		return(xmf4x4Result);
-	}
+    inline XMFLOAT4X4 AffineTransformation(XMFLOAT3& Scaling, XMFLOAT3& RotateOrigin,
+        const FQuaternion& Rotation, XMFLOAT3& Translation)
+    {
+        FQuaternion Q = Rotation;
+        Q.Normalize();
+        XMFLOAT4X4 Result;
+        XMStoreFloat4x4(&Result, XMMatrixAffineTransformation(XMLoadFloat3(&Scaling),
+            XMLoadFloat3(&RotateOrigin), XMVectorSet(Q.X, Q.Y, Q.Z, Q.W), XMLoadFloat3(&Translation)));
+        return Result;
+    }
 
 	inline XMFLOAT4X4 Multiply(XMMATRIX& xmmtxMatrix1, XMFLOAT4X4& xmmtx4x4Matrix2)
 	{

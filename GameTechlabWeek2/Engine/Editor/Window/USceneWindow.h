@@ -11,17 +11,16 @@ class USceneWindow : public UEditorWindow
 
 
 private:
-	bool bOrthogonal = false;
-	uint32 NumberOfSpawn = 0;
-	uint32 SelectedIndex = 0;
-	float FOV = 0;
-	FVector CameraLocation = { 0.0f, 0.0f, 0.0f };
-	FVector CameraRotation = { 0.0f, 0.0f, 0.0f };
-	FClassType* SelectedClass = nullptr;
-	TArray<FClassType*> Spawnables;
-	FWideString SceneName = L"Default";
-	//UPrimitiveComponent SelectedPrimitive; // Todo : default를 Sphere로 
-
+	float currentFPS = 0;
+	uint32 numberOfSpawn = 0;
+	UPrimitiveComponent spawnPrimitive; // Todo : default를 Sphere로 
+	FWideString sceneNawme = L"Default";
+	bool bIsOrthogonal = false;
+	/* Camera Info */
+	uint32 FOV = 60;
+	FVector cameraLocation = { 0.0f, 0.0f, 0.0f }; // Todo : 카메라 객체에서 값을 받아와서 초기값 설정
+	FQuaternion cameraRotation; // Todo : 카메라 객체에서 값을 받아와서 초기값 설정
+	/*             */
 public:
 	USceneWindow() = default;
 	~USceneWindow() = default;

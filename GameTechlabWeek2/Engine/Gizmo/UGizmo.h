@@ -18,7 +18,7 @@ class UGizmo : public UObject
     UCLASS(UGizmo, "Gizmo", UObject)
 
 public:
-	virtual ~UGizmo() = default;
+	virtual ~UGizmo();
 
 public:
 

@@ -5,7 +5,7 @@
 LRESULT HandleInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	GInputManager& Input = *GInputManager::GetInstance();
-
+	RECT rc;
 	switch (message)
 	{
 		//keyboard
@@ -46,20 +46,53 @@ LRESULT HandleInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		//mouse
 
 	case WM_LBUTTONDOWN:
+
+		GetClientRect(hWnd, &rc);
+		Input.SetLeftCursorX(2.0f * GET_X_LPARAM(lParam) / (rc.right - rc.left) - 1.0f);
+		Input.SetLeftCursorY(1.0f - 2.0f * GET_Y_LPARAM(lParam) / (rc.bottom - rc.top));
 		Input.SetKey(GInputManager::EI_LMOUSE, true);
 		break;
-	case WM_RBUTTONDOWN:
-		Input.SetKey(GInputManager::EI_RMOUSE, true);
-		break;
 	case WM_LBUTTONUP:
+		GetClientRect(hWnd, &rc);
+		Input.SetLeftCursorX(2.0f * GET_X_LPARAM(lParam) / (rc.right - rc.left) - 1.0f);
+		Input.SetLeftCursorY(1.0f - 2.0f * GET_Y_LPARAM(lParam) / (rc.bottom - rc.top));
 		Input.SetKey(GInputManager::EI_LMOUSE, false);
 		break;
-	case WM_RBUTTONUP:
-		Input.SetKey(GInputManager::EI_RMOUSE, false);
+	case WM_RBUTTONDOWN:
+		GetClientRect(hWnd, &rc);
+		Input.SetRightCursorX(2.0f * GET_X_LPARAM(lParam) / (rc.right - rc.left) - 1.0f);
+		Input.SetRightCursorY(1.0f - 2.0f * GET_Y_LPARAM(lParam) / (rc.bottom - rc.top));
+		Input.SetRightCursorPixelX(GET_X_LPARAM(lParam));
+		Input.SetRightCursorPixelY(GET_Y_LPARAM(lParam));
+		Input.BeginRightDrag(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		SetCapture(hWnd);
 		break;
+	case WM_RBUTTONUP:
+		GetClientRect(hWnd, &rc);
+		Input.SetRightCursorX(2.0f * GET_X_LPARAM(lParam) / (rc.right - rc.left) - 1.0f);
+		Input.SetRightCursorY(1.0f - 2.0f * GET_Y_LPARAM(lParam) / (rc.bottom - rc.top));
+		Input.SetRightCursorPixelX(GET_X_LPARAM(lParam));
+		Input.SetRightCursorPixelY(GET_Y_LPARAM(lParam));
+		Input.EndRightDrag();
+		if (GetCapture() == hWnd) ReleaseCapture();
+		break;
+	case WM_MOUSEMOVE:
+		// 우클릭 드래그중
+		if (Input.GetKey(GInputManager::EI_RMOUSE)) {
+			GetClientRect(hWnd, &rc);
+			Input.SetRightCursorX(2.0f * GET_X_LPARAM(lParam) / (rc.right - rc.left) - 1.0f);
+			Input.SetRightCursorY(1.0f - 2.0f * GET_Y_LPARAM(lParam) / (rc.bottom - rc.top));
+			Input.UpdateRightDrag(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		}
 
+		break;
+	case WM_CAPTURECHANGED:
+		Input.EndRightDrag();
+		break;
+	case WM_CANCELMODE:
 	case WM_KILLFOCUS:
 		Input.KillFocus();
+		if (GetCapture() == hWnd) ReleaseCapture();
 		break;
 
 	case WM_DESTROY:
