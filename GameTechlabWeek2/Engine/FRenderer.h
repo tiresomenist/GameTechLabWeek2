@@ -17,6 +17,8 @@
 #include "../Matrix.h"
 //#include "../FVertexSimple.h"
 
+#include "../Engine/Editor/Window/UEditorWindow.h"
+
 //struct FVertexSimple;
 struct FConstants
 {
@@ -178,7 +180,7 @@ public:
 	//ID3D11Buffer* SphereIndexBuffer = nullptr;
 
 
-    void Create(GDevice* InDevice);					// 렌더러 초기화 함수
+    void Create(HWND hWindow, GDevice* InDevice);					// 렌더러 초기화 함수
 
     void Shutdown();                                // 렌더러에 사용된 모든 리소스를 해제하는 함수
 
@@ -201,7 +203,7 @@ public:
 	void EndFrame();
 
 	void Render(UScene* Scene);
-	void RenderUI(TArray<UEditorWindow*>& WindowArray);
+	void RenderUI(TArray<UEditorWindow&>& WindowArray);
 	void RenderPrimitive(const FPrimitiveRenderData& Data);
 
 	//// @TEST >>

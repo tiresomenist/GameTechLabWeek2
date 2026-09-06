@@ -11,36 +11,62 @@
 
 void USceneWindow::SpawnPrimitive() 
 {
-	//USceneComponent에 해당 Primitive 생성 요청 (SlectedClass 및 NumbeOfSpawn 입력)
+	//UEditor에 해당 Primitive 생성 요청 (SlectedClass 및 NumbeOfSpawn 입력)
 }
 void USceneWindow::MakeNewScene()
 {
-	//USceneComponent에 JSON 파일로 씬 생성 요청 (SceneName 입력값)
+	//UEditor에 JSON 파일로 씬 생성 요청 (SceneName 입력값)
 }
 void USceneWindow::SaveCurrentScene()
 {
-	//USceneComponent에 JSON 파일로 저장 요청
+	//UEditor에 JSON 파일로 저장 요청
 }
 void USceneWindow::LoadSavedScene()
 {
-	//JSON 파일이 저장된곳에서 JSON 파일 로드해서 USceneComponent에 전달
+	//UEditor에 JSON 파일이 저장된곳에서 JSON 파일 로드해서 USceneComponent에 전달요청
 }
-
-/*
-TArray<FClassType> Spawnables
+void USceneWindow::UpdateOrthogonal()
 {
-	USphereComp::GetClass();
-	UCubeComp::GetClass();
-	UPlaneComp::GetClass();
-};
-*/
-
-void USceneWindow::UpdateEditorWindow(float fps, bool& bIsOrthogonal, float& fov, FVector& cameralocation, FVector& camerarotation)
+	//GEngine::GetInstance()->GetEditor()->UpdateOrthogonal();
+}
+void USceneWindow::UpdateCameraLocation()
 {
+	//GEngine::GetInstance()->GetEditor()->UpdateCameraLocation();
+}
+void USceneWindow::UpdateCameraRotation()
+{
+	//GEngine::GetInstance()->GetEditor()->UpdateCameraRocation();
+}
+void USceneWindow::UpdateFOV()
+{
+
+}
+void USceneWindow::Begin()
+{
+	Spawnables.Empty();
+	Spawnables.Add(USphereComponent::GetClass());
+	Spawnables.Add(UCubeComponent::GetClass());
+	Spawnables.Add(UPlaneComponent::GetClass());
+	if (!Spawnables.IsEmpty())
+	{
+		SelectedClass = *Spawnables.begin();
+	}
+}
+void USceneWindow::End()
+{
+
+}
+void USceneWindow::Tick()
+{
+	//CameraRotation = GEngine::GetInstance()->GetEditor()->GetCameraRotation();
+	//CameraLocation = GEngine::GetInstance()->GetEditor()->GetCameraLotation();
+	const ImGuiIO& IO = ImGui::GetIO(); //ImGui의 입출력 및 프레임 상태를 모아둔 객체
+	const float FPS = IO.Framerate; //ImGui가 계산한 평균 FPS
+
 	ImGui::Begin("Jungle Control Panel");
 	{
 		ImGui::Text("Hello Jungle World!");
-		ImGui::Text("FPS %.0f (%.0f ms)", fps, 1000.0f / fps);
+		ImGui::Text("FPS %.0f (%.0f ms)", FPS, 1000.0f / FPS);
 		ImGui::Separator();
 
 		ImGui::Button("Spawn");
@@ -48,16 +74,14 @@ void USceneWindow::UpdateEditorWindow(float fps, bool& bIsOrthogonal, float& fov
 			SpawnPrimitive();
 		}
 		ImGui::SameLine();
-		/*
-		if (ImGui::BeginCombo(Spawnable.begin()->Name, PreviewName))
+		
+		if (ImGui::BeginCombo("Primitive", SelectedClass->Name.c_str()))
 		{
 			for (FClassType* ClassType : Spawnables)
 			{
 				bool bSelected = (SelectedClass == ClassType);
 
-				if (ImGui::Selectable(
-					ClassType->Name.c_str(),
-					bSelected))
+				if (ImGui::Selectable(ClassType->Name.c_str(), bSelected))
 				{
 					SelectedClass = ClassType;
 				}
@@ -69,7 +93,7 @@ void USceneWindow::UpdateEditorWindow(float fps, bool& bIsOrthogonal, float& fov
 			}
 			ImGui::EndCombo();
 		}
-		*/
+		
 
 		ImGui::InputScalar("Number Of Spawn", ImGuiDataType_U32, &NumberOfSpawn);
 		ImGui::Separator();
@@ -88,24 +112,47 @@ void USceneWindow::UpdateEditorWindow(float fps, bool& bIsOrthogonal, float& fov
 			LoadSavedScene();
 		}
 		ImGui::Separator();
-		/*                          */
 
-		ImGui::Checkbox("Orthogonal", &bIsOrthogonal);
-		ImGui::DragFloat("FOV", &fov, 1.0f);
-		ImGui::DragFloat("##cameraX", &cameralocation.X, 0.1f);
+		ImGui::Checkbox("Orthogonal", &bOrthogonal);
+		{
+			UpdateOrthogonal();
+		}
+		ImGui::DragFloat("FOV", &FOV, 1.0f);
+		{
+			UpdateFOV();
+		}
+		ImGui::DragFloat("##cameraX", &CameraLocation.X, 0.1f);
+		{
+			UpdateCameraLocation();
+		}
 		ImGui::SameLine();
-		ImGui::DragFloat("##cameraY", &cameralocation.Y, 0.1f);
+		ImGui::DragFloat("##cameraY", &CameraLocation.Y, 0.1f);
+		{
+			UpdateCameraLocation();
+		}
 		ImGui::SameLine();
-		ImGui::DragFloat("##cameraZ", &cameralocation.Z, 0.1f);
+		ImGui::DragFloat("##cameraZ", &CameraLocation.Z, 0.1f);
+		{
+			UpdateCameraLocation();
+		}
 		ImGui::SameLine();
 		ImGui::Text("Camera Location");
-		ImGui::DragFloat("##cameraR", &camerarotation.X, 0.001f);
+		ImGui::DragFloat("##cameraR", &CameraRotation.X, 0.001f);
+		{
+			UpdateCameraRotation();
+		}
 		ImGui::SameLine();
-		ImGui::DragFloat("##cameraP", &camerarotation.Y, 0.001f);
+		ImGui::DragFloat("##cameraP", &CameraRotation.Y, 0.001f);
+		{
+			UpdateCameraRotation();
+		}
 		ImGui::SameLine();
-		ImGui::DragFloat("##cameraY", &camerarotation.Z, 0.001f);
+		ImGui::DragFloat("##cameraY", &CameraRotation.Z, 0.001f);
+		{
+			UpdateCameraRotation();
+		}
 		ImGui::SameLine();
-		ImGui::Text("Camera Rocation");
+		ImGui::Text("Camera Rotation");
 	}
 	ImGui::End();
 }

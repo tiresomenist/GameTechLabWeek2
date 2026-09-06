@@ -8,6 +8,14 @@
 #include "Engine/Core.h"
 #include "Engine/Object/UCameraComponent.h"
 
+//Test
+#include "ImGui/imgui.h"
+#include "ImGui/imgui_internal.h"
+#include "ImGui/imgui_impl_dx11.h"
+#include "ImGui/imgui_impl_win32.h"
+#include "Engine/Editor/Window/UEditorWindow.h"
+
+
 #include <format>
 
 void GenerateSphere(float Radius, int Slices, int Stacks, std::vector<FVertexTest>& OutVertices, std::vector<uint32_t>& OutIndices)
@@ -72,7 +80,7 @@ void GenerateSphere(float Radius, int Slices, int Stacks, std::vector<FVertexTes
     }
 }
 
-void FRenderer::Create(GDevice* InDevice)
+void FRenderer::Create(HWND hWindow, GDevice* InDevice)
 {
     Device = InDevice;
     DeviceContext = InDevice->GetContext();
@@ -102,7 +110,7 @@ void FRenderer::Create(GDevice* InDevice)
 
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(hWindow);
-    ImGui_ImplDX11_Init(Device, DeviceContext);
+    ImGui_ImplDX11_Init(D3DDevice, DeviceContext);
 
     //////////////////////////
     /// 임시 테스트 코드    //
@@ -293,6 +301,11 @@ void FRenderer::BeginFrame()
 {
     Prepare();
     PrepareShader();
+
+    //TEST
+    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
 }
 
 void FRenderer::EndFrame()
