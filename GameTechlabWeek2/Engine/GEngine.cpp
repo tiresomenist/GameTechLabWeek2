@@ -6,8 +6,11 @@
 #include "Engine/Object/UObject.h"
 #include "Engine/Core.h"
 
+#include "Engine/Editor/FEditor.h"
 #include "Engine/GSceneManager.h"
 #include "Engine/FConsole.h"
+
+#include "Engine/Primitive/GPrimitive.h"
 
 #include "GDevice.h"
 #include "GResourceManager.h"
@@ -35,11 +38,25 @@ void GEngine::Initialize(HWND InHwnd)
 	Console = new FConsole();
 	Console->Initialize();
 
+	// Device 초기화
+	GDevice& Device = *GDevice::GetInstance();
+	Device.Initialize(InHwnd, 1024, 1024);
+
+	// 리소스 매니저 초기화
+	GResourceManager& ResourceManager = *GResourceManager::GetInstance();
+	GPrimitive::Initialize(&Device);
+	ResourceManager.Initialize(&Device);
+	
+	// 렌더러 초기화
+	Renderer.Create(&Device);
+	
 	// 씬 매니저 초기화
-	GDevice::GetInstance()->Initialize(InHwnd, 1024, 1024);
-	GResourceManager::GetInstance()->Initialize(GDevice::GetInstance());
-	Renderer.Create(GDevice::GetInstance());GSceneManager* SceneManager = GSceneManager::GetInstance();
+	GSceneManager* SceneManager = GSceneManager::GetInstance();
 	SceneManager->Initialize();
+
+	// 에디터 초기화
+	Editor = new FEditor();
+	Editor->Initialize();
 
 	StartTime = GetTime();
 	LastTickTime = GetTime();
@@ -62,6 +79,11 @@ void GEngine::Tick()
 // 엔진의 자원을 정리합니다.
 void GEngine::Destroy()
 {
+	// 에디터 정리
+	Editor->Release();
+	delete Editor;
+	Editor = nullptr;
+
 	// 씬 매니저 정리
 	GSceneManager* SceneManager = GSceneManager::GetInstance();
 	SceneManager->Release();

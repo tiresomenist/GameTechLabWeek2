@@ -4,6 +4,8 @@
 #include "Engine/Object/USceneComponent.h"
 #include "Engine/Renderer/FPrimitiveRenderData.h"
 
+struct FMeshResource;
+
 class UPrimitiveComponent : public USceneComponent
 {
 
@@ -16,7 +18,7 @@ public:
 
 protected:
 
-    static FPrimitiveRenderData CreateRenderData(UPrimitiveComponent* self, FStringView Type);
+    static FPrimitiveRenderData CreateRenderData(UPrimitiveComponent* self, FMeshResource* Resource);
 
 };
 

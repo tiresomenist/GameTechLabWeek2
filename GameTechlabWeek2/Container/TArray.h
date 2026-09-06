@@ -41,6 +41,16 @@ public:
 		return Array.size();
 	}
 
+	void SetNum(size_t Size)
+	{
+		Array.resize(Size);
+	}
+
+	T* GetData()
+	{
+		return Array.data();
+	}
+
 	void RemoveAt(size_t Index)
 	{
 		Array.erase(Array.begin() + Index);
