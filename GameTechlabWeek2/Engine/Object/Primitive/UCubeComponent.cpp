@@ -1,7 +1,7 @@
 #include "UCubeComponent.h"
 #include "Engine/GResourceManager.h"
 
-FPrimitiveRenderData UCubeComponent::GetRenderData(FStringView Type)
+FPrimitiveRenderData UCubeComponent::GetRenderData()
 {
 	return Super::CreateRenderData(this, "Cube");
 }
