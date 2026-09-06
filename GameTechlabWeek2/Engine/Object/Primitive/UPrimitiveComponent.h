@@ -12,7 +12,11 @@ class UPrimitiveComponent : public USceneComponent
 public:
 
     // 렌더러에게 전달할 렌더 정보
-    virtual FPrimitiveRenderData GetRenderData(FStringView Type = "");
+    virtual FPrimitiveRenderData GetRenderData();
+
+protected:
+
+    static FPrimitiveRenderData CreateRenderData(UPrimitiveComponent* self, FStringView Type);
 
 };
 

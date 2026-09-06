@@ -3,5 +3,5 @@
 
 FPrimitiveRenderData UPlaneComponent::GetRenderData(FStringView Type)
 {
-	return Super::GetRenderData("Plane");
+	return Super::CreateRenderData(this, "Plane");
 }

@@ -3,5 +3,5 @@
 
 FPrimitiveRenderData UCubeComponent::GetRenderData(FStringView Type)
 {
-	return Super::GetRenderData("Cube");
+	return Super::CreateRenderData(this, "Cube");
 }

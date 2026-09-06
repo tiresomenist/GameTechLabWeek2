@@ -3,5 +3,5 @@
 
 FPrimitiveRenderData USphereComponent::GetRenderData(FStringView Type)
 {
-	return Super::GetRenderData("Sphere");
+	return Super::CreateRenderData(this, "Sphere");
 }
