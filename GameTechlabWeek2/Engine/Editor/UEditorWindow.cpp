@@ -38,7 +38,7 @@ void UEditorWindow::updateEditor(FRenderer &renderer)
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-	renderer.SwapBuffer();
+	//renderer.SwapBuffer();
 }
 void UEditorWindow::endEditor()
 {

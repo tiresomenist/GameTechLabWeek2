@@ -15,6 +15,8 @@ public:
 
 	void ChangeLevel(UScene* InNextScene);
 
+	UScene* GetScene() { return CurrentScene; };
+
 private:
 
 	UScene* CurrentScene = nullptr;

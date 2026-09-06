@@ -14,8 +14,8 @@ struct FGizmoVertex
 
 class UGizmo : public UObject
 {
-protected:
-    UGizmo(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
+    UCLASS(UGizmo, "Gizmo", UObject)
+
 public:
 	virtual ~UGizmo() = default;
 
@@ -28,8 +28,6 @@ public:
 	void SetVisible(bool bVisible);
 	bool IsVisible();
 
-
-	static FClassType* GetClass();
 
 protected:
 	ID3D11Buffer* vertexBuffer = nullptr;

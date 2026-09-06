@@ -9,6 +9,9 @@
 #include "Engine/GSceneManager.h"
 #include "Engine/FConsole.h"
 
+#include "GDevice.h"
+#include "GResourceManager.h"
+
 #include <chrono>
 
 float GEngine::GetTime()
@@ -33,10 +36,10 @@ void GEngine::Initialize(HWND InHwnd)
 	Console->Initialize();
 
 	// 씬 매니저 초기화
-	GSceneManager* SceneManager = GSceneManager::GetInstance();
+	GDevice::GetInstance()->Initialize(InHwnd, 1024, 1024);
+	GResourceManager::GetInstance()->Initialize(GDevice::GetInstance());
+	Renderer.Create(GDevice::GetInstance());GSceneManager* SceneManager = GSceneManager::GetInstance();
 	SceneManager->Initialize();
-
-	Renderer.Create(InHwnd, 1024, 1024);
 
 	StartTime = GetTime();
 	LastTickTime = GetTime();
@@ -52,14 +55,8 @@ void GEngine::Tick()
 	SceneManager->Tick(DeltaTime);
 
 	// 게임 화면을 렌더링합니다.
-	Renderer.Prepare();
-	Renderer.PrepareShader();
-	Renderer.Render();
-
-	// UScene* CurrentScene = GSceneManager->GetScene();
-	// FRenderer.Render(CurrentScene);
-
-	//Renderer.Render();
+	UScene* CurrentScene = SceneManager->GetScene();
+	Renderer.Render(CurrentScene);
 }
 
 // 엔진의 자원을 정리합니다.
@@ -72,7 +69,7 @@ void GEngine::Destroy()
 	// GObjects 정리 
 	GObjects::Release();
 
-	//Renderer.Shutdown();
+	Renderer.Shutdown();
 	
 	// 콘솔 정리
 	delete Console;

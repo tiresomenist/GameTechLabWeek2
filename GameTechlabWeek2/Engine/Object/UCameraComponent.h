@@ -13,8 +13,8 @@ enum class EProjectionMode
 
 class UCameraComponent : public USceneComponent
 {
-protected:
-    UCameraComponent(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
+
+    UCLASS(UCameraComponent, "CameraComponent", USceneComponent)
 
 public:
     static FClassType* GetClass();
