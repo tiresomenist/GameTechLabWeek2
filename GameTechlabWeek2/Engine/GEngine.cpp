@@ -4,23 +4,22 @@
 #include "Engine/Object/FObjectFactory.h"
 #include "Engine/Object/GObjects.h"
 #include "Engine/Object/UObject.h"
+#include "Engine/Core.h"
 
 #include "Engine/GSceneManager.h"
 #include "Engine/FConsole.h"
 
-#include "Engine/Editor/Window/UConsoleWindow.h"
-#include "Engine/Editor/Window/UDetailsWindow.h"
-#include "Engine/Editor/Window/UPropertyWindow.h"
-#include "Engine/Editor/Window/USceneWindow.h"
+#include "GDevice.h"
+#include "GResourceManager.h"
 
-#include <format>
+#include <chrono>
 
-float GetTime()
+float GEngine::GetTime()
 {
-	LARGE_INTEGER currentTime;
-	QueryPerformanceCounter(&currentTime);
+	static auto Start = std::chrono::steady_clock::now();
+	auto Now = std::chrono::steady_clock::now();
 
-	return static_cast<float>(currentTime.QuadPart);
+	return std::chrono::duration<float>(Now - Start).count();
 }
 
 GEngine* GEngine::GetInstance()
@@ -37,11 +36,12 @@ void GEngine::Initialize(HWND InHwnd)
 	Console->Initialize();
 
 	// 씬 매니저 초기화
-	GSceneManager* SceneManager = GSceneManager::GetInstance();
+	GDevice::GetInstance()->Initialize(InHwnd, 1024, 1024);
+	GResourceManager::GetInstance()->Initialize(GDevice::GetInstance());
+	Renderer.Create(GDevice::GetInstance());GSceneManager* SceneManager = GSceneManager::GetInstance();
 	SceneManager->Initialize();
 
-	Renderer.Create(InHwnd, 1024, 1024);
-
+	StartTime = GetTime();
 	LastTickTime = GetTime();
 }
 
@@ -62,16 +62,8 @@ void GEngine::Tick()
 	Windows.Add(new UPropertyWindow());
 
 	// 게임 화면을 렌더링합니다.
-	Renderer.Prepare();
-	Renderer.PrepareShader();
-	Renderer.Render();
-	Renderer.RenderUI(Windows);
-	Renderer.SwapBuffer();
-
-	// UScene* CurrentScene = GSceneManager->GetScene();
-	// FRenderer.Render(CurrentScene);
-
-	//Renderer.Render();
+	UScene* CurrentScene = SceneManager->GetScene();
+	Renderer.Render(CurrentScene);
 }
 
 // 엔진의 자원을 정리합니다.
@@ -84,7 +76,7 @@ void GEngine::Destroy()
 	// GObjects 정리 
 	GObjects::Release();
 
-	//Renderer.Shutdown();
+	Renderer.Shutdown();
 	
 	// 콘솔 정리
 	delete Console;

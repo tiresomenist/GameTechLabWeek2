@@ -15,13 +15,19 @@ struct FGizmoVertex
 
 class UGizmo : public UObject
 {
-protected:
-	UGizmo(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
+    UCLASS(UGizmo, "Gizmo", UObject)
 
 public:
-	static FClassType* GetClass();
+	virtual ~UGizmo() = default;
 
-	virtual void Create(FRenderer& renderer);
-	//virtual void Render(FRenderer& renderer);
-	//virtual void Release();
+public:
+
+	void SetVisible(bool bVisible);
+	bool IsVisible();
+
+
+protected:
+	ID3D11Buffer* vertexBuffer = nullptr;
+	uint32 VertexCount = 0;
+	bool bVisible = true;
 };

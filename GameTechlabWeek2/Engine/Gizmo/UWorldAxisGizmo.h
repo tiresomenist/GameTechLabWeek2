@@ -20,15 +20,8 @@ FGizmoVertex Vertices[] =
 
 class UWorldAxisGizmo : public UGizmo
 {
-protected:
-    UWorldAxisGizmo(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType);
 
-public:
-    static FClassType* GetClass();
+	UCLASS(UWorldAxisGizmo, "WorldAxisGizmo", UGizmo)
 
-
-    void Create(FRenderer& renderer);
-    //void Render(FRenderer& renderer);
-    //void Release();
 };
 

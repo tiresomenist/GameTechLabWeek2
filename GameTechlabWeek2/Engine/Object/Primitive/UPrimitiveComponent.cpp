@@ -1,42 +1,21 @@
 #include "UPrimitiveComponent.h"
+#include "Engine/GResourceManager.h"
 
-UPrimitiveComponent::~UPrimitiveComponent()
+FPrimitiveRenderData UPrimitiveComponent::GetRenderData(FStringView Type)
 {
-	if (VertexBuffer) { VertexBuffer->Release(); VertexBuffer = nullptr; }
-	if (IndexBuffer) { IndexBuffer->Release(); IndexBuffer = nullptr; }
-}
+	GResourceManager& ResourceManager = *GResourceManager::GetInstance();
+	FMeshResource* MeshResource = ResourceManager.GetOrCreatePrimitive(FString{ Type });
 
-FPrimitiveRenderData UPrimitiveComponent::GetRenderData() const
-{
-    FPrimitiveRenderData Data;
-    Data.VertexBuffer = VertexBuffer;
-    Data.IndexBuffer = IndexBuffer;
-    Data.Stride = VertexStride;
-    Data.IndexCount = IndexCount;
-    Data.Topology = Topology;
-    Data.WorldMatrix = &GetWorldMatrix();
-    return Data;
-}
+	FPrimitiveRenderData RenderData{};
+	if (MeshResource == nullptr) { return RenderData; }
+	
+	RenderData.VertexBuffer		= MeshResource->VertexBuffer;
+	RenderData.IndexBuffer		= MeshResource->IndexBuffer;
+	RenderData.IndexCount		= MeshResource->IndexCount;
+	RenderData.Stride			= MeshResource->Stride;
+ // RenderData.Material			= &GetMaterial();
+	RenderData.WorldMatrix		= &GetWorldMatrix();
 
-//DirectX::BoundingBox UPrimitiveComponent::GetWorldBoundingBox() const
-//{
-//    DirectX::BoundingBox WorldBox;
-//    LocalBoundingBox.Transform(WorldBox, GetWorldMatrix());
-//    return WorldBox;
-//}
+	return RenderData;
 
-void UPrimitiveComponent::UpdateGeometry(ID3D11Buffer* NewVB, ID3D11Buffer* NewIB, uint32 InStride, uint32 InIndexCount)
-{
-    // 기존 버퍼 Release
-    if (VertexBuffer) { VertexBuffer->Release(); }
-    if (IndexBuffer) { IndexBuffer->Release(); }
-
-    // 새 버퍼 Set
-    VertexBuffer = NewVB;
-    IndexBuffer = NewIB;
-    if (VertexBuffer) VertexBuffer->AddRef();
-    if (IndexBuffer) IndexBuffer->AddRef();
-
-    VertexStride = InStride;
-    IndexCount = InIndexCount;
 }
