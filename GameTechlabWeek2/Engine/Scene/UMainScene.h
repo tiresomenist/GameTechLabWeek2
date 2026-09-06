@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Scene/UScene.h"
+#include "Engine/Editor/Controller/FCameraController.h"
 
 ////////////////
 // UMainScene //
@@ -15,5 +16,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void EndPlay() override;
+
+private:
+	FCameraController CameraController;
 
 };

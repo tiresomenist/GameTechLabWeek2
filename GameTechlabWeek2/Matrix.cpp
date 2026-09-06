@@ -1,4 +1,5 @@
 #include "Matrix.h"
+#include "FQuaternion.h"
 
 const FMatrix FMatrix::Identity = FMatrix(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -22,55 +23,28 @@ FMatrix FMatrix::MakeScaleMatrix(const FVector& Scale)
 
 FMatrix FMatrix::MakeRotationXMatrix(float Radian)
 {
-	const float Cos = std::cos(Radian);
-	const float Sin = std::sin(Radian);
-
-	return FMatrix(
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, Cos, Sin, 0.0f,
-		0.0f, -Sin, Cos, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f);
+    return FQuaternion::FromAxisAngle(FVector(1, 0, 0), Radian).ToRotationMatrix();
 }
 
 FMatrix FMatrix::MakeRotationYMatrix(float Radian)
 {
-	const float Cos = std::cos(Radian);
-	const float Sin = std::sin(Radian);
-
-	return FMatrix(
-		Cos, 0.0f, -Sin, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		Sin, 0.0f, Cos, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f);
+    return FQuaternion::FromAxisAngle(FVector(0, 1, 0), Radian).ToRotationMatrix();
 }
 
 FMatrix FMatrix::MakeRotationZMatrix(float Radian)
 {
-	const float Cos = std::cos(Radian);
-	const float Sin = std::sin(Radian);
-
-	return FMatrix(
-		Cos, Sin, 0.0f, 0.0f,
-		-Sin, Cos, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f);
+    return FQuaternion::FromAxisAngle(FVector(0, 0, 1), Radian).ToRotationMatrix();
 }
 
-FMatrix FMatrix::MakeRotationMatrix(const FVector& Rotation)
+FMatrix FMatrix::MakeRotationMatrix(const FVector& EulerRadians)
 {
-	return MakeRotationZMatrix(Rotation.Z)
-		* MakeRotationYMatrix(Rotation.Y)
-		* MakeRotationXMatrix(Rotation.X);
+    return FQuaternion::FromEuler(EulerRadians).ToRotationMatrix();
 }
 
 FMatrix FMatrix::MakeModelMatrix(
-	const FVector& Location,
-	const FVector& Rotation,
-	const FVector& Scale)
+    const FVector& Location, const FQuaternion& Rotation, const FVector& Scale)
 {
-	return MakeScaleMatrix(Scale)
-		* MakeRotationMatrix(Rotation)
-		* MakeTranslationMatrix(Location);
+    return MakeScaleMatrix(Scale) * Rotation.ToRotationMatrix() * MakeTranslationMatrix(Location);
 }
 
 FMatrix FMatrix::MakeNormalMatrix(const FMatrix& Input)
