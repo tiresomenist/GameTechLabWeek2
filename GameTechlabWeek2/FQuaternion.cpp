@@ -27,6 +27,30 @@ FQuaternion FQuaternion::FromEuler(const FVector& EulerRadians)
     return Result;
 }
 
+FQuaternion FQuaternion::FromToRotation(const FVector& From, const FVector& To)
+{
+    const double FromLength = std::hypot(double(From.X), double(From.Y), double(From.Z));
+    const double ToLength = std::hypot(double(To.X), double(To.Y), double(To.Z));
+    if (!std::isfinite(FromLength) || !std::isfinite(ToLength)
+        || FromLength == 0.0 || ToLength == 0.0) return {};
+
+    const double AX = From.X / FromLength, AY = From.Y / FromLength, AZ = From.Z / FromLength;
+    const double BX = To.X / ToLength, BY = To.Y / ToLength, BZ = To.Z / ToLength;
+    const double CX = AY * BZ - AZ * BY, CY = AZ * BX - AX * BZ, CZ = AX * BY - AY * BX;
+    const double CrossLength = std::hypot(CX, CY, CZ);
+    const double Dot = AX * BX + AY * BY + AZ * BZ;
+    if (CrossLength < 1e-12)
+    {
+        if (Dot >= 0.0) return {};
+        // At 180 degrees any perpendicular axis is valid; pick a stable one.
+        const FVector A{float(AX), float(AY), float(AZ)};
+        const FVector Basis = std::fabs(AX) < 0.9 ? FVector(1, 0, 0) : FVector(0, 1, 0);
+        return FromAxisAngle(A.Cross(Basis), 3.14159265358979323846f);
+    }
+    return FromAxisAngle(FVector(float(CX / CrossLength), float(CY / CrossLength), float(CZ / CrossLength)),
+        float(std::atan2(CrossLength, Dot)));
+}
+
 FQuaternion FQuaternion::operator*(const FQuaternion& Other) const
 {
     return {

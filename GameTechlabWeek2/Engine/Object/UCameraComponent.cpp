@@ -86,15 +86,9 @@ void UCameraComponent::LookAt(const FVector& InTargetPosition)
 		//카메라의 위치를 바라보는 경우
 		return;
 	}
-	Forward.Normalize();
-    const float HorizontalLength = std::sqrt(Forward.X * Forward.X + Forward.Y * Forward.Y);
-    const float RotationY = std::atan2(-Forward.Z, HorizontalLength);
-    const float RotationZ = HorizontalLength > UEngineStatics::Epsilon
-        ? std::atan2(Forward.Y, Forward.X) : RelativeRotation.Z;
-
-	RelativeRotation.X = 0.0f;
-	RelativeRotation.Y = RotationY;
-	RelativeRotation.Z = RotationZ;
+    const FQuaternion Delta = FQuaternion::FromToRotation(GetForward(), Forward);
+    // Align the view using the shortest world-space rotation, preserving roll.
+    AddWorldRotation(Delta);
 
 }
 float UCameraComponent::GetOrthoHeight() const
@@ -158,7 +152,5 @@ void UCameraComponent::MoveCamera(const float& InForward, const float& InRight, 
 
 FMatrix UCameraComponent::GetCameraRotationMatrix() const
 {
-    // Row vectors: local pitch first, then yaw around world Z.
-    return FMatrix::MakeRotationYMatrix(RelativeRotation.Y)
-        * FMatrix::MakeRotationZMatrix(RelativeRotation.Z);
+    return RelativeRotation.ToRotationMatrix();
 }

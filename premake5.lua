@@ -37,3 +37,6 @@ project "GameTechlabWeek2"
 		"dxgi",				-- DirectX11
 		"user32"			-- Win32
 	}
+
+	-- Standalone test entry points are not part of the editor application.
+	removefiles { "tests/**" }

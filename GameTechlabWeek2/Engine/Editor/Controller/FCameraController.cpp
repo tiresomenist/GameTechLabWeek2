@@ -1,10 +1,6 @@
 #include "FCameraController.h"
 #include "Engine/InputManager/GInputManager.h"
 #include "Engine/Object/UCameraComponent.h"
-#include <algorithm>
-#include <cmath>
-
-#include <format>
 
 void FCameraController::SetCamera(UCameraComponent* InCamera)
 {
@@ -25,14 +21,13 @@ void FCameraController::Tick(float DeltaTime)
     if (Input.GetKey(GInputManager::EI_RMOUSE) && (DeltaX != 0 || DeltaY != 0))
     {
         constexpr float Pi = static_cast<float>(PI);
-        //constexpr float PitchLimit = 180.0f * Pi / 180.0f;
         const float RadiansPerPixel = RotationSensitivity * Pi / 180.0f;
-        FVector Rotation = Camera->GetRelativeRotation();
-        Rotation.Z = std::remainder(Rotation.Z + DeltaX * RadiansPerPixel, 2.0f * Pi);
-        Rotation.Y = std::remainder(Rotation.Y + DeltaY * RadiansPerPixel, 2.0f * Pi);
-        Rotation.X = 0.0f;
-        Camera->SetRelativeRotation(Rotation);
-        UE_LOG(std::format("현재 Forward Vector ({}, {}, {}) ",Rotation.X, Rotation.Y, Rotation.Z));
+        const FQuaternion Yaw = FQuaternion::FromAxisAngle(
+            FVector(0, 0, 1), DeltaX * RadiansPerPixel);
+        const FQuaternion Pitch = FQuaternion::FromAxisAngle(
+            FVector(0, 1, 0), DeltaY * RadiansPerPixel);
+        // Local up, then the updated local right. Preserve roll and full turns.
+        Camera->SetRelativeRotation(Camera->GetRelativeRotation() * Yaw * Pitch);
     }
 
     const float Forward = float(Input.GetKey(GInputManager::EI_W)) - float(Input.GetKey(GInputManager::EI_S));

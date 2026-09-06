@@ -16,7 +16,7 @@ private:
 	/* Camera Info */
 	uint32 FOV = 60;
 	FVector cameraLocation = { 0.0f, 0.0f, 0.0f }; // Todo : 카메라 객체에서 값을 받아와서 초기값 설정
-	FVector cameraRotation = { 0.0f, 0.0f, 0.0f }; // Todo : 카메라 객체에서 값을 받아와서 초기값 설정
+	FQuaternion cameraRotation; // Todo : 카메라 객체에서 값을 받아와서 초기값 설정
 	/*             */
 public:
 	USceneWindow() = default;

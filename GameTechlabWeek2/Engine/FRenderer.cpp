@@ -279,39 +279,11 @@ void FRenderer::Render(UScene* Scene)
 
     UCameraComponent* Camera = Scene->GetMainCamera();
     FMatrix ViewProjMatrix = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
-    // @TEST
-    static float Angle = 0.0f;
-    Angle += 0.01f;
-
-    const float AspectRatio = ViewportInfo.Width / ViewportInfo.Height;
-
-    XMVECTOR EyePosition = 
-    {
-        Camera->GetRelativeLocation().X,
-        Camera->GetRelativeLocation().Y,
-        Camera->GetRelativeLocation().Z,
-    };
-
-    XMVECTOR LookAt = 
-    {
-        Camera->GetRelativeLocation().X + 15.0f,
-        Camera->GetRelativeLocation().Y,
-        Camera->GetRelativeLocation().Z,
-    };
-
-    //XMMATRIX View = XMMatrixLookAtLH(EyePosition, LookAt, {0.0f, 1.0f, 0.0f});
-    //XMMATRIX Proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, AspectRatio, 0.1f, 100.0f);
-    //XMMATRIX ViewProjMatrix = View * Proj;
-
     TArray<FPrimitiveRenderData> RenderList = RenderUtil::GetRenderList(Scene);
     
     for (auto& Item: RenderList)
     {
         FMatrix MVP = (*Item.WorldMatrix) * ViewProjMatrix;
-        //XMMATRIX temp = XMMATRIX(&(Item.WorldMatrix->M[0][0]));
-        //XMMATRIX Rotation = XMMatrixRotationY(Angle); // @TEST
-        //XMMATRIX MVP = Rotation* temp * ViewProjMatrix;
-
         UpdateConstantBuffer(MVP);
         RenderPrimitive(Item);
     }
