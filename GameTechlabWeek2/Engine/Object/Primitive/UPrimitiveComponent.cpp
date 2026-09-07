@@ -4,7 +4,7 @@
 FPrimitiveRenderData UPrimitiveComponent::GetRenderData(FStringView Type)
 {
 	GResourceManager& ResourceManager = *GResourceManager::GetInstance();
-	FMeshResource* MeshResource = ResourceManager.GetOrCreatePrimitive(FString{ Type });
+	FMeshResource* MeshResource = ResourceManager.GetPrimitive(FString{ Type });
 
 	FPrimitiveRenderData RenderData{};
 	if (MeshResource == nullptr) { return RenderData; }
