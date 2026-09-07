@@ -45,6 +45,9 @@ void UMainScene::BeginPlay()
 
 	UArrowBlueComponent* BlueArrowComponent = SpawnObject<UArrowBlueComponent*>(UArrowBlueComponent::GetClass());
 	BlueArrowComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 3.0f));
+
+	UPepeComponent* BPepeComponent = SpawnObject<UPepeComponent*>(UPepeComponent::GetClass());
+	BPepeComponent->SetRelativeLocation(FVector(0.0f, 3.0f, 3.0f));
 }
 
 void UMainScene::Tick(float DeltaTime)
