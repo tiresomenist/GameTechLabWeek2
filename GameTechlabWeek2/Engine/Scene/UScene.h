@@ -8,6 +8,7 @@
 struct FPrimitiveRenderData;
 struct UCameraComponent;
 class FRenderer;
+class FArchive;
 
 class UScene : public UObject
 {
@@ -25,6 +26,10 @@ public:
 	void SetMainCamera(UCameraComponent* InCamera) { MainCamera = InCamera; }
 
 	void CreateMainCamera();
+
+	void Serialize(TArray<FArchive>& ObjectInfoList);
+
+	void Deserialize(TArray<FArchive>& ObjectInfoList);
 
 	template <typename T>
 	T SpawnObject(FClassType* Type)

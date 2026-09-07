@@ -1,8 +1,6 @@
 #include "UPrimitiveComponent.h"
 #include "Engine/GResourceManager.h"
 #include "Engine/Primitive/FMeshResource.h"
-#include "Engine/Primitive/GPrimitive.h"
-
 
 FPrimitiveRenderData UPrimitiveComponent::GetRenderData(FStringView Type)
 {

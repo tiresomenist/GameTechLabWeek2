@@ -1,6 +1,7 @@
 #include "UObject.h"
 #include "Engine/Object/GObjects.h"
 #include "Engine/GAllocator.h"
+#include "Engine/Object/FArchive.h"
 
 FClassType* UObject::GetClass()
 {
@@ -45,18 +46,26 @@ bool UObject::IsA(FClassType* InClassType) const
 
 void* UObject::operator new(size_t Size)
 {
-	void* RawPtr = GAllocator::Allocate(Size);
-	return RawPtr;
+	return GAllocator::Allocate(Size);
 }
 
-// TODO: delete에 Size를 0으로 두면 안됨
-// 이 부분은 GAllocator의 구조를 다시 수정할 것
 void UObject::operator delete(void* Ptr)
 {
-	GAllocator::Free(Ptr, 0);
+	GAllocator::Free(Ptr);
 }
 
 UObject::~UObject()
 {
 	GObjects::DestoryObject(InternalIndex);
+}
+
+void UObject::Serialize(FArchive& Archive)
+{
+	// FClassType의 Serialize 이름 지정
+	Archive.SetString("Type", ClassType->Name);
+}
+
+void UObject::Deserialize(FArchive& Archive)
+{
+	
 }

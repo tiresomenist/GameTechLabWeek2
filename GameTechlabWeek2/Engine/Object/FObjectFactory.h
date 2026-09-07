@@ -12,7 +12,6 @@ class FObjectFactory
 
 public:
 
-	// TODO: 생성자에 인자를 넣을 수 있는 기능?
 	static UObject* ConstructObject(FClassType* Type)
 	{
 		if (Type == nullptr)
@@ -25,7 +24,7 @@ public:
 
 		UObject* Object = Type->ClassConstructor(UUID, InternalIndex, Type);
 		GObjects::AddObject(Object);
-
+		
 		return Object;
 	}
 };

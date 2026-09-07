@@ -9,4 +9,3 @@ typedef unsigned int uint32;
 
 typedef std::int64_t int64;
 typedef std::uint64_t uint64;
-

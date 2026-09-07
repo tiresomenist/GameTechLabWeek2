@@ -26,41 +26,16 @@ void UMainScene::BeginPlay()
 {
     //UScene::BeginPlay();
 
-	
-    CreateMainCamera();
-
-	USphereComponent* SphereComponent = SpawnObject<USphereComponent*>(USphereComponent::GetClass());
-	SphereComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
-
-	UCubeComponent* CubeComponent = SpawnObject<UCubeComponent*>(UCubeComponent::GetClass());
-	CubeComponent->SetRelativeLocation(FVector(3.0f, 0.0f, 0.0f));
-
-	UOctopusComponent* OctopusComponent = SpawnObject<UOctopusComponent*>(UOctopusComponent::GetClass());
-	OctopusComponent->SetRelativeLocation(FVector(-3.0f, 0.0f, 0.0f));
-
-	UArrowRedComponent* RedArrowComponent = SpawnObject<UArrowRedComponent*>(UArrowRedComponent::GetClass());
-	RedArrowComponent->SetRelativeLocation(FVector(0.0f, 3.0f, 0.0f));
-
-	UArrowGreenComponent* GreenArrowComponent = SpawnObject<UArrowGreenComponent*>(UArrowGreenComponent::GetClass());
-	GreenArrowComponent->SetRelativeLocation(FVector(0.0f, -3.0f, 0.0f));
-
-	UArrowBlueComponent* BlueArrowComponent = SpawnObject<UArrowBlueComponent*>(UArrowBlueComponent::GetClass());
-	BlueArrowComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 3.0f));
-
-	UPepeComponent* BPepeComponent = SpawnObject<UPepeComponent*>(UPepeComponent::GetClass());
-	BPepeComponent->SetRelativeLocation(FVector(0.0f, 3.0f, 3.0f));
+    //CreateMainCamera();
 }
 
 void UMainScene::Tick(float DeltaTime)
 {
     //UScene::Tick(DeltaTime);
 
-	//CameraController.Tick(DeltaTime);
-
 }
 
 void UMainScene::EndPlay()
 {
 	//UScene::EndPlay();
-	//CameraController.SetCamera(nullptr);
 }

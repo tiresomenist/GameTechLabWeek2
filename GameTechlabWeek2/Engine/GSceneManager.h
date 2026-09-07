@@ -15,6 +15,8 @@ public:
 
 	void ChangeLevel(UScene* InNextScene);
 
+	void SaveScene();
+
 	UScene* GetScene() { return CurrentScene; };
 
 private:

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/Object/FClassRegistry.h"
 #include "Engine/Object/FClassType.h"
 #include "Engine/Core.h"
 #include "Container/FString.h"
@@ -39,6 +40,14 @@ public:                                                                       \
                                                                               \
 		return &Type;                                                         \
 	}																		  \
+                                                                              \
+private:                                                                      \
+                                                                              \
+    static inline void* __INTERNAL__RegisteredClassType =					  \
+		FClassRegistry::__INTERNAL__Add(GetClass());                          \
+                                                                              \
+
+class FArchive;
 
 /// <summary>
 /// 엔진이 직접 생성 및 관리하는 모든 유형의 객체들을 정의합니다.
@@ -67,6 +76,18 @@ public:
 	/// <param name="InClassType">자식 여부를 확인하려는 타입</param>
 	/// <returns>자식 여부</returns>
 	bool IsA(FClassType* InClassType) const;
+	
+	/// <summary>
+	/// 객체에 담긴 정보를 직렬화하여 Archive에 저장합니다.
+	/// </summary>
+	/// <param name="Archive"></param>
+	virtual void Serialize(FArchive& Archive);
+	
+	/// <summary>
+	/// Archive에 담긴 정보를 역직렬화하여 UObject에 저장합니다.
+	/// </summary>
+	/// <param name="Archive"></param>
+	virtual void Deserialize(FArchive& Archive);
 
 	void* operator new(size_t Size);
 	void operator delete(void* Ptr);

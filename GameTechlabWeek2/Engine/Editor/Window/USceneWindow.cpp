@@ -13,6 +13,8 @@
 #include "ImGui/imgui_impl_win32.h"
 #include "Engine/InputManager/GInputManager.h"
 
+#include "Engine/GSceneManager.h"
+
 void USceneWindow::SpawnPrimitive() 
 {
 	//테스트 코드
@@ -81,6 +83,12 @@ void USceneWindow::Render()
 		ImGui::Text("Hello Jungle World!");
 		ImGui::Text("FPS %.0f (%.0f ms)", FPS, 1000.0f / FPS);
 		ImGui::Separator();
+
+		if (ImGui::Button("Save"))
+		{
+			GSceneManager::GetInstance()->SaveScene();
+		}
+
 		ImGui::PushItemWidth(WideItemWidth);
 		if (ImGui::BeginCombo("Primitive", SelectedClass->Name.c_str()))
 		{

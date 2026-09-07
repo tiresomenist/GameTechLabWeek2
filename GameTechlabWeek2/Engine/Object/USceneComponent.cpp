@@ -1,6 +1,8 @@
 #include "USceneComponent.h"
 #include "Engine/Object/UObject.h"
-#include "FObjectFactory.h"
+#include "Engine/Object/FObjectFactory.h"
+#include "Engine/Object/FArchive.h"
+#include "FQuaternion.h"
 
 void USceneComponent::SetRelativeLocation(const FVector& Location)
 {
@@ -57,4 +59,66 @@ void USceneComponent::UpdateWorldTransform() const
     //}
 
     //bWorldMatrixDirty = false;
+}
+
+void USceneComponent::Serialize(FArchive& Archive)
+{
+    Super::Serialize(Archive);
+
+    // Location
+    TArray<float> Location
+    {
+        RelativeLocation.X,
+        RelativeLocation.Y,
+        RelativeLocation.Z,
+    };
+    Archive.SetArray<float>("Location", Location);
+
+    // Rotation
+    FVector EulerRotation = FQuaternion::ToEuler(RelativeRotation);
+    TArray<float> Rotation
+    {
+        EulerRotation.X,
+        EulerRotation.Y,
+        EulerRotation.Z,
+    };
+    Archive.SetArray<float>("Rotation", Rotation);
+
+    // Scale
+    TArray<float> Scale
+    {
+        RelativeScale3D.X,
+        RelativeScale3D.Y,
+        RelativeScale3D.Z,
+    };
+    Archive.SetArray<float>("Scale", Scale);
+}
+
+void USceneComponent::Deserialize(FArchive& Archive)
+{
+    Super::Deserialize(Archive);
+
+    // Location
+    TArray<float> Location = Archive.GetArray<float>("Location");
+    RelativeLocation.X = Location[0];
+    RelativeLocation.Y = Location[1];
+    RelativeLocation.Z = Location[2];
+
+    // Rotation
+    TArray<float> Rotation = Archive.GetArray<float>("Location");
+    FVector EulerRotation
+    {
+        Rotation[0],
+        Rotation[1],
+        Rotation[2],
+    };
+    RelativeRotation = FQuaternion::FromEuler(EulerRotation);
+    
+    // Scale
+    TArray<float> Scale = Archive.GetArray<float>("Scale");
+    RelativeScale3D.X = Scale[0];
+    RelativeScale3D.Y = Scale[1];
+    RelativeScale3D.Z = Scale[2];
+
+    UpdateWorldTransform();
 }
