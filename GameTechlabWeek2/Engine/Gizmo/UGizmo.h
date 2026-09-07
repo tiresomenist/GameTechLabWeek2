@@ -24,8 +24,10 @@ public:
 
 	void SetVisible(bool bVisible);
 	bool IsVisible();
+	void Release();
+	void Render(FRenderer &render);
 
-
+	virtual void Create(FRenderer& Renderer);
 protected:
 	ID3D11Buffer* vertexBuffer = nullptr;
 	uint32 VertexCount = 0;

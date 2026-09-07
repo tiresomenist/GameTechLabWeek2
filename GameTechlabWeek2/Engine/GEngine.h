@@ -29,6 +29,7 @@ private:
 
 	FRenderer Renderer;
 	FConsole* Console;
+	TArray<UEditorWindow*> Windows;
 
 	// 싱글톤
 	GEngine() = default;

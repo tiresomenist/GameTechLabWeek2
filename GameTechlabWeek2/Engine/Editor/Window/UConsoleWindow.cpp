@@ -51,26 +51,26 @@ void UConsoleWindow::Tick()
 		ImGui::Text("This example implements a console with basic coloring, completion (TAB key) and history (Up/Down keys), A more elaborate implementation may want to store entries along with extra data such as timestamp, emitter, etc.");
 		ImGui::Text("Enter 'HELP for help.");
 
-		ImGui::Button("Add Debug Text");
+		if(ImGui::Button("Add Debug Text"))
 		{
 			AddDebugText("[Debug] Test");
 		}
 		ImGui::SameLine();
-		ImGui::Button("Add Debug Error");
+		if(ImGui::Button("Add Debug Error"))
 		{
 			AddDebugError("[Error] Test");
 		}
 		ImGui::SameLine();
-		ImGui::Button("Clear");
+		if(ImGui::Button("Clear"))
 		{
 			Clear();
 		}
-		ImGui::Button("Copy");
+		if(ImGui::Button("Copy"))
 		{
 			Copy();
 		}
 		ImGui::Separator();
-		ImGui::Button("options");
+		if(ImGui::Button("options"))
 		{
 			Option();
 		}

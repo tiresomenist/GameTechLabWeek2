@@ -33,49 +33,49 @@ void UPropertyWindow::Tick()
 {
 	ImGui::Begin("Jungle Property Window");
 	{
-		ImGui::DragFloat("##translationX", &Translation.X, 0.001f);
+		if (ImGui::DragFloat("##translationX", &Translation.X, 0.001f))
 		{
 			UpdateTranslation();
 		}
 		ImGui::SameLine();
-		ImGui::DragFloat("##translationY", &Translation.Y, 0.001f);
+		if(ImGui::DragFloat("##translationY", &Translation.Y, 0.001f))
 		{
 			UpdateTranslation();
 		}
 		ImGui::SameLine();
-		ImGui::DragFloat("##translationZ", &Translation.Z, 0.001f);
+		if(ImGui::DragFloat("##translationZ", &Translation.Z, 0.001f))
 		{
 			UpdateTranslation();
 		}
 		ImGui::SameLine();
 		ImGui::Text("Translation");
-		ImGui::DragFloat("##rotationR", &Rotation.X, 0.001f);
+		if(ImGui::DragFloat("##rotationR", &Rotation.X, 0.001f))
 		{
 			UpdateRotation();
 		}
 		ImGui::SameLine();
-		ImGui::DragFloat("##rotationP", &Rotation.Y, 0.001f);
+		if(ImGui::DragFloat("##rotationP", &Rotation.Y, 0.001f))
 		{
 			UpdateRotation();
 		}
 		ImGui::SameLine();
-		ImGui::DragFloat("##rotationY", &Rotation.Z, 0.001f);
+		if(ImGui::DragFloat("##rotationY", &Rotation.Z, 0.001f))
 		{
 			UpdateRotation();
 		}
 		ImGui::SameLine();
 		ImGui::Text("Rotation");
-		ImGui::DragFloat("##scaleX", &Scale.X, 0.001f);
+		if(ImGui::DragFloat("##scaleX", &Scale.X, 0.001f))
 		{
 			UpdateScale();
 		}
 		ImGui::SameLine();
-		ImGui::DragFloat("##scaleY", &Scale.Y, 0.001f);
+		if(ImGui::DragFloat("##scaleY", &Scale.Y, 0.001f))
 		{
 			UpdateScale();
 		}
 		ImGui::SameLine();
-		ImGui::DragFloat("##scaleZ", &Scale.Z, 0.001f);
+		if(ImGui::DragFloat("##scaleZ", &Scale.Z, 0.001f))
 		{
 			UpdateScale();
 		}

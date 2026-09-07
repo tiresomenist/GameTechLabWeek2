@@ -128,11 +128,11 @@ void FRenderer::Shutdown()
     ReleaseShader();
     ReleaseRasterizerState();
 
-    // 테스트 코드
+    //TESTCODE//
     ImGui_ImplDX11_Shutdown();
     ImGui_ImplWin32_Shutdown();
     ImGui::DestroyContext();
-    // 테스트 코드
+    ////////////
 
     // 렌더 타겟을 초기화
     DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
@@ -299,20 +299,21 @@ void FRenderer::BeginFrame()
 {
     Prepare();
     PrepareShader();
-
-    //TEST
-    ImGui_ImplDX11_NewFrame();
-    ImGui_ImplWin32_NewFrame();
-    ImGui::NewFrame();
 }
 
 void FRenderer::EndFrame()
 {
 }
 
-void FRenderer::Render(UScene* Scene)
+void FRenderer::Render(UScene* Scene, const TArray<UEditorWindow*>& WindowArray)
 {
     BeginFrame();
+
+    //TEST CODE//
+    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+    /////////////
 
     UCameraComponent* Camera = Scene->GetMainCamera();
     FMatrix ViewProjMatrix = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
@@ -325,13 +326,34 @@ void FRenderer::Render(UScene* Scene)
         RenderPrimitive(Item);
     }
 
+    // TEMP(UI test): Gizmo rendering is disabled until the Gizmo implementation builds again.
     // Gizmo vertices are already in world space (identity world transform).
-    UpdateConstantBuffer(ViewProjMatrix);
-    Scene->RenderGizmos(*this);
+    // UpdateConstantBuffer(ViewProjMatrix);
+    // Scene->RenderGizmos(*this);
 
+    RenderUI(WindowArray);
+
+    //TEST CODE//
+    ImGui::Render();
+    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    /////////////
+    
     GDevice::GetInstance()->SwapBuffer();
     EndFrame();
 }
+
+// TEST CODE //
+void FRenderer::RenderUI(const TArray<UEditorWindow*>& WindowArray)
+{
+    for (UEditorWindow* Window : WindowArray)
+    {
+        if (Window != nullptr)
+        {
+            Window->Tick();
+        }
+    }
+}
+////////////////
 
 //void FRenderer::Render()
 //{

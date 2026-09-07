@@ -4,7 +4,8 @@
 #include "Engine/InputManager/GInputManager.h"
 #include "Engine/Object/Primitive/USphereComponent.h"
 #include "Engine/Object/UCameraComponent.h"
-#include "Engine/Gizmo/UWorldAxisGizmo.h"
+// TEMP(UI test): Gizmo implementation is currently excluded from the build.
+// #include "Engine/Gizmo/UWorldAxisGizmo.h"
 
 #include <format>
 
@@ -17,7 +18,7 @@ void UMainScene::BeginPlay()
 
     CreateMainCamera();
     // Temporary world-axis display. Remove this spawn to disable it.
-    SpawnObject<UWorldAxisGizmo*>(UWorldAxisGizmo::GetClass());
+    //SpawnObject<UWorldAxisGizmo*>(UWorldAxisGizmo::GetClass());
     CameraController.SetCamera(GetMainCamera());
 	GetMainCamera()->SetRelativeLocation(FVector(-5.0f, 0.0f, 0.0f));
 

@@ -204,8 +204,8 @@ public:
 	void BeginFrame();
 	void EndFrame();
 
-	void Render(UScene* Scene);
-	void RenderUI(TArray<UEditorWindow&>& WindowArray);
+	void Render(UScene* Scene, const TArray<UEditorWindow*>& WindowArray);
+	void RenderUI(const TArray<UEditorWindow*>& WindowArray);
 	void RenderPrimitive(const FPrimitiveRenderData& Data);
 
 	//// @TEST >>

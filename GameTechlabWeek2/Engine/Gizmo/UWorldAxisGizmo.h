@@ -25,6 +25,5 @@ class UWorldAxisGizmo : public UGizmo
 
 public:
     void Create(FRenderer& Renderer) override;
-
 };
 

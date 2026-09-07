@@ -42,7 +42,8 @@ public:
 	}
 
 	void Destroy(UObject* Object);
-    void RenderGizmos(FRenderer& Renderer);
+    // TEMP(UI test): Re-enable together with the Gizmo implementation.
+    // void RenderGizmos(FRenderer& Renderer);
 
 	virtual ~UScene();
 

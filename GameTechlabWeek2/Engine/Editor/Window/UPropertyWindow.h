@@ -12,7 +12,17 @@ private:
 	FQuaternion Rotation;
 	FVector Scale = { 0.0f, 0.0f, 0.0f };
 public:
-	UPropertyWindow() = default;
+	UPropertyWindow()
+	{
+		Begin();
+	}
 	~UPropertyWindow() = default;
-	void UpdatePropertyInfo(FVector translation, FQuaternion rotation, FVector scale);
+	
+	void UpdateTranslation();
+	void UpdateRotation();
+	void UpdateScale();
+
+	void Begin() override;
+	void Tick() override;
+	void End() override;
 };
