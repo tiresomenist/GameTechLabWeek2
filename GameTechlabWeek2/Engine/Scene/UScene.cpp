@@ -1,14 +1,7 @@
 #include "UScene.h"
-#include "Engine/Gizmo/UGizmo.h"
+// TEMP(UI test): Gizmo implementation is currently excluded from the build.
+// #include "Engine/Gizmo/UGizmo.h"
 
-void UScene::RenderGizmos(FRenderer& Renderer)
-{
-    for (auto Object : Objects)
-    {
-        if (Object->IsA(UGizmo::GetClass()))
-            static_cast<UGizmo*>(Object)->Render(Renderer);
-    }
-}
 #include "Engine/Object/UCameraComponent.h"
 #include "Engine/Object/Primitive/UPrimitiveComponent.h"
 #include "Engine/Object/Primitive/USphereComponent.h"

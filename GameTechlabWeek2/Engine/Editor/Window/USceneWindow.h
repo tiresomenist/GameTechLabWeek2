@@ -1,31 +1,31 @@
 #pragma once
 
 #include "UEditorWindow.h"
+#include "../../../Engine/Object/FClassType.h"
 #include "../../../Matrix.h"
-#include "../../Object/Primitive/UPrimitiveComponent.h"
 #include "../../../Container/FString.h"
+#include "../../../FQuaternion.h"
 
 class USceneWindow : public UEditorWindow
 {
 private:
-	float currentFPS = 0;
-	uint32 numberOfSpawn = 0;
-	UPrimitiveComponent spawnPrimitive; // Todo : default를 Sphere로 
-	FWideString sceneNawme = L"Default";
-	bool bIsOrthogonal = false;
+	uint32 NumberOfSpawn = 1;
+	FWideString SceneName = L"Default";
+	bool bOrthogonal = false;
+	TArray<FClassType*> Spawnables;
+	FClassType* SelectedClass;
 	/* Camera Info */
-	uint32 FOV = 60;
-	FVector cameraLocation = { 0.0f, 0.0f, 0.0f }; // Todo : 카메라 객체에서 값을 받아와서 초기값 설정
-	FQuaternion cameraRotation; // Todo : 카메라 객체에서 값을 받아와서 초기값 설정
+	float FOV = 90.0f;
+	float MaxFOV = 175.0f;
+	float MinFOV = 5.0f;
+	FVector CameraLocation = { 0.0f, 0.0f, 0.0f };
+	FQuaternion CameraRotation;
 	/*             */
 public:
-	USceneWindow() = default;
-	~USceneWindow() = default;
-
 	void SpawnPrimitive();
 	void MakeNewScene();
 	void SaveCurrentScene();
 	void LoadSavedScene();
-	void UpdateCamerInfo();
-};
 
+	void Render() override;
+};

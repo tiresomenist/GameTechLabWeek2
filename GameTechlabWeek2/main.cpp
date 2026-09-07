@@ -9,7 +9,7 @@
 #include "Matrix.h"
 
 // 구체 배열 헤더 파일
-#include "FVertexSimple.h"
+#include "Engine/Renderer/FVertexSimple.h"
 #include "Models/Sphere.h"
 #include "Models/Cube.h"
 #include "Models/Triangle.h"
@@ -41,8 +41,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         // Signal that the app should quit
         PostQuitMessage(0);
         break;
-    case WM_SIZE:
-        // Handle window size changes
+    case WM_SIZE: //lParam -> (Width|Height)=(LO|HI)
+        {
+        // 창 최소화 시 Width, Height가 0이므로 리사이즈하지 않음
+        if (wParam == SIZE_MINIMIZED) 
+        {
+            return 0;
+        }
+
+        const uint32 Width = static_cast<uint32>(LOWORD(lParam));
+        const uint32 Height = static_cast<uint32>(HIWORD(lParam));
+
+        GDevice::GetInstance()->OnResize(Width, Height);
+
+        return 0;
+        }
         break;
     default:
         return HandleInput(hWnd, message, wParam, lParam);
@@ -79,7 +92,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     bool bIsExit = false;
     while (bIsExit == false)
     {
-
         MSG msg;
 
         // 처리할 메시지가 더 이상 없을때 까지 수행
@@ -97,19 +109,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 break;
             }
         }
-
-
-        ////////////////////////////////////////////
-        // 매번 실행되는 코드를 여기에 추가합니다.
         Engine->Tick();
 
     }
-
 
     // 엔진을 정리합니다.
     Engine->Destroy();
     Engine = nullptr;
 
-    //Exit();
     return 0;
 }

@@ -12,4 +12,3 @@ public:
 	virtual FPrimitiveRenderData GetRenderData(FStringView Type = "") override;
 
 };
-

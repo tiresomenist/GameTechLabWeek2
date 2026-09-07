@@ -41,6 +41,16 @@ public:
 		return Array.size();
 	}
 
+	void SetNum(size_t Size)
+	{
+		Array.resize(Size);
+	}
+
+	T* GetData()
+	{
+		return Array.data();
+	}
+
 	void RemoveAt(size_t Index)
 	{
 		Array.erase(Array.begin() + Index);
@@ -59,6 +69,11 @@ public:
 	void Sort(std::function<bool(const T&, const T&)> Compare = std::less<T>())
 	{
 		std::sort(Array.begin(), Array.end(), Compare);
+	}
+
+	int Size()
+	{
+		return Array.size();
 	}
 
 	auto begin() { return Array.begin(); }

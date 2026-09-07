@@ -1,5 +1,5 @@
 #include "GResourceManager.h"
-#include "../FVertexSimple.h"
+#include "Engine/Renderer/FVertexSimple.h"
 #include "Models/Sphere.h"
 #include "Models/Cube.h"
 #include "Models/Triangle.h"

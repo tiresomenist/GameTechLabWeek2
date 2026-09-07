@@ -2,10 +2,10 @@
 
 #include "Engine/Core.h"
 
-// 아주 간단한 Allocator
+// 아주 아주 간단한 Allocator
 // 
 // TODO: Linear Allocator, Pool Allocator, Stack Allocator 등
-// 상황 및 메모리 생명주기에 맞는 다양한 Allocator 구현해보기.
+// 상황 및 객체 생명주기에 맞는 다양한 Allocator 구현해보기.
 
 class GAllocator
 {
