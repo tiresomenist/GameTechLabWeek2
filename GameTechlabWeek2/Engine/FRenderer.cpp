@@ -44,6 +44,14 @@ void FRenderer::CreateShaders()
 
     D3DDevice->CreatePixelShader(pixelshaderCSO->GetBufferPointer(), pixelshaderCSO->GetBufferSize(), nullptr, &SimplePixelShader);
 
+    D3DCompileFromFile(L"GameTechlabWeek2/ShaderW0.hlsl", nullptr, nullptr, "VS_Highlight", "vs_5_0", 0, 0, &vertexshaderCSO, nullptr);
+
+    D3DDevice->CreateVertexShader(vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(), nullptr, &HighlightVertexShader);
+
+    D3DCompileFromFile(L"GameTechlabWeek2/ShaderW0.hlsl", nullptr, nullptr, "PS_Highlight", "ps_5_0", 0, 0, &pixelshaderCSO, nullptr);
+
+    D3DDevice->CreatePixelShader(pixelshaderCSO->GetBufferPointer(), pixelshaderCSO->GetBufferSize(), nullptr, &HighlightPixelShader);
+
     D3D11_INPUT_ELEMENT_DESC layout[] =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -90,7 +98,7 @@ void FRenderer::PrepareRTVDSV()
     DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     DeviceContext->RSSetViewports(1, &ViewportInfo);
-    DeviceContext->RSSetState(RasterizerState);
+    DeviceContext->RSSetState(DefaultRasterizerState);
 
     DeviceContext->OMSetRenderTargets(1, &RTV, DSV);
     DeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
@@ -159,17 +167,20 @@ void FRenderer::CreateRasterizerState()
     D3D11_RASTERIZER_DESC rasterizerdesc = {};
     rasterizerdesc.FillMode = D3D11_FILL_SOLID; // 채우기 모드
     rasterizerdesc.CullMode = D3D11_CULL_BACK;  // 백 페이스 컬링
-    //rasterizerdesc.FrontCounterClockwise = TRUE;
+    D3DDevice->CreateRasterizerState(&rasterizerdesc, &DefaultRasterizerState);
 
-    D3DDevice->CreateRasterizerState(&rasterizerdesc, &RasterizerState);
+    D3D11_RASTERIZER_DESC rasterizerdescHighlight = {};
+    rasterizerdescHighlight.FillMode = D3D11_FILL_SOLID; // 채우기 모드
+    rasterizerdescHighlight.CullMode = D3D11_CULL_FRONT;  // 프론트 페이스 컬링
+    D3DDevice->CreateRasterizerState(&rasterizerdescHighlight, &CullFrontRasterizerState);
 }
 
 void FRenderer::ReleaseRasterizerState()
 {
-    if (RasterizerState)
+    if (DefaultRasterizerState)
     {
-        RasterizerState->Release();
-        RasterizerState = nullptr;
+        DefaultRasterizerState->Release();
+        DefaultRasterizerState = nullptr;
     }
 }
 
@@ -197,6 +208,10 @@ void FRenderer::Render(UScene* Scene)
     {
         FMatrix MVP = Rotation * (*Item.WorldMatrix) * ViewProjMatrix;
         UpdateConstantBuffer(MVP);
+        if (Item.isSelected)
+        {
+            RenderHighlight(Item);
+        }
         RenderPrimitive(Item);
     }
 
@@ -233,7 +248,28 @@ void FRenderer::RenderPrimitive(const FPrimitiveRenderData& Data)
 
     // 머티리얼(셰이더/텍스처) 바인딩
     //BindMaterial(Data.Material);
+    DeviceContext->VSSetShader(SimpleVertexShader, nullptr, 0);
+    DeviceContext->PSSetShader(SimplePixelShader, nullptr, 0);
+
+    DeviceContext->RSSetState(DefaultRasterizerState);
 
     // Draw
+    DeviceContext->DrawIndexed(Data.IndexCount, 0, 0);
+}
+
+void FRenderer::RenderHighlight(const FPrimitiveRenderData& Data)
+{
+    DeviceContext->VSSetConstantBuffers(0, 1, &ConstantBuffer);
+
+    UINT Offset = 0;
+    DeviceContext->IASetVertexBuffers(0, 1, &Data.VertexBuffer, &Data.Stride, &Offset);
+    DeviceContext->IASetIndexBuffer(Data.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+    DeviceContext->IASetPrimitiveTopology(Data.Topology);
+
+    DeviceContext->VSSetShader(HighlightVertexShader, nullptr, 0);
+    DeviceContext->PSSetShader(HighlightPixelShader, nullptr, 0);
+
+    DeviceContext->RSSetState(CullFrontRasterizerState);
+
     DeviceContext->DrawIndexed(Data.IndexCount, 0, 0);
 }
