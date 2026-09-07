@@ -2,6 +2,7 @@
 
 #include "Engine/Scene/UScene.h"
 #include "Engine/Editor/Controller/FCameraController.h"
+#include "../Editor/ObjectPicker/FObjectPicker.h"
 
 ////////////////
 // UMainScene //

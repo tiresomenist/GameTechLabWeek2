@@ -3,6 +3,8 @@
 #include "Container/FString.h"
 #include "Engine/Object/USceneComponent.h"
 #include "Engine/Renderer/FPrimitiveRenderData.h"
+#include "../../GResourceManager.h"
+
 
 struct FMeshResource;
 
@@ -14,11 +16,11 @@ class UPrimitiveComponent : public USceneComponent
 public:
 
     // 렌더러에게 전달할 렌더 정보
-    virtual FPrimitiveRenderData GetRenderData();
+    virtual FPrimitiveRenderData GetRenderData(FStringView Text = "");
 
-protected:
-
-    static FPrimitiveRenderData CreateRenderData(UPrimitiveComponent* self, FMeshResource* Resource);
-
+    FMeshResource* GetMeshResource() const
+    {
+        return GResourceManager::GetInstance()->GetPrimitive(FString(GetClassType()->Name));
+    }
 };
 

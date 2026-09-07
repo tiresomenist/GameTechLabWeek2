@@ -9,10 +9,15 @@
 #include "Matrix.h"
 
 // 구체 배열 헤더 파일
-#include "FVertexSimple.h"
-#include "Sphere.h"
-#include "Cube.h"
-#include "Triangle.h"
+#include "Engine/Renderer/FVertexSimple.h"
+#include "Models/Sphere.h"
+#include "Models/Cube.h"
+#include "Models/Triangle.h"
+#include "Models/PePe.h"
+#include "Models/Octopus.h"
+#include "Models/ArrowRed.h"
+#include "Models/ArrowGreen.h"
+#include "Models/ArrowBlue.h"
 
 //렌더러 헤더파일
 #include "Engine/FRenderer.h"
@@ -39,8 +44,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         // Signal that the app should quit
         PostQuitMessage(0);
         break;
-    case WM_SIZE:
-        // Handle window size changes
+    case WM_SIZE: //lParam -> (Width|Height)=(LO|HI)
+        {
+        // 창 최소화 시 Width, Height가 0이므로 리사이즈하지 않음
+        if (wParam == SIZE_MINIMIZED) 
+        {
+            return 0;
+        }
+
+        const uint32 Width = static_cast<uint32>(LOWORD(lParam));
+        const uint32 Height = static_cast<uint32>(HIWORD(lParam));
+
+        GDevice::GetInstance()->OnResize(Width, Height);
+
+        return 0;
+        }
         break;
     default:
         return HandleInput(hWnd, message, wParam, lParam);

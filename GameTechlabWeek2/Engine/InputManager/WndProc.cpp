@@ -25,6 +25,12 @@ LRESULT HandleInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case 'D':
 			Input.SetKey(GInputManager::EI_D, true);
 			break;
+		case 'Q':
+			Input.SetKey(GInputManager::EI_Q, true);
+			break;
+		case 'E':
+			Input.SetKey(GInputManager::EI_E, true);
+			break;
 		}
 		return 0;
 	case WM_KEYUP:
@@ -42,13 +48,17 @@ LRESULT HandleInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case 'D':
 			Input.SetKey(GInputManager::EI_D, false);
 			break;
+		case 'Q':
+			Input.SetKey(GInputManager::EI_Q, false);
+			break;
+		case 'E':
+			Input.SetKey(GInputManager::EI_E, false);
+			break;
 		}
 		return 0;
 		//mouse
 
 	case WM_LBUTTONDOWN:
-		
-
 		GetClientRect(hWnd, &rc);
 		Input.SetLeftCursorX(2.0f * GET_X_LPARAM(lParam) / (rc.right - rc.left) - 1.0f);
 		Input.SetLeftCursorY(1.0f - 2.0f * GET_Y_LPARAM(lParam) / (rc.bottom - rc.top));

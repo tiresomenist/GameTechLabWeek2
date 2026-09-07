@@ -11,14 +11,13 @@ class UConsoleWindow : public UEditorWindow
 {
 private:
 	FString Filter;
-	uint32 prevLogIndex = 0;
-	uint32 displayStartIndex = 0;
 public:
-	void AddDebugText();
-	void AddDebugError();
-	void Clear(uint32 prevlogindex);
+	void AddDebugText(FString DebugText);
+	void AddDebugError(FString ErrorText);
+	void Clear();
 	void Copy();
 	void Option();
+
 	void Render() override;
 };
 

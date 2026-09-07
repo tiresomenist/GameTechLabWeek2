@@ -76,7 +76,7 @@ public:
 	{
 		return Array[Index];
 	}
-	
+
 	const T& operator[](size_t Index) const
 	{
 		return Array[Index];
@@ -90,6 +90,16 @@ public:
 	int Size()
 	{
 		return Array.size();
+	}
+
+	void assign(T* first, T* last)
+	{
+		Array.assign(first, last);
+	}
+
+	void resize(size_t Index)
+	{
+		Array.resize(Index);
 	}
 
 	auto begin() { return Array.begin(); }

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine/GEngine.h"
-#include "Engine/FRenderer.h"
 #include <Windows.h>
 
 class FEditor;

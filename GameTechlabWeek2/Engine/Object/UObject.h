@@ -94,6 +94,10 @@ public:
 
 	virtual ~UObject();
 
+	FClassType* GetClassType() const
+	{
+		return ClassType;
+	}
 private:
 	FClassType* ClassType;
 };

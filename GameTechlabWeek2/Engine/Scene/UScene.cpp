@@ -1,5 +1,6 @@
 #include "UScene.h"
-#include "Engine/Gizmo/UGizmo.h"
+// TEMP(UI test): Gizmo implementation is currently excluded from the build.
+// #include "Engine/Gizmo/UGizmo.h"
 
 #include "Engine/Object/UCameraComponent.h"
 #include "Engine/Object/Primitive/UPrimitiveComponent.h"

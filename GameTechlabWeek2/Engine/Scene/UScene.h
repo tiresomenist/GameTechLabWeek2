@@ -3,6 +3,7 @@
 #include "Engine/Object/UObject.h"
 #include "Engine/Object/FObjectFactory.h"
 #include "Engine/Renderer/RenderUtil.h"
+#include "../Object/Primitive/UPrimitiveComponent.h"
 
 struct FPrimitiveRenderData;
 struct UCameraComponent;
@@ -47,6 +48,21 @@ public:
 	}
 
 	void Destroy(UObject* Object);
+
+	//외부에서 Primitive 접근 제공
+	template <typename Func>
+	void ForEachPrimitive(Func&& Function) const
+	{
+		for (UObject* Object : Objects)
+		{
+			if (Object->IsA(UPrimitiveComponent::GetClass()))
+			{
+				Function(
+					static_cast<UPrimitiveComponent*>(Object)
+				);
+			}
+		}
+	}
 
 	virtual ~UScene();
 

@@ -4,7 +4,6 @@
 //각 오브젝트의 update에 대해서 InputManager::getInstance()->isKeyDown(EInputStatus)으로 조건 확인
 //입력 추가시 EInputStatus 및 WndProc.h 업데이트
 
-//Check the status of KeyInput by enum
 class GInputManager {
 public:
 	static GInputManager* GetInstance();
@@ -14,6 +13,8 @@ public:
 		EI_A,
 		EI_S,
 		EI_D,
+		EI_Q,
+		EI_E,
 		EI_LMOUSE,
 		EI_RMOUSE,
 		KEY_COUNT
@@ -35,7 +36,7 @@ public:
 	float GetRightCursorY()const;
 	float GetLeftCursorX()const;
 	float GetLeftCursorY()const;
-
+	bool ConsumeLeftClick();
 	void SetRightCursorPixelX(const int32& InPixel);
 	void SetRightCursorPixelY(const int32& InPixel);
 	int32 GetRightCursorPixelX()const;
@@ -51,6 +52,7 @@ private:
 	float LeftCursorY;
 	int32 RightCursorPixelX;
 	int32 RightCursorPixelY;
+	bool bLeftClickPending = false;
 	GInputManager() = default;
 	~GInputManager() = default;
 	GInputManager(const GInputManager&) = delete;

@@ -20,6 +20,16 @@ FVector UCameraComponent::GetUp() const
 	return FVector(UpVector * GetCameraRotationMatrix());
 }
 
+void UCameraComponent::RemoveRoll()
+{
+    SetRelativeRotation(RelativeRotation.GetWithoutRoll());
+}
+
+void UCameraComponent::ConstrainEditorRotation()
+{
+    SetRelativeRotation(RelativeRotation.GetUprightCameraRotation());
+}
+
 FMatrix UCameraComponent::GetViewMatrix() const
 {
 	FMatrix RotationMatrix = GetCameraRotationMatrix();
@@ -87,8 +97,9 @@ void UCameraComponent::LookAt(const FVector& InTargetPosition)
 		return;
 	}
     const FQuaternion Delta = FQuaternion::FromToRotation(GetForward(), Forward);
-    // Align the view using the shortest world-space rotation, preserving roll.
+    // Align the view, then keep the horizon upright without changing the target.
     AddWorldRotation(Delta);
+    RemoveRoll();
 
 }
 
@@ -167,9 +178,9 @@ FMatrix UCameraComponent::GetPerspectiveProjectionMatrix() const
 		0.0f, 0.0f, -NearZ * DepthScale, 0.0f);
 }
 
-void UCameraComponent::MoveCamera(const float& InForward, const float& InRight, const float& InDeltaTime)
+void UCameraComponent::MoveCamera(const float& InForward, const float& InRight, const float& InUp, const float& InDeltaTime)
 {
-	FVector InVelocity = GetForward() * InForward + GetRight() * InRight;
+	FVector InVelocity = GetForward() * InForward + GetRight() * InRight + GetUp()*InUp;
 	if (InVelocity.Length() < UEngineStatics::Epsilon) return;
 	InVelocity.Normalize();
 	SetRelativeLocation(RelativeLocation + InVelocity * MoveSpeed * InDeltaTime);

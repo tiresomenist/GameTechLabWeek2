@@ -8,6 +8,10 @@ GInputManager* GInputManager::GetInstance()
 
 void GInputManager::SetKey(EInputStatus Key, bool Status)
 {
+	if (Key == EI_LMOUSE && Status && !bKeyStatus[Key])
+	{
+		bLeftClickPending = true;
+	}
 	bKeyStatus[Key] = Status;
 }
 
@@ -93,6 +97,12 @@ float GInputManager::GetLeftCursorX() const
 float GInputManager::GetLeftCursorY() const
 {
 	return LeftCursorY;
+}
+bool GInputManager::ConsumeLeftClick()
+{
+	const bool bClicked = bLeftClickPending;
+	bLeftClickPending = false;
+	return bClicked;
 }
 void GInputManager::SetRightCursorPixelX(const int32& InPixel)
 {

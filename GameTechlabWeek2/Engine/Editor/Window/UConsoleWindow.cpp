@@ -1,24 +1,32 @@
 #include "UConsoleWindow.h"
 #include "../../FConsole.h"
 #include "../../../FVector.h"
+#include "../../GEngine.h"
 #include "ImGui/imgui.h"
-#include "Engine/GEngine.h"
 
-void UConsoleWindow::AddDebugText()
+void UConsoleWindow::AddDebugText(FString DebugText)
 {
-	//FConsole에 AddDebugText 요청
+	GEngine::GetInstance()->GetConsole()->Append(DebugText);
 }
-void UConsoleWindow::AddDebugError()
+void UConsoleWindow::AddDebugError(FString ErrorText)
 {
-	//FConsole에 AddDebugError 요청
+	GEngine::GetInstance()->GetConsole()->Append(ErrorText);
 }
-void UConsoleWindow::Clear(uint32 displaystartindex)
+void UConsoleWindow::Clear()
 {
-	displayStartIndex = displaystartindex; //실제 로그파일의 내용은 유지하면서 현재까지 읽은 내용 이후 부터 읽음
+
 }
 void UConsoleWindow::Copy()
 {
-	//FConsole에 Copy 요청
+	FString ClipBoardText;
+	/*
+	for (uint32 i = 0; i < logs.Size(); i++)
+	{
+		ClipBoardText += logs[i];
+		ClipBoardText += "\n";
+	}
+	ImGui::SetClipboardText(ClipBoardText.c_str()); // 클립보드로 복사
+	*/
 }
 void UConsoleWindow::Option()
 {
@@ -28,54 +36,78 @@ void UConsoleWindow::Render()
 {
 	FConsole* console = GEngine::GetInstance()->GetConsole();
 	TArray<FString> logs = console->Get(Filter);
+
+	const ImGuiViewport* Viewport = ImGui::GetMainViewport();
+	const ImVec2 WorkPosition = Viewport->WorkPos; // 메뉴창을 제외한 제일 왼쪽 위 위치
+	const ImVec2 WorkSize = Viewport->WorkSize;    // 메뉴창을 제외한 Imgui를 띄울 수 있는 공간
+
+	// 전체 프로그램 창 크기에 대한 비율
+	constexpr float WindowWidthRatio = 1.0f;
+	constexpr float WindowHeightRatio = 0.3f;
+
+	float WindowWidth = WorkSize.x * WindowWidthRatio;
+	float WindowHeight = WorkSize.y * WindowHeightRatio;
+
+	ImVec2 NewPosition = WorkPosition;
+	NewPosition.y += WorkSize.y - WindowHeight;
+
+	ImGui::SetNextWindowPos(
+		NewPosition,
+		ImGuiCond_Once
+	);
+
+	ImGui::SetNextWindowSize(
+		ImVec2(WindowWidth, WindowHeight),
+		ImGuiCond_Once
+	);
+
 	ImGui::Begin("Example: Console");
 	{
 		ImGui::Text("This example implements a console with basic coloring, completion (TAB key) and history (Up/Down keys), A more elaborate implementation may want to store entries along with extra data such as timestamp, emitter, etc.");
 		ImGui::Text("Enter 'HELP for help.");
 
-		ImGui::Button("Add Debug Text");
+		if(ImGui::Button("Add Debug Text"))
 		{
-			AddDebugText();
+			AddDebugText("[Debug] Test");
 		}
 		ImGui::SameLine();
-		ImGui::Button("Add Debug Error");
+		if(ImGui::Button("Add Debug Error"))
 		{
-			AddDebugError();
+			AddDebugError("[Error] Test");
 		}
 		ImGui::SameLine();
-		ImGui::Button("Clear");
+		if(ImGui::Button("Clear"))
 		{
-			Clear(logs.Size());
+			Clear();
 		}
-		ImGui::Button("Copy");
+		ImGui::SameLine();
+		if(ImGui::Button("Copy"))
 		{
 			Copy();
 		}
 		ImGui::Separator();
-		ImGui::Button("options");
+		if(ImGui::Button("options"))
 		{
 			Option();
 		}
 		ImGui::SameLine();
-		ImGui::InputScalar("Scene Name", ImGuiDataType_S32, &Filter);
+		ImGui::InputScalar("##SearchFilter", ImGuiDataType_S32, &Filter);
 		ImGui::SameLine();
 		ImGui::Text("Filter (\"incl,-excl\") (\"error\")");
 		ImGui::Separator();
 
-		ImGui::BeginChild("##consoleLogArea",ImVec2(0,0),true);
+		ImGui::BeginChild("##consoleLogArea",ImVec2(0,0),true, ImGuiWindowFlags_HorizontalScrollbar);
 
 		bool bWasAtBottom = ImGui::GetScrollY() >= ImGui::GetScrollMaxY();
 
-		for (int i = displayStartIndex; i < logs.Size(); i++)
+		for (auto & i : logs)
 		{
-			ImGui::TextUnformatted(logs[i].c_str());
+			ImGui::TextUnformatted(i.c_str());
 		}
-		if (logs.Size() > prevLogIndex && !bWasAtBottom)
+		if (bWasAtBottom)
 		{
 			ImGui::SetScrollHereY(1.0f);
 		}
-		prevLogIndex = logs.Size();
-
 		ImGui::EndChild();
 	}
 	ImGui::End();

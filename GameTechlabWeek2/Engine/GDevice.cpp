@@ -19,6 +19,69 @@ void GDevice::Release()
 
 void GDevice::OnResize(uint32 Width, uint32 Height)
 {
+    // 최소화되었을 때 Width/Height가 0으로 들어올 수 있음
+    if (Width == 0 || Height == 0)
+    {
+        return;
+    }
+
+    // Device 초기화 전에 WM_SIZE가 들어올 수 있음
+    if (Device == nullptr ||
+        DeviceContext == nullptr ||
+        SwapChain == nullptr)
+    {
+        return;
+    }
+
+    // 기존 RTV/DSV 바인딩 해제
+    DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
+
+    // 기존 크기에 종속된 리소스 해제
+    ReleaseDepthStencilBuffer();
+    ReleaseFrameBuffer();
+
+    DeviceContext->Flush();
+
+    // 스왑체인 백 버퍼 크기 변경
+    const HRESULT Result = SwapChain->ResizeBuffers(
+        0,                      // 기존 BufferCount 유지
+        Width,
+        Height,
+        DXGI_FORMAT_UNKNOWN,    // 기존 포맷 유지
+        0
+    );
+
+    if (FAILED(Result))
+    {
+        return;
+    }
+
+    // 새로운 크기로 뷰포트 갱신
+    ViewportInfo.TopLeftX = 0.0f;
+    ViewportInfo.TopLeftY = 0.0f;
+    ViewportInfo.Width = static_cast<float>(Width);
+    ViewportInfo.Height = static_cast<float>(Height);
+    ViewportInfo.MinDepth = 0.0f;
+    ViewportInfo.MaxDepth = 1.0f;
+
+    // 새로운 백 버퍼를 이용해 RTV/DSV 재생성
+    CreateFrameBuffer();
+
+    if (!CreateDepthStencilBuffer(
+        static_cast<int32>(Width),
+        static_cast<int32>(Height)))
+    {
+        return;
+    }
+
+    // 새 렌더 타깃과 뷰포트 적용
+    DeviceContext->OMSetRenderTargets(
+        1,
+        &FrameBufferRTV,
+        DepthStencilView
+    );
+
+    DeviceContext->RSSetViewports(1, &ViewportInfo);
 }
 
 void GDevice::CreateDeviceAndSwapChain(HWND hWindow, uint32 Width, uint32 Height)

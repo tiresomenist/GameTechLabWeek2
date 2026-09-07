@@ -4,10 +4,10 @@
 #include "../../GResourceManager.h"
 #include "../FClassType.h"
 
-class USphereComponent : public UPrimitiveComponent
+class UPepeComponent : public UPrimitiveComponent
 {
 
-	UCLASS(USphereComponent, "Sphere", UPrimitiveComponent)
+	UCLASS(UPepeComponent, "Pepe", UPrimitiveComponent)
 
 public:
 

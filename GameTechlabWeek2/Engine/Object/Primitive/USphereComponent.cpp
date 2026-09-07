@@ -1,8 +1,7 @@
 #include "USphereComponent.h"
 #include "Engine/GResourceManager.h"
-#include "Engine/Primitive/GPrimitive.h"
 
-FPrimitiveRenderData USphereComponent::GetRenderData()
+FPrimitiveRenderData USphereComponent::GetRenderData(FStringView Type)
 {
-	return Super::CreateRenderData(this, GPrimitive::GetSphere());
+	return Super::GetRenderData("Sphere");
 }

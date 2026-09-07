@@ -11,6 +11,11 @@ struct VS_INPUT
     float4 color : COLOR;
 };
 
+struct VS_OUTPUT
+{
+    float4 Pos : SV_POSITION;
+};
+
 struct PS_INPUT
 {
     float4 position : SV_POSITION;
@@ -32,4 +37,20 @@ PS_INPUT mainVS(VS_INPUT input)
 float4 mainPS(PS_INPUT input) : SV_TARGET
 {
     return input.color;
+}
+
+VS_OUTPUT VS_Highlight(VS_INPUT input)
+{
+    VS_OUTPUT output;
+    
+    float3 expandedPos = input.position * 1.05f;
+    
+    output.Pos = mul(float4(expandedPos, 1.0f), MVP);
+    
+    return output;
+}
+
+float4 PS_Highlight(VS_OUTPUT input) : SV_Target
+{
+    return float4(1.0f, 1.0f, 0.0f, 1.0f);
 }

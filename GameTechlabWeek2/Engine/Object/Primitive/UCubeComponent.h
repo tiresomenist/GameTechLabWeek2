@@ -9,6 +9,7 @@ class UCubeComponent : public UPrimitiveComponent
 
 public:
 
-	virtual FPrimitiveRenderData GetRenderData() override;
+	virtual FPrimitiveRenderData GetRenderData(FStringView Type = "") override;
+	
 
 };
