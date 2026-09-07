@@ -26,7 +26,15 @@ void FRenderer::Create(HWND HWnd, GDevice* InDevice)
     CreateRasterizerState();
     CreateShaders();
     CreateConstantBuffer();
-    CreateAlphaBlendState();
+
+    // @TEST >>
+    //GenerateSphere(1.0f, 30, 30, SphereVertices, SphereIndices);
+    //const UINT vertexByteWidth = static_cast<UINT>(SphereVertices.size() * sizeof(FVertexTest));
+    //SphereVertexBuffer = CreateVertexBuffer(SphereVertices.data(), vertexByteWidth);
+    //const UINT indexByteWidth = static_cast<UINT>(SphereIndices.size() * sizeof(uint32_t));
+    //SphereIndexBuffer = CreateIndexBuffer(SphereIndices.data(), indexByteWidth);
+    // @TEST <<
+
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -214,34 +222,6 @@ void FRenderer::ReleaseRasterizerState()
     }
 }
 
-void FRenderer::CreateAlphaBlendState()
-{
-    D3D11_BLEND_DESC blendDesc = {};
-    blendDesc.AlphaToCoverageEnable = FALSE;
-    blendDesc.IndependentBlendEnable = FALSE;
-
-    // 0번째 렌더 타겟(우리의 메인 화면)에 대한 블렌딩 설정
-    blendDesc.RenderTarget[0].BlendEnable = TRUE;
-    blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;       // 새로 그릴 픽셀의 알파값 비중
-    blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;  // 이미 그려진 픽셀의 비중 (1 - SrcAlpha)
-    blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;           // 두 색상을 더함
-
-    // 알파 채널 자체를 섞는 공식 (보통 아래와 같이 고정)
-    blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-    blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-    blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-
-    blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-
-    // Device를 이용해 객체 생성
-    D3DDevice->CreateBlendState(&blendDesc, &AlphaBlendState);
-}
-
-void FRenderer::ReleaseAlphaBlendState()
-{
-
-}
-
 void FRenderer::BeginFrame()
 {
     PrepareRTVDSV();
@@ -288,6 +268,7 @@ void FRenderer::Render(FEditor* Editor, UScene* Scene)
     UpdateConstantBuffer(ViewProjMatrix);
     EndFrame();
 }
+////////////////
 
 void FRenderer::UpdateConstantBuffer(const FMatrix& MVP)
 {
@@ -339,17 +320,4 @@ void FRenderer::RenderHighlight(const FPrimitiveRenderData& Data)
     DeviceContext->RSSetState(CullFrontRasterizerState);
 
     DeviceContext->DrawIndexed(Data.IndexCount, 0, 0);
-}
-
-void FRenderer::RenderGrid()
-{
-    // 알파 블렌딩 켜기 (OM: Output Merger 단계)
-    float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-    UINT sampleMask = 0xffffffff;
-
-    DeviceContext->OMSetBlendState(AlphaBlendState, blendFactor, sampleMask);
-
-    // DeviceContext->DrawIndexed(...);
-
-    DeviceContext->OMSetBlendState(nullptr, blendFactor, sampleMask);
 }
