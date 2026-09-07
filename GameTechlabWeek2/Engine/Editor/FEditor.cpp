@@ -38,6 +38,8 @@ void FEditor::Initialize()
 	RegisterWindow(new UConsoleWindow());
 	RegisterWindow(new UPropertyWindow());
 	RegisterWindow(new USceneWindow());
+
+	RegisterGrid(UGrid::GetClass());
 }
 
 void FEditor::Tick(float DeltaTime)
@@ -110,4 +112,13 @@ void FEditor::RegisterWindow(UEditorWindow* Window)
 {
 	Window->Initialize(this);
 	Windows.Add(Window);
+}
+
+void FEditor::RegisterGrid(FClassType* Type)
+{
+	UObject* Object = FObjectFactory::ConstructObject(Type);
+	UGrid* Grid = static_cast<UGrid*>(Object);
+
+	Grid->Initialize(this);
+	Grids.Add(Grid);
 }

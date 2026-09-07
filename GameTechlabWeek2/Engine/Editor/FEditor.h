@@ -53,6 +53,7 @@ public:
 
 	void RegisterGizmo(FClassType* Type);
 	void RegisterWindow(UEditorWindow* Window);
+	void RegisterGrid(FClassType* Type);
 
 	TArray<UGizmo*>& GetGizmos() { return Gizmos; }
 	TArray<UEditorWindow*>& GetWindows() { return Windows; }
