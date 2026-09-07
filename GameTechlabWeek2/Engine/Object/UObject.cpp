@@ -1,6 +1,7 @@
 #include "UObject.h"
 #include "Engine/Object/GObjects.h"
 #include "Engine/GAllocator.h"
+#include "Engine/Object/FArchive.h"
 
 FClassType* UObject::GetClass()
 {
@@ -56,4 +57,15 @@ void UObject::operator delete(void* Ptr)
 UObject::~UObject()
 {
 	GObjects::DestoryObject(InternalIndex);
+}
+
+void UObject::Serialize(FArchive& Archive)
+{
+	// FClassType의 Serialize 이름 지정
+	Archive.SetString("Type", ClassType->Name);
+}
+
+void UObject::Deserialize(FArchive& Archive)
+{
+	
 }

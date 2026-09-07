@@ -1,9 +1,9 @@
 #pragma once
 
+#include "Matrix.h"
 #include "Engine/Core.h"
 #include "Engine/Object/USceneComponent.h"
-#include "../../Matrix.h"
-#include "USceneComponent.h"
+#include "Engine/Object/FArchive.h"
 
 enum class EProjectionMode
 {
@@ -43,6 +43,8 @@ public:
     void LookAt(const FVector& InTargetPosition);
     EProjectionMode ProjectionMode = EProjectionMode::Perspective;
     
+    virtual void Serialize(FArchive& Archive) override;
+    virtual void Deserialize(FArchive& Archive) override;
 
 private:
     FMatrix GetCameraRotationMatrix() const;

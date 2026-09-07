@@ -9,6 +9,8 @@
 #include "ImGui/imgui_impl_dx11.h"
 #include "ImGui/imgui_impl_win32.h"
 
+#include "Engine/GSceneManager.h"
+
 void USceneWindow::SpawnPrimitive() 
 {
 	//USceneComponent에 해당 Primitive 생성 요청 (SlectedClass 및 NumbeOfSpawn 입력)
@@ -49,6 +51,11 @@ void USceneWindow::Render()
 		ImGui::Text("Hello Jungle World!");
 		ImGui::Text("FPS %.0f (%.0f ms)", fps, 1000.0f / fps);
 		ImGui::Separator();
+
+		if (ImGui::Button("Save"))
+		{
+			GSceneManager::GetInstance()->SaveScene();
+		}
 
 		ImGui::Button("Spawn");
 		{

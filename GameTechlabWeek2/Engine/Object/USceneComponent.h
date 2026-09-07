@@ -4,8 +4,8 @@
 #include "Engine/Core.h"
 #include "FVector.h"
 #include "FQuaternion.h"
-#include "../../Matrix.h"
 #include "FClassType.h"
+#include "Matrix.h"
 
 class USceneComponent : public UObject
 {
@@ -24,6 +24,9 @@ public:
     void SetRelativeScale3D(const FVector& Scale3D);
 
     const FMatrix& GetWorldMatrix() const;
+
+    virtual void Serialize(FArchive& Archive) override;
+    virtual void Deserialize(FArchive& Archive) override;
 
 protected:
     // 로컬 트랜스폼

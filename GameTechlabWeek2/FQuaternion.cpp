@@ -27,6 +27,11 @@ FQuaternion FQuaternion::FromEuler(const FVector& EulerRadians)
     return Result;
 }
 
+FVector FQuaternion::ToEuler(const FQuaternion& Quaternion)
+{
+    return FVector();
+}
+
 FQuaternion FQuaternion::FromToRotation(const FVector& From, const FVector& To)
 {
     const double FromLength = std::hypot(double(From.X), double(From.Y), double(From.Z));

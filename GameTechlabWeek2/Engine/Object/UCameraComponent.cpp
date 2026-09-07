@@ -91,6 +91,31 @@ void UCameraComponent::LookAt(const FVector& InTargetPosition)
     AddWorldRotation(Delta);
 
 }
+
+void UCameraComponent::Serialize(FArchive& Archive)
+{
+	Super::Serialize(Archive);
+
+	Archive.SetFloat("FOV", FOV);
+	Archive.SetFloat("AspectRatio", AspectRatio);
+	Archive.SetFloat("Near", NearZ);
+	Archive.SetFloat("Far", FarZ);
+	Archive.SetFloat("MoveSpeed", MoveSpeed);
+	Archive.SetFloat("OrthogonalHeight", OrthoHeight);
+}
+
+void UCameraComponent::Deserialize(FArchive& Archive)
+{
+	Super::Deserialize(Archive);
+
+	FOV = Archive.GetFloat("FOV");
+	AspectRatio = Archive.GetFloat("AspectRatio");
+	NearZ = Archive.GetFloat("Near");
+	FarZ = Archive.GetFloat("Far");
+	MoveSpeed = Archive.GetFloat("MoveSpeed");
+	OrthoHeight = Archive.GetFloat("OrthogonalHeight");
+}
+
 float UCameraComponent::GetOrthoHeight() const
 {
 	return OrthoHeight;

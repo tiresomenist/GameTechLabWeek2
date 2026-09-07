@@ -18,6 +18,9 @@
 #include "Engine/FRenderer.h"
 #include "Engine/GEngine.h"
 #include "Engine/InputManager/WndProc.h"
+#include "Engine/Log.h"
+
+#include <iostream>
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -65,7 +68,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         CW_USEDEFAULT, CW_USEDEFAULT, 1024, 1024,
         nullptr, nullptr, hInstance, nullptr);
     
-
     // 엔진을 초기화합니다.
     GEngine* Engine = GEngine::GetInstance();
     Engine->Initialize(hWnd);

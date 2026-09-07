@@ -12,6 +12,8 @@ struct FQuaternion
     // X/Y/Z angles in radians. Matches FMatrix::MakeRotationMatrix (Rz * Ry * Rx).
     // Returns identity if any angle is non-finite.
     static FQuaternion FromEuler(const FVector& EulerRadians);
+    static FVector ToEuler(const FQuaternion& Quaternion);
+
     // Shortest rotation between directions; invalid/zero directions give identity.
     static FQuaternion FromToRotation(const FVector& From, const FVector& To);
 

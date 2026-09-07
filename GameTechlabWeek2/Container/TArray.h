@@ -13,6 +13,22 @@ private:
 	std::vector<T> Array;
 
 public:
+
+	TArray()
+		: Array()
+	{
+	}
+
+	TArray(size_t Size)
+		: Array(Size)
+	{
+	}
+
+	TArray(const std::initializer_list<T>& List)
+		: Array(List)
+	{
+	}
+
 	void Add(const T& Element)
 	{
 		Array.push_back(Element);
