@@ -6,15 +6,16 @@
 #include "Engine/Editor/Controller/FCameraController.h"
 
 //TESTCODE//
-#include "../Object/UCameraComponent.h"
-#include "../GEngine.h"
-#include "../../Engine/FConsole.h"
+#include "Engine/Object/UCameraComponent.h"
+#include "Engine/GEngine.h"
+#include "Engine/FConsole.h"
 
 class USceneComponent;
 class UCameraComponent;
 class UEditorWindow;
 class UGizmo;
 class FObjectPicker;
+class UGrid;
 
 class FEditor
 {
@@ -55,6 +56,7 @@ public:
 
 	TArray<UGizmo*>& GetGizmos() { return Gizmos; }
 	TArray<UEditorWindow*>& GetWindows() { return Windows; }
+	TArray<UGrid*>& GetGrids() { return Grids; }
 
 	//TEST CODE//
 	FVector GetCameraLocation() { return GetEditorCamera()->GetRelativeLocation(); }

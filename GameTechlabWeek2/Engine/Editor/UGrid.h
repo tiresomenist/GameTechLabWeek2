@@ -15,4 +15,6 @@ public:
     void Initialize(FEditor* InEditor);
 
     virtual TArray<FPrimitiveRenderData> GetRenderData();
+
+    virtual void Render() {};
 };

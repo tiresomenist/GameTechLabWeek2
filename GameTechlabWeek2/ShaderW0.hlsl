@@ -55,8 +55,6 @@ float4 PS_Highlight(VS_OUTPUT input) : SV_Target
     return float4(1.0f, 1.0f, 0.0f, 1.0f);
 }
 
-}
-
 //cbuffer CameraBuffer : register(b0)
 //{
 //    matrix MVP;

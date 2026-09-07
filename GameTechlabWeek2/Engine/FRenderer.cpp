@@ -6,6 +6,7 @@
 #include "Engine/GDevice.h"
 #include "Engine/Scene/UScene.h"
 #include "Engine/Editor/FEditor.h"
+#include "Engine/Editor/UGrid.h"
 #include "Engine/Gizmo/UGizmo.h"
 #include "Engine/Renderer/RenderUtil.h"
 #include "Engine/Core.h"
@@ -280,6 +281,12 @@ void FRenderer::Render(FEditor* Editor, UScene* Scene)
 
     // 2. Editor Window 렌더
     for (auto Item : Editor->GetWindows())
+    {
+        Item->Render();
+    }
+
+    // Grid 랜더
+    for (auto Item : Editor->GetGrids())
     {
         Item->Render();
     }
