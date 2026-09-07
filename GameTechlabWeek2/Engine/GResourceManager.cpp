@@ -1,6 +1,8 @@
 #include "GResourceManager.h"
 #include "../FVertexSimple.h"
 #include "../Sphere.h"
+#include "../PePe.h"
+#include "../Octopus.h"
 
 GResourceManager* GResourceManager::GetInstance()
 {
@@ -13,19 +15,21 @@ void GResourceManager::Initialize(GDevice* InDevice)
 	Device = InDevice;
 
     FMeshResource* MeshResource = new FMeshResource;
-    UINT VertexCount = sizeof(sphere_vertices) / sizeof(sphere_vertices[0]);
+    UINT VertexCount = sizeof(octopus_vertices) / sizeof(octopus_vertices[0]);
     std::vector<uint32_t> Indices(VertexCount);
     for (uint32_t Index = 0; Index < VertexCount; ++Index)
     {
         Indices[Index] = Index;
     }
 
-    MeshResource->VertexBuffer = Device->CreateVertexBuffer(sphere_vertices, sizeof(FVertexSimple) * VertexCount);
+    MeshResource->VertexBuffer = Device->CreateVertexBuffer(octopus_vertices, sizeof(FVertexSimple) * VertexCount);
     MeshResource->IndexBuffer = Device->CreateIndexBuffer(Indices.data(), sizeof(uint32_t) * VertexCount);
     MeshResource->VertexCount = VertexCount;
     MeshResource->IndexCount = VertexCount;
     MeshResource->Stride = sizeof(FVertexSimple);
     PrimitiveCache["Sphere"] = MeshResource;
+
+
 }
 
 void GResourceManager::Shutdown()

@@ -13,6 +13,8 @@
 #include "Sphere.h"
 #include "Cube.h"
 #include "Triangle.h"
+#include "PePe.h"
+#include "Octopus.h"
 
 //렌더러 헤더파일
 #include "Engine/FRenderer.h"

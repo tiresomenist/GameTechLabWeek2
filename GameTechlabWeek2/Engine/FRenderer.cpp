@@ -17,7 +17,7 @@ void FRenderer::Create(GDevice* InDevice)
     D3DDevice = InDevice->GetDevice();
     ViewportInfo = InDevice->GetViewport();
     CreateRasterizerState();
-    CreateShader();
+    CreateShaders();
     CreateConstantBuffer();
 }
 
@@ -31,7 +31,7 @@ void FRenderer::Shutdown()
     DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
-void FRenderer::CreateShader()
+void FRenderer::CreateShaders()
 {
     ID3DBlob* vertexshaderCSO;
     ID3DBlob* pixelshaderCSO;
@@ -79,7 +79,7 @@ void FRenderer::ReleaseShader()
     }
 }
 
-void FRenderer::Prepare()
+void FRenderer::PrepareRTVDSV()
 {
     ID3D11RenderTargetView* RTV = Device->GetFrameBufferRTV();
     ID3D11DepthStencilView* DSV = Device->GetDepthStencilView();
@@ -159,7 +159,7 @@ void FRenderer::CreateRasterizerState()
     D3D11_RASTERIZER_DESC rasterizerdesc = {};
     rasterizerdesc.FillMode = D3D11_FILL_SOLID; // 채우기 모드
     rasterizerdesc.CullMode = D3D11_CULL_BACK;  // 백 페이스 컬링
-    rasterizerdesc.FrontCounterClockwise = TRUE;
+    //rasterizerdesc.FrontCounterClockwise = TRUE;
 
     D3DDevice->CreateRasterizerState(&rasterizerdesc, &RasterizerState);
 }
@@ -175,7 +175,7 @@ void FRenderer::ReleaseRasterizerState()
 
 void FRenderer::BeginFrame()
 {
-    Prepare();
+    PrepareRTVDSV();
     PrepareShader();
 }
 
@@ -191,11 +191,11 @@ void FRenderer::Render(UScene* Scene)
     FMatrix ViewProjMatrix = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
     TArray<FPrimitiveRenderData> RenderList = RenderUtil::GetRenderList(Scene);
     static float Angle = 0.0f;
-    Angle += 0.11f;
-    FMatrix Rotation = FMatrix::MakeRotationYMatrix(Angle);
+    Angle += 0.03f;
+    FMatrix Rotation = FMatrix::MakeRotationZMatrix(Angle);
     for (auto& Item: RenderList)
     {
-        FMatrix MVP = (*Item.WorldMatrix)* Rotation* ViewProjMatrix;
+        FMatrix MVP = Rotation * (*Item.WorldMatrix) * ViewProjMatrix;
         UpdateConstantBuffer(MVP);
         RenderPrimitive(Item);
     }

@@ -51,9 +51,9 @@ public:
 
     void Shutdown();                                // 렌더러에 사용된 모든 리소스를 해제하는 함수
 
-    void CreateShader();
+    void CreateShaders();
     void ReleaseShader();
-    void Prepare();
+    void PrepareRTVDSV();
     void PrepareShader();
 
     ID3D11Buffer* CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidth);
