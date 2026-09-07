@@ -41,6 +41,7 @@ public:
 
 	ID3D11RasterizerState* DefaultRasterizerState = nullptr;   // 래스터라이저 상태(컬링, 채우기 모드 등 정의)
 	ID3D11RasterizerState* CullFrontRasterizerState = nullptr;   // 래스터라이저 상태(컬링, 채우기 모드 등 정의)
+	ID3D11BlendState* AlphaBlendState = nullptr;
 
 	ID3D11Buffer* ConstantBuffer = nullptr;             // 쉐이더에 데이터를 전달하기 위한 상수 버퍼
 	FLOAT                   ClearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
@@ -73,10 +74,14 @@ public:
 	void CreateRasterizerState();
 	void ReleaseRasterizerState();
 
+	void CreateAlphaBlendState();
+	void ReleaseAlphaBlendState();
+
 	void BeginFrame();
 	void EndFrame();
 
 	void Render(FEditor* Editor, UScene* Scene);
 	void RenderPrimitive(const FPrimitiveRenderData& Data);
 	void RenderHighlight(const FPrimitiveRenderData& Data);
+	void RenderGrid();
 };
