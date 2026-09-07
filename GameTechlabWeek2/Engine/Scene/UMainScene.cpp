@@ -3,6 +3,12 @@
 #include "Engine/Core.h"
 #include "Engine/InputManager/GInputManager.h"
 #include "Engine/Object/Primitive/USphereComponent.h"
+#include "Engine/Object/Primitive/UCubeComponent.h"
+#include "Engine/Object/Primitive/UPepeComponent.h"
+#include "Engine/Object/Primitive/UOctopusComponent.h"
+#include "Engine/Object/Primitive/UArrowRedComponent.h"
+#include "Engine/Object/Primitive/UArrowGreenComponent.h"
+#include "Engine/Object/Primitive/UArrowBlueComponent.h"
 #include "Engine/Object/UCameraComponent.h"
 #include "Engine/Gizmo/UWorldAxisGizmo.h"
 
@@ -21,18 +27,23 @@ void UMainScene::BeginPlay()
     CameraController.SetCamera(GetMainCamera());
 	GetMainCamera()->SetRelativeLocation(FVector(-5.0f, 0.0f, 0.0f));
 
-	USphereComponent* Sphere1 = SpawnObject<USphereComponent*>(USphereComponent::GetClass());
-	Sphere1->SetRelativeLocation(FVector(0.0f, 0.5f, 1.0f));
+	USphereComponent* SphereComponent = SpawnObject<USphereComponent*>(USphereComponent::GetClass());
+	SphereComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 
-	USphereComponent* Sphere2 = SpawnObject<USphereComponent*>(USphereComponent::GetClass());
-	Sphere2->SetRelativeLocation(FVector(0.0f, -0.5f, 0.0f));
+	UCubeComponent* CubeComponent = SpawnObject<UCubeComponent*>(UCubeComponent::GetClass());
+	CubeComponent->SetRelativeLocation(FVector(3.0f, 0.0f, 0.0f));
 
-	USphereComponent* Sphere3 = SpawnObject<USphereComponent*>(USphereComponent::GetClass());
-	Sphere3->SetRelativeLocation(FVector(-5.0f, -0.5f, -6.0f));
+	UOctopusComponent* OctopusComponent = SpawnObject<UOctopusComponent*>(UOctopusComponent::GetClass());
+	OctopusComponent->SetRelativeLocation(FVector(-3.0f, 0.0f, 0.0f));
 
-	USphereComponent* Sphere4 = SpawnObject<USphereComponent*>(USphereComponent::GetClass());
-	Sphere4->SetRelativeLocation(FVector(-10.0f, -0.5f, 0.0f));
+	UArrowRedComponent* RedArrowComponent = SpawnObject<UArrowRedComponent*>(UArrowRedComponent::GetClass());
+	RedArrowComponent->SetRelativeLocation(FVector(0.0f, 3.0f, 0.0f));
 
+	UArrowGreenComponent* GreenArrowComponent = SpawnObject<UArrowGreenComponent*>(UArrowGreenComponent::GetClass());
+	GreenArrowComponent->SetRelativeLocation(FVector(0.0f, -3.0f, 0.0f));
+
+	UArrowBlueComponent* BlueArrowComponent = SpawnObject<UArrowBlueComponent*>(UArrowBlueComponent::GetClass());
+	BlueArrowComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 3.0f));
 }
 
 void UMainScene::Tick(float DeltaTime)

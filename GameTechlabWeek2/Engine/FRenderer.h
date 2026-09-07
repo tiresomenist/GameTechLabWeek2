@@ -36,7 +36,9 @@ public:
 	ID3D11DeviceContext* DeviceContext;
 	ID3D11Device* D3DDevice;
 
-	ID3D11RasterizerState* RasterizerState = nullptr;   // 래스터라이저 상태(컬링, 채우기 모드 등 정의)
+	ID3D11RasterizerState* DefaultRasterizerState = nullptr;   // 래스터라이저 상태(컬링, 채우기 모드 등 정의)
+	ID3D11RasterizerState* CullFrontRasterizerState = nullptr;   // 래스터라이저 상태(컬링, 채우기 모드 등 정의)
+
 	ID3D11Buffer* ConstantBuffer = nullptr;             // 쉐이더에 데이터를 전달하기 위한 상수 버퍼
 	FLOAT                   ClearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 	D3D11_VIEWPORT          ViewportInfo;               // 렌더링 영역을 정의하는 뷰포트 정보
@@ -44,6 +46,8 @@ public:
 	ID3D11VertexShader* SimpleVertexShader = nullptr;
 	ID3D11PixelShader* SimplePixelShader = nullptr;
 	ID3D11InputLayout* SimpleInputLayout = nullptr;
+	ID3D11VertexShader* HighlightVertexShader = nullptr;
+	ID3D11PixelShader* HighlightPixelShader = nullptr;
 
     unsigned int Stride;
 
@@ -71,4 +75,5 @@ public:
 
 	void Render(UScene* Scene);
 	void RenderPrimitive(const FPrimitiveRenderData& Data);
+	void RenderHighlight(const FPrimitiveRenderData& Data);
 };
