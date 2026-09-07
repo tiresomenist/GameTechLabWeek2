@@ -1,7 +1,8 @@
 #include "UPlaneComponent.h"
 #include "Engine/GResourceManager.h"
+#include "Engine/Primitive/GPrimitive.h"
 
-FPrimitiveRenderData UPlaneComponent::GetRenderData(FStringView Type)
+FPrimitiveRenderData UPlaneComponent::GetRenderData()
 {
-	return Super::GetRenderData("Plane");
+	return Super::CreateRenderData(this, GPrimitive::GetPlane());
 }

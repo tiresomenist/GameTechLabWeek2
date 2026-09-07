@@ -2,19 +2,18 @@
 #include "FRenderer.h"
 #include "Matrix.h"
 #include "FVertexSimple.h"
+#include "Engine/Editor/Window/UEditorWindow.h"
 #include "Engine/GDevice.h"
 #include "Engine/Scene/UScene.h"
+#include "Engine/Editor/FEditor.h"
+#include "Engine/Gizmo/UGizmo.h"
 #include "Engine/Renderer/RenderUtil.h"
 #include "Engine/Core.h"
 #include "Engine/Object/UCameraComponent.h"
 
-//Test
 #include "ImGui/imgui.h"
-#include "ImGui/imgui_internal.h"
 #include "ImGui/imgui_impl_dx11.h"
 #include "ImGui/imgui_impl_win32.h"
-#include "Engine/Editor/Window/UEditorWindow.h"
-
 
 #include <format>
 
@@ -78,7 +77,7 @@ void GenerateSphere(float Radius, int Slices, int Stacks, std::vector<FVertexTes
     }
 }
 
-void FRenderer::Create(HWND hWindow, GDevice* InDevice)
+void FRenderer::Create(HWND HWnd, GDevice* InDevice)
 {
     Device = InDevice;
     DeviceContext = InDevice->GetContext();
@@ -97,22 +96,14 @@ void FRenderer::Create(HWND hWindow, GDevice* InDevice)
     // @TEST <<
 
 
-    //////////////////////////
-    /// 임시 테스트 코드    //
-    //////////////////////////
-
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 
     // Setup Platform/Renderer backends
-    ImGui_ImplWin32_Init(hWindow);
+    ImGui_ImplWin32_Init(HWnd);
     ImGui_ImplDX11_Init(D3DDevice, DeviceContext);
-
-    //////////////////////////
-    /// 임시 테스트 코드    //
-    //////////////////////////
 }
 
 void FRenderer::Shutdown()
@@ -188,6 +179,12 @@ void FRenderer::ReleaseShader()
 
 void FRenderer::Prepare()
 {
+    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+
+    DeviceContext->ClearRenderTargetView(Device->GetFrameBufferRTV(), ClearColor);
+    DeviceContext->ClearDepthStencilView(Device->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     ID3D11RenderTargetView* RTV = Device->GetFrameBufferRTV();
     ID3D11DepthStencilView* DSV = Device->GetDepthStencilView();
 
@@ -303,55 +300,37 @@ void FRenderer::BeginFrame()
 
 void FRenderer::EndFrame()
 {
+    ImGui::Render();
+    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    GDevice::GetInstance()->SwapBuffer();
 }
 
-void FRenderer::Render(UScene* Scene, const TArray<UEditorWindow*>& WindowArray)
+void FRenderer::Render(FEditor* Editor, UScene* Scene)
 {
     BeginFrame();
 
-    //TEST CODE//
-    ImGui_ImplDX11_NewFrame();
-    ImGui_ImplWin32_NewFrame();
-    ImGui::NewFrame();
-    /////////////
+    UCameraComponent* Camera = Editor->GetEditorCamera();
 
-    UCameraComponent* Camera = Scene->GetMainCamera();
     FMatrix ViewProjMatrix = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
-    TArray<FPrimitiveRenderData> RenderList = RenderUtil::GetRenderList(Scene);
-    
-    for (auto& Item: RenderList)
+    TArray<FPrimitiveRenderData> RenderList = RenderUtil::GetRenderList(Editor, Scene);
+
+    // 1. Scene Object, Editor Gizmo 렌더
+    for (auto& Item : RenderList)
     {
         FMatrix MVP = (*Item.WorldMatrix) * ViewProjMatrix;
         UpdateConstantBuffer(MVP);
         RenderPrimitive(Item);
     }
 
-    // TEMP(UI test): Gizmo rendering is disabled until the Gizmo implementation builds again.
-    // Gizmo vertices are already in world space (identity world transform).
-    // UpdateConstantBuffer(ViewProjMatrix);
-    // Scene->RenderGizmos(*this);
-
-    RenderUI(WindowArray);
-
-    //TEST CODE//
-    ImGui::Render();
-    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-    /////////////
-    
-    GDevice::GetInstance()->SwapBuffer();
-    EndFrame();
-}
-
-// TEST CODE //
-void FRenderer::RenderUI(const TArray<UEditorWindow*>& WindowArray)
-{
-    for (UEditorWindow* Window : WindowArray)
+    // 2. Editor Window 렌더
+    for (auto Item : Editor->GetWindows())
     {
-        if (Window != nullptr)
-        {
-            Window->Tick();
-        }
+        Item->Render();
     }
+
+    // Gizmo vertices are already in world space (identity world transform).
+    UpdateConstantBuffer(ViewProjMatrix);
+    EndFrame();
 }
 ////////////////
 
@@ -399,6 +378,7 @@ void FRenderer::UpdateConstantBuffer(const FMatrix& MVP)
 
         DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR);
         FConstants* constants = (FConstants*)constantbufferMSR.pData;
+
         constants->MVP = MVP;//.Transpose(); 그냥 Shader에서 row_major 키워드 넣기로 함
         DeviceContext->Unmap(ConstantBuffer, 0);
     }

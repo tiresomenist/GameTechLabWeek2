@@ -1,6 +1,5 @@
 #pragma once
-#include "UEditorWindow.h"
-#include "../../FEditor.h"
+#include "Engine/Editor/Window/UEditorWindow.h"
 #include "../../../Matrix.h"
 #include "../../../FQuaternion.h"
 #include "../../../Container/FString.h"
@@ -25,4 +24,5 @@ public:
 	void Begin() override;
 	void Tick() override;
 	void End() override;
+	void Render() override;
 };

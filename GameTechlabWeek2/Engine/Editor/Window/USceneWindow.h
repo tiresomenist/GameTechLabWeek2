@@ -8,10 +8,7 @@
 
 class USceneWindow : public UEditorWindow
 {
-
-
 private:
-	float CurrentFPS = 0;
 	uint32 NumberOfSpawn = 0;
 	FWideString SceneName = L"Default";
 	bool bOrthogonal = false;
@@ -23,12 +20,6 @@ private:
 	FQuaternion CameraRotation; // Todo : 카메라 객체에서 값을 받아와서 초기값 설정
 	/*             */
 public:
-	USceneWindow()
-	{
-		Begin();
-	}
-	~USceneWindow() = default;
-
 	void SpawnPrimitive();
 	void MakeNewScene();
 	void SaveCurrentScene();
@@ -38,8 +29,5 @@ public:
 	void UpdateCameraLocation();
 	void UpdateCameraRotation();
 
-	void Begin() override;
-	void End() override;
-	void Tick() override;
+	void Render() override;
 };
-

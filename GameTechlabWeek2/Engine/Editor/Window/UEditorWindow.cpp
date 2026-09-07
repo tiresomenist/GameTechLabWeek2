@@ -1,3 +1,6 @@
 #include "UEditorWindow.h"
-#include <Windows.h>
 
+void UEditorWindow::Initialize(FEditor* InEditor)
+{
+	Editor = InEditor;
+}

@@ -4,6 +4,8 @@
 #include "Engine/Object/USceneComponent.h"
 #include "Engine/Renderer/FPrimitiveRenderData.h"
 
+struct FMeshResource;
+
 class UPrimitiveComponent : public USceneComponent
 {
 
@@ -12,7 +14,11 @@ class UPrimitiveComponent : public USceneComponent
 public:
 
     // 렌더러에게 전달할 렌더 정보
-    virtual FPrimitiveRenderData GetRenderData(FStringView Type = "");
+    virtual FPrimitiveRenderData GetRenderData();
+
+protected:
+
+    static FPrimitiveRenderData CreateRenderData(UPrimitiveComponent* self, FMeshResource* Resource);
 
 };
 

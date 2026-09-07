@@ -1,6 +1,7 @@
 #include "FCameraController.h"
 #include "Engine/InputManager/GInputManager.h"
 #include "Engine/Object/UCameraComponent.h"
+#include "Engine/Log.h"
 
 void FCameraController::SetCamera(UCameraComponent* InCamera)
 {

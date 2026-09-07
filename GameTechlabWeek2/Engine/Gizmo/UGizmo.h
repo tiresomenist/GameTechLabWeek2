@@ -1,35 +1,23 @@
 #pragma once
-
-#include "../Core.h"
-#include "../Object/FClassType.h"
-#include "../FEditor.h"
-#include "../../Matrix.h"
-#include "../FRenderer.h"
+#include "Container/TArray.h"
+#include "Engine/Editor/FEditor.h"
+#include "Engine/Renderer/FPrimitiveRenderData.h"
 #include "Engine/Object/UObject.h"
-
-struct FGizmoVertex
-{
-	FVector Position;
-	FVector4 Color;
-};
 
 class UGizmo : public UObject
 {
+
     UCLASS(UGizmo, "Gizmo", UObject)
 
-public:
-	virtual ~UGizmo();
+private:
+
+	FEditor* Editor = nullptr;
 
 public:
 
-	void SetVisible(bool bVisible);
-	bool IsVisible();
-	void Release();
-	void Render(FRenderer &render);
+	void Initialize(FEditor* InEditor);
 
-	virtual void Create(FRenderer& Renderer);
-protected:
-	ID3D11Buffer* vertexBuffer = nullptr;
-	uint32 VertexCount = 0;
-	bool bVisible = true;
+	// 렌더러에게 전달할 렌더 정보
+	virtual TArray<FPrimitiveRenderData> GetRenderData();
+
 };

@@ -1,21 +1,25 @@
 #include "UPrimitiveComponent.h"
 #include "Engine/GResourceManager.h"
+#include "Engine/Primitive/FMeshResource.h"
+#include "Engine/Primitive/GPrimitive.h"
 
-FPrimitiveRenderData UPrimitiveComponent::GetRenderData(FStringView Type)
+FPrimitiveRenderData UPrimitiveComponent::GetRenderData()
 {
-	GResourceManager& ResourceManager = *GResourceManager::GetInstance();
-	FMeshResource* MeshResource = ResourceManager.GetOrCreatePrimitive(FString{ Type });
+	return CreateRenderData(this, nullptr);
+}
 
+FPrimitiveRenderData UPrimitiveComponent::CreateRenderData(UPrimitiveComponent* self, FMeshResource* Resource)
+{
 	FPrimitiveRenderData RenderData{};
-	if (MeshResource == nullptr) { return RenderData; }
-	
-	RenderData.VertexBuffer		= MeshResource->VertexBuffer;
-	RenderData.IndexBuffer		= MeshResource->IndexBuffer;
-	RenderData.IndexCount		= MeshResource->IndexCount;
-	RenderData.Stride			= MeshResource->Stride;
+
+	if (Resource == nullptr) { return RenderData; }
+
+	RenderData.VertexBuffer		= Resource->VertexBuffer;
+	RenderData.IndexBuffer		= Resource->IndexBuffer;
+	RenderData.IndexCount		= Resource->IndexCount;
+	RenderData.Stride			= Resource->Stride;
  // RenderData.Material			= &GetMaterial();
-	RenderData.WorldMatrix		= &GetWorldMatrix();
+	RenderData.WorldMatrix		= &(self->GetWorldMatrix());
 
 	return RenderData;
-
 }

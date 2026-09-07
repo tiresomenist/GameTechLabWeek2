@@ -42,8 +42,6 @@ public:
 	}
 
 	void Destroy(UObject* Object);
-    // TEMP(UI test): Re-enable together with the Gizmo implementation.
-    // void RenderGizmos(FRenderer& Renderer);
 
 	virtual ~UScene();
 
@@ -60,5 +58,5 @@ protected:
 	UCameraComponent* MainCamera = nullptr;
 
 public:
-	friend TArray<FPrimitiveRenderData> RenderUtil::GetRenderList(UScene* Scene);
+	friend TArray<FPrimitiveRenderData> RenderUtil::GetRenderList(FEditor* Editor, UScene* Scene);
 };

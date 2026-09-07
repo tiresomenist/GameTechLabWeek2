@@ -54,8 +54,7 @@ void USceneWindow::Begin()
 void USceneWindow::End()
 {
 
-}
-void USceneWindow::Tick()
+void USceneWindow::Render()
 {
 	//CameraRotation = GEngine::GetInstance()->GetEditor()->GetCameraRotation();
 	//CameraLocation = GEngine::GetInstance()->GetEditor()->GetCameraLotation();

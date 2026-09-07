@@ -3,9 +3,7 @@
 #include "../../../FVector.h"
 #include "../../GEngine.h"
 #include "ImGui/imgui.h"
-#include "ImGui/imgui_internal.h"
-#include "ImGui/imgui_impl_dx11.h"
-#include "ImGui/imgui_impl_win32.h"
+#include "Engine/GEngine.h"
 
 void UConsoleWindow::AddDebugText(FString DebugText)
 {
@@ -35,17 +33,10 @@ void UConsoleWindow::Option()
 {
 	//과제 시연 영상에는 있었는데 뭐하는지는 모르는 함수
 }
-void UConsoleWindow::Begin()
+void UConsoleWindow::Render()
 {
-	//FConsole Console = *GEngine::GetInstance()->GetConsole();
-	//처음 실행할때는 로그가 비어있는걸 기대하므로 logs = GEngine::GetInstance()->GetConsole()->Get(Filter); 할필요 없을듯
-}
-void UConsoleWindow::End()
-{
-
-}
-void UConsoleWindow::Tick() 
-{
+	FConsole* console = GEngine::GetInstance()->GetConsole();
+	TArray<FString> logs = console->Get(Filter);
 	ImGui::Begin("Example: Console");
 	{
 		ImGui::Text("This example implements a console with basic coloring, completion (TAB key) and history (Up/Down keys), A more elaborate implementation may want to store entries along with extra data such as timestamp, emitter, etc.");
@@ -92,6 +83,8 @@ void UConsoleWindow::Tick()
 		{
 			ImGui::SetScrollHereY(1.0f);
 		}
+		prevLogIndex = logs.Size();
+
 		ImGui::EndChild();
 	}
 	ImGui::End();

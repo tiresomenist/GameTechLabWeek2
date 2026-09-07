@@ -2,35 +2,13 @@
 #include "../../FEditor.h"
 #include "../../../FVector.h"
 #include "ImGui/imgui.h"
-#include "ImGui/imgui_internal.h"
-#include "ImGui/imgui_impl_dx11.h"
-#include "ImGui/imgui_impl_win32.h"
 
-void UPropertyWindow::UpdateTranslation()
+void UPropertyWindow::Render()
 {
-	//Editor->TranslationUpdated(FVector Translation);
-}
-void UPropertyWindow::UpdateRotation()
-{
-	//Editor->RotationUpdated(FVector Rotation);
-}
-void UPropertyWindow::UpdateScale()
-{
-	//Editor->ScaleUpdated(FVector Scale);
-}
+	FVector translation;
+	FVector rotation;
+	FVector scale;
 
-void UPropertyWindow::Begin()
-{
-	//Editor = *GEngine::GetInstance()->GetEditor();
-}
-
-void UPropertyWindow::End()
-{
-	//Editor = nullptr;
-}
-
-void UPropertyWindow::Tick()
-{
 	ImGui::Begin("Jungle Property Window");
 	{
 		if (ImGui::DragFloat("##translationX", &Translation.X, 0.001f))

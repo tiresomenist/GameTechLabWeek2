@@ -6,8 +6,11 @@
 #include "Engine/Object/UObject.h"
 #include "Engine/Core.h"
 
+#include "Engine/Editor/FEditor.h"
 #include "Engine/GSceneManager.h"
 #include "Engine/FConsole.h"
+
+#include "Engine/Primitive/GPrimitive.h"
 
 #include "GDevice.h"
 #include "GResourceManager.h"
@@ -40,12 +43,25 @@ void GEngine::Initialize(HWND InHwnd)
 	Console = new FConsole();
 	Console->Initialize();
 
+	// Device 초기화
+	GDevice& Device = *GDevice::GetInstance();
+	Device.Initialize(InHwnd, 1024, 1024);
+
+	// 리소스 매니저 초기화
+	GResourceManager& ResourceManager = *GResourceManager::GetInstance();
+	GPrimitive::Initialize(&Device);
+	ResourceManager.Initialize(&Device);
+	
+	// 렌더러 초기화
+	Renderer.Create(InHwnd, &Device);
+	
 	// 씬 매니저 초기화
-	GDevice::GetInstance()->Initialize(InHwnd, 1024, 1024);
-	GResourceManager::GetInstance()->Initialize(GDevice::GetInstance());
-	Renderer.Create(InHwnd, GDevice::GetInstance()); //FRenderer에서 ImGui 처리로직이 있음
 	GSceneManager* SceneManager = GSceneManager::GetInstance();
 	SceneManager->Initialize();
+
+	// 에디터 초기화
+	Editor = new FEditor();
+	Editor->Initialize();
 
 	StartTime = GetTime();
 	LastTickTime = GetTime();
@@ -65,24 +81,20 @@ void GEngine::Tick()
 	GSceneManager* SceneManager = GSceneManager::GetInstance();
 	SceneManager->Tick(DeltaTime);
 
+	Editor->Tick(DeltaTime);
+
 	// 게임 화면을 렌더링합니다.
 	UScene* CurrentScene = SceneManager->GetScene();
-	Renderer.Render(CurrentScene, Windows);
+	Renderer.Render(Editor, CurrentScene);
 }
 
 // 엔진의 자원을 정리합니다.
 void GEngine::Destroy()
 {
-	// ImGui와 엔진 자원이 살아 있을 때 에디터 창을 먼저 정리합니다.
-	for (UEditorWindow* Window : Windows)
-	{
-		if (Window != nullptr)
-		{
-			Window->End();
-			delete Window;
-		}
-	}
-	Windows.Empty();
+	// 에디터 정리
+	Editor->Release();
+	delete Editor;
+	Editor = nullptr;
 
 	// 씬 매니저 정리
 	GSceneManager* SceneManager = GSceneManager::GetInstance();

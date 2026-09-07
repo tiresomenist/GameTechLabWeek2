@@ -4,8 +4,8 @@
 
 #include <chrono>
 
-
 class FConsole;
+class FEditor;
 
 class GEngine
 {
@@ -29,7 +29,7 @@ private:
 
 	FRenderer Renderer;
 	FConsole* Console;
-	TArray<UEditorWindow*> Windows;
+	FEditor* Editor;
 
 	// 싱글톤
 	GEngine() = default;

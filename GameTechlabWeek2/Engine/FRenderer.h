@@ -17,6 +17,7 @@
 #include "../Matrix.h"
 #include "../FQuaternion.h"
 //#include "../FVertexSimple.h"
+#include "Container/TArray.h"
 
 #include "../Engine/Editor/Window/UEditorWindow.h"
 
@@ -26,6 +27,7 @@ struct FConstants
 	FMatrix MVP;
 };
 class UScene;
+class FEditor;
 struct FPrimitiveRenderData;
 
 #include <cmath>
@@ -182,7 +184,7 @@ public:
 	//ID3D11Buffer* SphereIndexBuffer = nullptr;
 
 
-    void Create(HWND hWindow, GDevice* InDevice);					// 렌더러 초기화 함수
+    void Create(HWND HWnd, GDevice* InDevice);					// 렌더러 초기화 함수
 
     void Shutdown();                                // 렌더러에 사용된 모든 리소스를 해제하는 함수
 
@@ -204,8 +206,7 @@ public:
 	void BeginFrame();
 	void EndFrame();
 
-	void Render(UScene* Scene, const TArray<UEditorWindow*>& WindowArray);
-	void RenderUI(const TArray<UEditorWindow*>& WindowArray);
+	void Render(FEditor* Editor, UScene* Scene);
 	void RenderPrimitive(const FPrimitiveRenderData& Data);
 
 	//// @TEST >>
