@@ -21,6 +21,7 @@ project "GameTechlabWeek2"
 	}
 	
 	filter "toolset:msc*"
+		callingconvention "Cdecl"
         buildoptions { "/utf-8" }
 	
 	filter "configurations:Debug"
