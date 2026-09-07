@@ -10,7 +10,9 @@ class FConsole
 private:
 	TArray<FString> MessageList;
 	int32 MaxMessages = 100;
-
+	FString Filter;
+	//FConsole Console;
+	TArray<FString> logs;
 public:
 	const TArray<FString> Get(FString Filter) const;
 

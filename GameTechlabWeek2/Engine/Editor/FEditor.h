@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Engine/GEngine.h"
 #include "Container/TArray.h"
 #include "Engine/Object/FObjectFactory.h"
 #include "Engine/Renderer/RenderUtil.h"

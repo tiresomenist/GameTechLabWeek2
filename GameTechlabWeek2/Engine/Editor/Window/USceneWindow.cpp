@@ -40,22 +40,16 @@ void USceneWindow::UpdateFOV()
 {
 
 }
-void USceneWindow::Begin()
-{
-	Spawnables.Empty();
-	Spawnables.Add(USphereComponent::GetClass());
-	Spawnables.Add(UCubeComponent::GetClass());
-	Spawnables.Add(UPlaneComponent::GetClass());
-	if (!Spawnables.IsEmpty())
-	{
-		SelectedClass = *Spawnables.begin();
-	}
-}
-void USceneWindow::End()
-{
-
 void USceneWindow::Render()
 {
+	if (Spawnables.IsEmpty())
+	{
+		Spawnables.Empty();
+		Spawnables.Add(USphereComponent::GetClass());
+		Spawnables.Add(UCubeComponent::GetClass());
+		Spawnables.Add(UPlaneComponent::GetClass());
+		SelectedClass = *Spawnables.begin();
+	}
 	//CameraRotation = GEngine::GetInstance()->GetEditor()->GetCameraRotation();
 	//CameraLocation = GEngine::GetInstance()->GetEditor()->GetCameraLotation();
 	const ImGuiIO& IO = ImGui::GetIO(); //ImGui의 입출력 및 프레임 상태를 모아둔 객체

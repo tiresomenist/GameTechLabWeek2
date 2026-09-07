@@ -11,15 +11,13 @@ class UConsoleWindow : public UEditorWindow
 {
 private:
 	FString Filter;
-	//FConsole Console;
-	TArray<FString> logs; // Tick에서는 현재 UConsoleWindow에 저장된 logs 만 출력한다.
-						  // 즉, FConsole에 디버그 메세지가 추가될 때마다 FEditor에서는 UConsoleWindow의 logs에 추가해줘야함
 public:
-	void AddDebugText();
-	void AddDebugError();
-	void Clear(uint32 prevlogindex);
+	void AddDebugText(FString DebugText);
+	void AddDebugError(FString ErrorText);
+	void Clear();
 	void Copy();
 	void Option();
+
 	void Render() override;
 };
 

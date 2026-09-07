@@ -3,7 +3,6 @@
 #include "../../../FVector.h"
 #include "../../GEngine.h"
 #include "ImGui/imgui.h"
-#include "Engine/GEngine.h"
 
 void UConsoleWindow::AddDebugText(FString DebugText)
 {
@@ -12,22 +11,22 @@ void UConsoleWindow::AddDebugText(FString DebugText)
 void UConsoleWindow::AddDebugError(FString ErrorText)
 {
 	GEngine::GetInstance()->GetConsole()->Append(ErrorText);
-	//해당 명렁어로 logs에 추가되는경우 (Fstring, bool) 구조체로 에러 메세지인지 아닌지 해서
-	//if문으로 ImGui::TextColored(ImVec4(1, 0, 0, 1), "Red"); 같이 색 다르게 하는 아이디어
 }
 void UConsoleWindow::Clear()
 {
-	logs.Empty();
+
 }
 void UConsoleWindow::Copy()
 {
 	FString ClipBoardText;
+	/*
 	for (uint32 i = 0; i < logs.Size(); i++)
 	{
 		ClipBoardText += logs[i];
 		ClipBoardText += "\n";
 	}
 	ImGui::SetClipboardText(ClipBoardText.c_str()); // 클립보드로 복사
+	*/
 }
 void UConsoleWindow::Option()
 {
@@ -83,7 +82,7 @@ void UConsoleWindow::Render()
 		{
 			ImGui::SetScrollHereY(1.0f);
 		}
-		prevLogIndex = logs.Size();
+		//prevLogIndex = logs.Size();
 
 		ImGui::EndChild();
 	}

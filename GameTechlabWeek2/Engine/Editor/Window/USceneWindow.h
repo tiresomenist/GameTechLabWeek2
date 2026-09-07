@@ -16,8 +16,8 @@ private:
 	FClassType* SelectedClass;
 	/* Camera Info */
 	float FOV = 60;
-	FVector CameraLocation = { 0.0f, 0.0f, 0.0f }; // Todo : 카메라 객체에서 값을 받아와서 초기값 설정
-	FQuaternion CameraRotation; // Todo : 카메라 객체에서 값을 받아와서 초기값 설정
+	FVector CameraLocation = { 0.0f, 0.0f, 0.0f };
+	FQuaternion CameraRotation;
 	/*             */
 public:
 	void SpawnPrimitive();

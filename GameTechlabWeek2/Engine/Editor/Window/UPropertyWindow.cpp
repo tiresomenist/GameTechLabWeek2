@@ -1,14 +1,22 @@
 #include "UPropertyWindow.h"
-#include "../../FEditor.h"
 #include "../../../FVector.h"
 #include "ImGui/imgui.h"
 
+void UPropertyWindow::UpdateTranslation()
+{
+
+}
+void UPropertyWindow::UpdateRotation()
+{
+
+}
+void UPropertyWindow::UpdateScale()
+{
+
+}
+
 void UPropertyWindow::Render()
 {
-	FVector translation;
-	FVector rotation;
-	FVector scale;
-
 	ImGui::Begin("Jungle Property Window");
 	{
 		if (ImGui::DragFloat("##translationX", &Translation.X, 0.001f))

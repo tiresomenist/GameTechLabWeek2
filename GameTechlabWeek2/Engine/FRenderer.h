@@ -19,7 +19,6 @@
 //#include "../FVertexSimple.h"
 #include "Container/TArray.h"
 
-#include "../Engine/Editor/Window/UEditorWindow.h"
 
 //struct FVertexSimple;
 struct FConstants

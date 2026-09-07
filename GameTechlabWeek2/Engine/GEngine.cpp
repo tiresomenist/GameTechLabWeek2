@@ -65,11 +65,6 @@ void GEngine::Initialize(HWND InHwnd)
 
 	StartTime = GetTime();
 	LastTickTime = GetTime();
-
-	Windows.Add(new UConsoleWindow());
-	//Windows.Add(new UDetailsWindow());
-	Windows.Add(new UPropertyWindow());
-	Windows.Add(new USceneWindow());
 }
 
 // 엔진의 메인 게임 루프를 실행합니다.
