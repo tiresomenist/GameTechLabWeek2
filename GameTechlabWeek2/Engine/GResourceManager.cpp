@@ -1,8 +1,13 @@
 #include "GResourceManager.h"
 #include "../FVertexSimple.h"
-#include "../Sphere.h"
-#include "../PePe.h"
-#include "../Octopus.h"
+#include "Models/Sphere.h"
+#include "Models/Cube.h"
+#include "Models/Triangle.h"
+#include "Models/PePe.h"
+#include "Models/Octopus.h"
+#include "Models/ArrowRed.h"
+#include "Models/ArrowGreen.h"
+#include "Models/ArrowBlue.h"
 
 GResourceManager* GResourceManager::GetInstance()
 {
@@ -14,22 +19,7 @@ void GResourceManager::Initialize(GDevice* InDevice)
 {
 	Device = InDevice;
 
-    FMeshResource* MeshResource = new FMeshResource;
-    UINT VertexCount = sizeof(octopus_vertices) / sizeof(octopus_vertices[0]);
-    std::vector<uint32_t> Indices(VertexCount);
-    for (uint32_t Index = 0; Index < VertexCount; ++Index)
-    {
-        Indices[Index] = Index;
-    }
-
-    MeshResource->VertexBuffer = Device->CreateVertexBuffer(octopus_vertices, sizeof(FVertexSimple) * VertexCount);
-    MeshResource->IndexBuffer = Device->CreateIndexBuffer(Indices.data(), sizeof(uint32_t) * VertexCount);
-    MeshResource->VertexCount = VertexCount;
-    MeshResource->IndexCount = VertexCount;
-    MeshResource->Stride = sizeof(FVertexSimple);
-    PrimitiveCache["Sphere"] = MeshResource;
-
-
+    CreateMesh("Sphere", arrow_green_vertices, arrow_green_indices);
 }
 
 void GResourceManager::Shutdown()
@@ -56,7 +46,7 @@ void GResourceManager::Shutdown()
     //RasterizerStateCache.clear();
 }
 
-FMeshResource* GResourceManager::GetOrCreatePrimitive(const FString& Type)
+FMeshResource* GResourceManager::GetPrimitive(const FString& Type)
 {
     auto Item = PrimitiveCache.find(Type);
 
@@ -70,7 +60,7 @@ FMeshResource* GResourceManager::GetOrCreatePrimitive(const FString& Type)
     }
 }
 
-FShaderResource* GResourceManager::GetOrCreateShader(const std::wstring& FilePath, const std::string& VSEntry, const std::string& PSEntry, const D3D11_INPUT_ELEMENT_DESC* Layout, UINT LayoutCount)
+FShaderResource* GResourceManager::GetShader(const std::wstring& FilePath, const std::string& VSEntry, const std::string& PSEntry, const D3D11_INPUT_ELEMENT_DESC* Layout, UINT LayoutCount)
 {
 	return nullptr;
 }

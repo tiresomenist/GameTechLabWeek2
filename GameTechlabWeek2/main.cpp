@@ -10,11 +10,14 @@
 
 // 구체 배열 헤더 파일
 #include "FVertexSimple.h"
-#include "Sphere.h"
-#include "Cube.h"
-#include "Triangle.h"
-#include "PePe.h"
-#include "Octopus.h"
+#include "Models/Sphere.h"
+#include "Models/Cube.h"
+#include "Models/Triangle.h"
+#include "Models/PePe.h"
+#include "Models/Octopus.h"
+#include "Models/ArrowRed.h"
+#include "Models/ArrowGreen.h"
+#include "Models/ArrowBlue.h"
 
 //렌더러 헤더파일
 #include "Engine/FRenderer.h"

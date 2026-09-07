@@ -5,6 +5,8 @@
 #include "GDevice.h"
 
 #include "Container/FString.h"
+#include "Container/Tarray.h"
+#include "../FVertexSimple.h"
 
 struct FMeshResource
 {
@@ -13,6 +15,9 @@ struct FMeshResource
 	UINT VertexCount = 0;
 	UINT IndexCount = 0;
 	UINT Stride = 0;
+
+	TArray<FVertexSimple> vertexs;
+	TArray<uint32> indexes;
 };
 
 struct FShaderResource
@@ -35,15 +40,52 @@ public:
 	void Initialize(GDevice* InDevice);
 	void Shutdown();
 
-	// ---- Geometry ----
-	FMeshResource* GetOrCreatePrimitive(const FString& Type);
+	template <size_t VCount, size_t ICount>
+	FMeshResource* CreateMesh(
+		const std::string& MeshName,
+		const FVertexSimple(&Vertices)[VCount],
+		const uint32_t(&Indices)[ICount])
+	{
+		if (PrimitiveCache.find(MeshName) != PrimitiveCache.end())
+		{
+			return PrimitiveCache[MeshName];
+		}
 
-	// ---- Shader ----
-	FShaderResource* GetOrCreateShader(const std::wstring& FilePath,
+		FMeshResource* MeshResource = new FMeshResource;
+		UINT VertexCount = VCount;
+		UINT IndexCount = ICount;
+
+		for (UINT i = 0; i < VertexCount; ++i)
+		{
+			MeshResource->vertexs.Add(Vertices[i]);
+		}
+		for (UINT i = 0; i < IndexCount; ++i)
+		{
+			MeshResource->indexes.Add(Indices[i]);
+		}
+
+		MeshResource->VertexBuffer = Device->CreateVertexBuffer(&MeshResource->vertexs[0], sizeof(FVertexSimple) * VertexCount);
+
+		MeshResource->IndexBuffer = Device->CreateIndexBuffer(&MeshResource->indexes[0], sizeof(uint32_t) * IndexCount);
+
+		MeshResource->VertexCount = VertexCount;
+		MeshResource->IndexCount = IndexCount;
+		MeshResource->Stride = sizeof(FVertexSimple);
+
+		PrimitiveCache[MeshName] = MeshResource;
+
+		return MeshResource;
+	};
+
+	FMeshResource* GetPrimitive(const FString& Type);
+
+	FShaderResource* GetShader(
+		const std::wstring& FilePath,
 		const std::string& VSEntry,
 		const std::string& PSEntry,
 		const D3D11_INPUT_ELEMENT_DESC* Layout,
-		UINT LayoutCount);
+		UINT LayoutCount
+	);
 
 private:
 	GResourceManager() = default;
