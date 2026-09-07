@@ -5,6 +5,11 @@
 #include "Engine/Renderer/RenderUtil.h"
 #include "Engine/Editor/Controller/FCameraController.h"
 
+//TESTCODE//
+#include "../Object/UCameraComponent.h"
+#include "../GEngine.h"
+#include "../../Engine/FConsole.h"
+
 class USceneComponent;
 class UCameraComponent;
 class UEditorWindow;
@@ -46,6 +51,15 @@ public:
 
 	TArray<UGizmo*>& GetGizmos() { return Gizmos; }
 	TArray<UEditorWindow*>& GetWindows() { return Windows; }
+
+	//TEST CODE//
+	FVector GetCameraLocation() { return GetEditorCamera()->GetRelativeLocation(); }
+	void SetCameraLocation(FVector NewCameraLocation) { EditorCamera->SetRelativeLocation(NewCameraLocation); }
+	FQuaternion GetCamerRotation() { return GetEditorCamera()->GetRelativeRotation(); }
+	void SetCamerRotation(FQuaternion NewCameraRotation) { EditorCamera->SetRelativeRotation(NewCameraRotation); }
+	float GetCameraFOV() { return GetEditorCamera()->GetFOV() * 180.0f / PI; }
+	void SetCameraFOV(float NewFOV) { EditorCamera->SetFOVByDegree(NewFOV); }
+	void SpawnPrimitives(FClassType* ClassType, uint32 num) { GEngine::GetInstance()->GetConsole()->Append(std::format("Make {}, {} times",ClassType->Name,num)); }
 
 public:
 	friend TArray<FPrimitiveRenderData> RenderUtil::GetRenderList(FEditor* Editor, UScene* Scene);

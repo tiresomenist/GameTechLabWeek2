@@ -193,6 +193,7 @@ void FRenderer::Prepare()
 
     DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+    ViewportInfo = Device->GetViewport(); // 리사이징 된 현재 뷰포트 복사
     DeviceContext->RSSetViewports(1, &ViewportInfo);
     DeviceContext->RSSetState(RasterizerState);
 
@@ -313,6 +314,8 @@ void FRenderer::Render(FEditor* Editor, UScene* Scene)
 
     FMatrix ViewProjMatrix = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
     TArray<FPrimitiveRenderData> RenderList = RenderUtil::GetRenderList(Editor, Scene);
+
+    Camera->SetAspectRatio(Device->GetViewport().Width / Device->GetViewport().Height); // 리사이징된 카메라 화면에 맞게 종횡비를 맞춥니다.
 
     // 1. Scene Object, Editor Gizmo 렌더
     for (auto& Item : RenderList)

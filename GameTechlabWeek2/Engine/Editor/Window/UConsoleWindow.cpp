@@ -36,6 +36,31 @@ void UConsoleWindow::Render()
 {
 	FConsole* console = GEngine::GetInstance()->GetConsole();
 	TArray<FString> logs = console->Get(Filter);
+
+	const ImGuiViewport* Viewport = ImGui::GetMainViewport();
+	const ImVec2 WorkPosition = Viewport->WorkPos; // 메뉴창을 제외한 제일 왼쪽 위 위치
+	const ImVec2 WorkSize = Viewport->WorkSize;    // 메뉴창을 제외한 Imgui를 띄울 수 있는 공간
+
+	// 전체 프로그램 창 크기에 대한 비율
+	constexpr float WindowWidthRatio = 1.0f;
+	constexpr float WindowHeightRatio = 0.3f;
+
+	float WindowWidth = WorkSize.x * WindowWidthRatio;
+	float WindowHeight = WorkSize.y * WindowHeightRatio;
+
+	ImVec2 NewPosition = WorkPosition;
+	NewPosition.y += WorkSize.y - WindowHeight;
+
+	ImGui::SetNextWindowPos(
+		NewPosition,
+		ImGuiCond_Once
+	);
+
+	ImGui::SetNextWindowSize(
+		ImVec2(WindowWidth, WindowHeight),
+		ImGuiCond_Once
+	);
+
 	ImGui::Begin("Example: Console");
 	{
 		ImGui::Text("This example implements a console with basic coloring, completion (TAB key) and history (Up/Down keys), A more elaborate implementation may want to store entries along with extra data such as timestamp, emitter, etc.");
@@ -55,6 +80,7 @@ void UConsoleWindow::Render()
 		{
 			Clear();
 		}
+		ImGui::SameLine();
 		if(ImGui::Button("Copy"))
 		{
 			Copy();
@@ -82,8 +108,6 @@ void UConsoleWindow::Render()
 		{
 			ImGui::SetScrollHereY(1.0f);
 		}
-		//prevLogIndex = logs.Size();
-
 		ImGui::EndChild();
 	}
 	ImGui::End();

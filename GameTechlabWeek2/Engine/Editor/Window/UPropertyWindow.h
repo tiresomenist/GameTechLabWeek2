@@ -9,7 +9,7 @@ class UPropertyWindow : public UEditorWindow
 private:
 	FVector Translation = { 0.0f, 0.0f, 0.0f };
 	FQuaternion Rotation;
-	FVector Scale = { 0.0f, 0.0f, 0.0f };
+	FVector OScale = { 0.0f, 0.0f, 0.0f };
 public:
 	
 	void UpdateTranslation();

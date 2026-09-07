@@ -44,8 +44,16 @@ void GEngine::Initialize(HWND InHwnd)
 	Console->Initialize();
 
 	// Device 초기화
+	// DirectX 백버퍼 크기를 실제 윈도우 클라이언트 크기에 맞춥니다.
+	// Main() { CreateWindwoExW(... 1024,1024 ...) }  -> 제목 표시줄과 테두리를 포함한 전체 창 크기
+	// GetClientRect() -> 제목 표시줄과 테두리를 제외한 클라이언트 영역
+	// 이를 사용함으로 프로그램 사용 초기 Imgui출력 위치가 이상한 문제가 해결됩니다.
+	RECT ClientRect{};
+	GetClientRect(InHwnd, &ClientRect);
+	const uint32 ClientWidth = static_cast<uint32>(ClientRect.right - ClientRect.left);
+	const uint32 ClientHeight = static_cast<uint32>(ClientRect.bottom - ClientRect.top);
 	GDevice& Device = *GDevice::GetInstance();
-	Device.Initialize(InHwnd, 1024, 1024);
+	Device.Initialize(InHwnd, ClientWidth, ClientHeight);
 
 	// 리소스 매니저 초기화
 	GResourceManager& ResourceManager = *GResourceManager::GetInstance();

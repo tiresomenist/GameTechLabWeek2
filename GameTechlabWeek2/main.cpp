@@ -36,8 +36,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         // Signal that the app should quit
         PostQuitMessage(0);
         break;
-    case WM_SIZE:
-        // Handle window size changes
+    case WM_SIZE: //lParam -> (Width|Height)=(LO|HI)
+        {
+        // 창 최소화 시 Width, Height가 0이므로 리사이즈하지 않음
+        if (wParam == SIZE_MINIMIZED) 
+        {
+            return 0;
+        }
+
+        const uint32 Width = static_cast<uint32>(LOWORD(lParam));
+        const uint32 Height = static_cast<uint32>(HIWORD(lParam));
+
+        GDevice::GetInstance()->OnResize(Width, Height);
+
+        return 0;
+        }
         break;
     default:
         return HandleInput(hWnd, message, wParam, lParam);
