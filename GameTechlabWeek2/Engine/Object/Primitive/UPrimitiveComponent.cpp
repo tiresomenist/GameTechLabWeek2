@@ -5,8 +5,8 @@
 
 FPrimitiveRenderData UPrimitiveComponent::GetRenderData()
 {
-	return CreateRenderData(this, nullptr);
-}
+	GResourceManager& ResourceManager = *GResourceManager::GetInstance();
+	FMeshResource* MeshResource = ResourceManager.GetPrimitive(FString{ Type });
 
 FPrimitiveRenderData UPrimitiveComponent::CreateRenderData(UPrimitiveComponent* self, FMeshResource* Resource)
 {
