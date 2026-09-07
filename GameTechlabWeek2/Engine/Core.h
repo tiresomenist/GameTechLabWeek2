@@ -3,7 +3,7 @@
 #include <cstdint>
 #include "Container/FString.h"
 
-#define PI 3.141592
+#define PI 3.141592f
 typedef int int32;
 typedef unsigned int uint32;
 

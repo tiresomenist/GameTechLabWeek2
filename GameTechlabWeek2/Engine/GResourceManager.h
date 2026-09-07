@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 #include "GDevice.h"
-
+#include "Core.h"
 #include "Container/FString.h"
 #include "Container/Tarray.h"
 #include "../FVertexSimple.h"

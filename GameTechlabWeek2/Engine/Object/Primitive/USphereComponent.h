@@ -12,5 +12,4 @@ class USphereComponent : public UPrimitiveComponent
 public:
 
 	virtual FPrimitiveRenderData GetRenderData(FStringView Type = "") override;
-
 };
