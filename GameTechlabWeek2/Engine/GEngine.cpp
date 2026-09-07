@@ -10,8 +10,6 @@
 #include "Engine/GSceneManager.h"
 #include "Engine/FConsole.h"
 
-#include "Engine/Primitive/GPrimitive.h"
-
 #include "GDevice.h"
 #include "GResourceManager.h"
 
@@ -57,7 +55,6 @@ void GEngine::Initialize(HWND InHwnd)
 
 	// 리소스 매니저 초기화
 	GResourceManager& ResourceManager = *GResourceManager::GetInstance();
-	GPrimitive::Initialize(&Device);
 	ResourceManager.Initialize(&Device);
 	
 	// 렌더러 초기화
