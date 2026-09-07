@@ -4,7 +4,6 @@
 //각 오브젝트의 update에 대해서 InputManager::getInstance()->isKeyDown(EInputStatus)으로 조건 확인
 //입력 추가시 EInputStatus 및 WndProc.h 업데이트
 
-//Check the status of KeyInput by enum
 class GInputManager {
 public:
 	static GInputManager* GetInstance();
@@ -14,6 +13,8 @@ public:
 		EI_A,
 		EI_S,
 		EI_D,
+		EI_Q,
+		EI_E,
 		EI_LMOUSE,
 		EI_RMOUSE,
 		KEY_COUNT

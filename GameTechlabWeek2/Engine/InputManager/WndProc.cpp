@@ -24,6 +24,12 @@ LRESULT HandleInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case 'D':
 			Input.SetKey(GInputManager::EI_D, true);
 			break;
+		case 'Q':
+			Input.SetKey(GInputManager::EI_Q, true);
+			break;
+		case 'E':
+			Input.SetKey(GInputManager::EI_E, true);
+			break;
 		}
 		return 0;
 	case WM_KEYUP:
@@ -40,6 +46,12 @@ LRESULT HandleInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		case 'D':
 			Input.SetKey(GInputManager::EI_D, false);
+			break;
+		case 'Q':
+			Input.SetKey(GInputManager::EI_Q, false);
+			break;
+		case 'E':
+			Input.SetKey(GInputManager::EI_E, false);
 			break;
 		}
 		return 0;

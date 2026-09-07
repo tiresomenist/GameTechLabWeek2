@@ -3,8 +3,9 @@
 #include <map>
 #include <string>
 #include "GDevice.h"
-
+#include "Core.h"
 #include "Container/FString.h"
+#include "Container/TArray.h"
 
 struct FMeshResource
 {
@@ -13,6 +14,9 @@ struct FMeshResource
 	UINT VertexCount = 0;
 	UINT IndexCount = 0;
 	UINT Stride = 0;
+
+	TArray<FVertexSimple> Vertices;
+	TArray<uint32> Indices;
 };
 
 struct FShaderResource

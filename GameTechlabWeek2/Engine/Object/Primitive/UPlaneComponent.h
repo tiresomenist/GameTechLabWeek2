@@ -10,6 +10,6 @@ class UPlaneComponent : public UPrimitiveComponent
 public:
 
 	virtual FPrimitiveRenderData GetRenderData(FStringView Type = "") override;
-
+	
 };
 

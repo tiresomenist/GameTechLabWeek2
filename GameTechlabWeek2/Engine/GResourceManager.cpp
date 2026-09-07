@@ -26,6 +26,16 @@ void GResourceManager::Initialize(GDevice* InDevice)
     MeshResource->IndexCount = VertexCount;
     MeshResource->Stride = sizeof(FVertexSimple);
     PrimitiveCache["Sphere"] = MeshResource;
+
+    MeshResource->Vertices.assign(std::begin(sphere_vertices),std::end(sphere_vertices));
+
+    MeshResource->Indices.resize(VertexCount);
+
+    for (uint32 Index = 0; Index < VertexCount; ++Index)
+    {
+        MeshResource->Indices[Index] = Index;
+    }
+
 }
 
 void GResourceManager::Shutdown()

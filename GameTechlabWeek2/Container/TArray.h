@@ -61,6 +61,17 @@ public:
 		std::sort(Array.begin(), Array.end(), Compare);
 	}
 
+
+	void assign(T* first,T* last)
+	{
+		Array.assign(first, last);
+	}
+
+	void resize(size_t Index)
+	{
+		Array.resize(Index);
+	}
+
 	auto begin() { return Array.begin(); }
 	auto end() { return Array.end(); }
 

@@ -2,6 +2,7 @@
 
 #include "Engine/Scene/UScene.h"
 #include "Engine/Editor/Controller/FCameraController.h"
+#include "../Editor/ObjectPicker/FObjectPicker.h"
 
 ////////////////
 // UMainScene //
@@ -19,5 +20,5 @@ public:
 
 private:
 	FCameraController CameraController;
-
+	FObjectPicker* ObjectPicker = nullptr;
 };

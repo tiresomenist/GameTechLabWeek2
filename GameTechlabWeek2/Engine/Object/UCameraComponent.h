@@ -20,12 +20,14 @@ public:
     FVector GetForward() const;
     FVector GetRight() const;
     FVector GetUp() const;
+    void RemoveRoll();
+    void ConstrainEditorRotation();
 
     FMatrix GetViewMatrix() const;
     FMatrix GetProjectionMatrix() const;
     FMatrix GetOrthographicProjectionMatrix() const;
     FMatrix GetPerspectiveProjectionMatrix() const;
-    void MoveCamera(const float& InForward, const float& InRight, const float& InDeltaTime);
+    void MoveCamera(const float& InForward, const float& InRight, const float& InUp, const float& InDeltaTime);
     float GetOrthoHeight() const;
     void SetOrthoHeight(float InHeight);
 

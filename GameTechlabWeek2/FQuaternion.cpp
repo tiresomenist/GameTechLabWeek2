@@ -27,6 +27,43 @@ FQuaternion FQuaternion::FromEuler(const FVector& EulerRadians)
     return Result;
 }
 
+FVector FQuaternion::ToEuler(const FQuaternion& InQuaternion)
+{
+    // FromEuler uses QX * QY * QZ, or Rz * Ry * Rx for row vectors.
+    // ToRotationMatrix normalizes the input and handles invalid quaternions.
+    // Compute only the needed matrix entries in double precision, including
+    // normalization, to avoid cancellation near +/-90 degrees.
+    FVector Result;
+    float X = InQuaternion.X, Y = InQuaternion.Y, Z = InQuaternion.Z, W = InQuaternion.W;
+    float LengthSquared = X * X + Y * Y + Z * Z + W * W;
+    if (!std::isfinite(LengthSquared) || LengthSquared == 0.0) return FVector();
+
+    float S = 2 / LengthSquared;
+    float R00 = 1 - S * (Y * Y + Z * Z);
+    float R10 = S * (X * Y - Z * W);
+    float R20 = S * (X * Z + Y * W);
+    float R21 = S * (Y * Z - X * W);
+    float R22 = 1 - S * (X * X + Y * Y);
+
+
+    float CosPitch = std::hypot(R00, R10);
+
+    Result.Y = std::atan2(R20, CosPitch);
+
+    if (CosPitch > 1.0e-6f)
+    {
+        Result.X = std::atan2(-R21, R22);
+        Result.Z = std::atan2(-R10, R00);
+    }
+    else
+    {
+        float CoupledAngle = std::atan2(S * (Y * Z + X * W), 1.0 - S * (X * X + Z * Z));
+        Result.X = 0.0f;
+        Result.Z = (R20 >= 0.0 ? CoupledAngle : -CoupledAngle);
+    }
+    return Result;
+}
+
 FQuaternion FQuaternion::FromToRotation(const FVector& From, const FVector& To)
 {
     const double FromLength = std::hypot(double(From.X), double(From.Y), double(From.Z));
@@ -89,4 +126,43 @@ FMatrix FQuaternion::ToRotationMatrix() const
         2.0f * (XY - ZW), 1.0f - 2.0f * (XX + ZZ), 2.0f * (YZ + XW), 0.0f,
         2.0f * (XZ + YW), 2.0f * (YZ - XW), 1.0f - 2.0f * (XX + YY), 0.0f,
         0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+FQuaternion FQuaternion::GetUprightCameraRotation() const
+{
+    const FMatrix R = ToRotationMatrix();
+    const FVector Forward = R.GetAxis(0);
+    const float Horizontal = std::hypot(Forward.X, Forward.Y);
+    // At the pole, recover heading from the previous right axis.
+    const float Yaw = Horizontal > 1e-6f ? std::atan2(Forward.Y, Forward.X)
+        : std::atan2(-R.M[1][0], R.M[1][1]);
+    constexpr float Limit = 89.0f * PI / 180.0f;
+    const float Pitch = std::clamp(std::atan2(-Forward.Z, Horizontal), -Limit, Limit);
+    FQuaternion Result = FromAxisAngle(FVector(0, 0, 1), Yaw)
+        * FromAxisAngle(FVector(0, 1, 0), Pitch);
+    Result.Normalize();
+    return Result;
+}
+
+FQuaternion FQuaternion::GetWithoutRoll(const FVector& WorldUp) const
+{
+    FQuaternion Orientation = *this;
+    Orientation.Normalize();
+    const FMatrix Rotation = Orientation.ToRotationMatrix();
+    const FVector Forward = Rotation.GetAxis(0);
+    const FVector Right = Rotation.GetAxis(1);
+    const FVector UpReference = WorldUp.GetNormalized();
+    FVector TargetRight = UpReference.Cross(Forward);
+    // Avoid amplifying rounding errors when forward is parallel to world up.
+    if (!std::isfinite(TargetRight.LengthSquared()) || TargetRight.LengthSquared() < 1e-8f)
+        return Orientation;
+    TargetRight.Normalize();
+
+    // A world-space twist about forward changes only roll, not the viewing direction.
+    const float SinAngle = Forward.Dot(Right.Cross(TargetRight));
+    const float CosAngle = Right.Dot(TargetRight);
+    const float Angle = std::atan2(SinAngle, CosAngle);
+    FQuaternion Result = FromAxisAngle(Forward, Angle) * Orientation;
+    Result.Normalize();
+    return Result;
 }

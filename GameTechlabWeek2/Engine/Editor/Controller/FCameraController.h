@@ -9,7 +9,7 @@ public:
     void SetCamera(UCameraComponent* InCamera);
     void Tick(float DeltaTime);
 
-    float RotationSensitivity = 0.2f; // Degrees per pixel.
+    float RotationSensitivity = 0.1f; // Degrees per pixel.
 
 private:
     UCameraComponent* Camera = nullptr;
