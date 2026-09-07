@@ -14,8 +14,8 @@ class USceneComponent;
 class UCameraComponent;
 class UEditorWindow;
 class UGizmo;
-class FObjectPicker;
 class UGrid;
+class FObjectPicker;
 
 class FEditor
 {
