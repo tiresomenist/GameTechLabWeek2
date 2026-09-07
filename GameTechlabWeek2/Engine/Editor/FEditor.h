@@ -28,8 +28,8 @@ private:
 	USceneComponent* SelectedSceneComponent;
 	TArray<UGizmo*> Gizmos;
 	TArray<UEditorWindow*> Windows;
-
-
+	TArray<UGrid*> Grids;
+	
 
 public:
 

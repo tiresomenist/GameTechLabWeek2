@@ -8,6 +8,7 @@
 #include "Models/ArrowRed.h"
 #include "Models/ArrowGreen.h"
 #include "Models/ArrowBlue.h"
+#include "Models/Grid.h"
 
 GResourceManager* GResourceManager::GetInstance()
 {

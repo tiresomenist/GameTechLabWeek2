@@ -11,6 +11,8 @@
 #include "Engine/Gizmo/UWorldAxisGizmo.h"
 #include "Engine/Gizmo/UWorldGridGizmo.h"
 
+#include "Engine/Editor/UGrid.h"
+
 #include "Engine/Object/FObjectFactory.h"
 #include "Engine/Log.h"
 
