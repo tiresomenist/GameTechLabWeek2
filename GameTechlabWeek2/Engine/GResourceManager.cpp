@@ -17,9 +17,15 @@ GResourceManager* GResourceManager::GetInstance()
 
 void GResourceManager::Initialize(GDevice* InDevice)
 {
-	Device = InDevice;
-
-    CreateMesh("Sphere", arrow_green_vertices, arrow_green_indices);
+    Device = InDevice;
+    CreateMesh("Sphere", sphere_vertices, sphere_indices);
+    CreateMesh("Cube", cube_vertices, cube_indices);
+    //CreateMesh("Triangle", triangle_vertices, triangle_indices);
+    CreateMesh("PePe", pepe_vertices, pepe_indices);
+    CreateMesh("Octopus", octopus_vertices, octopus_indices);
+    CreateMesh("ArrowRed", arrow_red_vertices, arrow_red_indices);
+    CreateMesh("ArrowGreen", arrow_green_vertices, arrow_green_indices);
+    CreateMesh("ArrowBlue", arrow_blue_vertices, arrow_blue_indices);
 }
 
 void GResourceManager::Shutdown()
