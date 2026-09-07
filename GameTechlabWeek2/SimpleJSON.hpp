@@ -102,8 +102,15 @@ namespace json {
             : JSON()
         {
             SetType(Class::Object);
-            for (auto i = list.begin(), e = list.end(); i != e; ++i, ++i)
-                operator[](i->ToString()) = *std::next(i);
+            for (auto i = list.begin(), e = list.end(); i != e; ) {
+                const auto key = i++;
+                if (i == e) {
+                    std::cerr << "ERROR: Object: Expected a value for the last key\n";
+                    break;
+                }
+
+                operator[](key->ToString()) = *i++;
+            }
         }
 
         JSON(JSON&& other)
@@ -145,6 +152,9 @@ namespace json {
         }
 
         JSON& operator=(const JSON& other) {
+            if (this == &other)
+                return *this;
+
             ClearInternal();
             switch (other.Type) {
             case Class::Object:

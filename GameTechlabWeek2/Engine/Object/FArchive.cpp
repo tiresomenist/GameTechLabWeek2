@@ -3,12 +3,12 @@
 #include <utility>
 
 FArchive::FArchive()
-	: Object{}
+	: Object()
 {
 }
 
-FArchive::FArchive(json::JSON& InObject)
-	: Object{ InObject }
+FArchive::FArchive(const json::JSON& InObject)
+	: Object(InObject)
 {
 }
 

@@ -119,4 +119,6 @@ void USceneComponent::Deserialize(FArchive& Archive)
     RelativeScale3D.X = Scale[0];
     RelativeScale3D.Y = Scale[1];
     RelativeScale3D.Z = Scale[2];
+
+    UpdateWorldTransform();
 }

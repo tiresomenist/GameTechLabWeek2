@@ -16,7 +16,7 @@ private:
 
 public:
 	FArchive();
-	FArchive(json::JSON& InObject);
+	explicit FArchive(const json::JSON& InObject);
 
 	json::JSON GetJSON() const { return Object; }
 

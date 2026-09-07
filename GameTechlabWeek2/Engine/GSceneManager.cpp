@@ -23,7 +23,7 @@ void GSceneManager::Initialize()
 
 	TArray<FArchive> ObjectInfoList;
 
-	json::JSON List = FileJSON["Primitives"];
+	json::JSON& List = FileJSON["Primitives"];
 	for (auto& Item : List.ObjectRange())
 	{
 		uint32 UUID = std::stoi(Item.first);
