@@ -159,6 +159,7 @@ void FRenderer::CreateRasterizerState()
     D3D11_RASTERIZER_DESC rasterizerdesc = {};
     rasterizerdesc.FillMode = D3D11_FILL_SOLID; // 채우기 모드
     rasterizerdesc.CullMode = D3D11_CULL_BACK;  // 백 페이스 컬링
+    rasterizerdesc.FrontCounterClockwise = TRUE;
 
     D3DDevice->CreateRasterizerState(&rasterizerdesc, &RasterizerState);
 }
@@ -194,7 +195,7 @@ void FRenderer::Render(UScene* Scene)
     FMatrix Rotation = FMatrix::MakeRotationYMatrix(Angle);
     for (auto& Item: RenderList)
     {
-        FMatrix MVP = Rotation* (*Item.WorldMatrix) * ViewProjMatrix;
+        FMatrix MVP = (*Item.WorldMatrix)* Rotation* ViewProjMatrix;
         UpdateConstantBuffer(MVP);
         RenderPrimitive(Item);
     }
