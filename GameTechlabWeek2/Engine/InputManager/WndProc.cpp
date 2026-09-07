@@ -1,6 +1,7 @@
 #include "WndProc.h"
 #include "Engine/InputManager/GInputManager.h"
 #include "Engine/Core.h"
+#include "Engine/Log.h"
 
 LRESULT HandleInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -58,7 +59,6 @@ LRESULT HandleInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		//mouse
 
 	case WM_LBUTTONDOWN:
-
 		GetClientRect(hWnd, &rc);
 		Input.SetLeftCursorX(2.0f * GET_X_LPARAM(lParam) / (rc.right - rc.left) - 1.0f);
 		Input.SetLeftCursorY(1.0f - 2.0f * GET_Y_LPARAM(lParam) / (rc.bottom - rc.top));
@@ -77,7 +77,8 @@ LRESULT HandleInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		Input.SetRightCursorPixelX(GET_X_LPARAM(lParam));
 		Input.SetRightCursorPixelY(GET_Y_LPARAM(lParam));
 		Input.BeginRightDrag(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-		SetCapture(hWnd);
+		if (GetCapture() != hWnd)
+			SetCapture(hWnd);
 		break;
 	case WM_RBUTTONUP:
 		GetClientRect(hWnd, &rc);

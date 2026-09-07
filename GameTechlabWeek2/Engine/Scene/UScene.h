@@ -43,7 +43,6 @@ public:
 	}
 
 	void Destroy(UObject* Object);
-    void RenderGizmos(FRenderer& Renderer);
 
 	//외부에서 Primitive 접근 제공
 	template <typename Func>
@@ -75,5 +74,5 @@ protected:
 	UCameraComponent* MainCamera = nullptr;
 
 public:
-	friend TArray<FPrimitiveRenderData> RenderUtil::GetRenderList(UScene* Scene);
+	friend TArray<FPrimitiveRenderData> RenderUtil::GetRenderList(FEditor* Editor, UScene* Scene);
 };

@@ -3,9 +3,10 @@
 #include "Container/TArray.h"
 
 class UScene;
+class FEditor;
 struct FPrimitiveRenderData;
 
 namespace RenderUtil
 {
-	TArray<FPrimitiveRenderData> GetRenderList(UScene* Scene);
+	TArray<FPrimitiveRenderData> GetRenderList(FEditor* Editor, UScene* Scene);
 };

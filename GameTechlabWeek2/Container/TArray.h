@@ -41,6 +41,16 @@ public:
 		return Array.size();
 	}
 
+	void SetNum(size_t Size)
+	{
+		Array.resize(Size);
+	}
+
+	T* GetData()
+	{
+		return Array.data();
+	}
+
 	void RemoveAt(size_t Index)
 	{
 		Array.erase(Array.begin() + Index);
@@ -50,7 +60,7 @@ public:
 	{
 		return Array[Index];
 	}
-	
+
 	const T& operator[](size_t Index) const
 	{
 		return Array[Index];
@@ -61,8 +71,12 @@ public:
 		std::sort(Array.begin(), Array.end(), Compare);
 	}
 
+	int Size()
+	{
+		return Array.size();
+	}
 
-	void assign(T* first,T* last)
+	void assign(T* first, T* last)
 	{
 		Array.assign(first, last);
 	}

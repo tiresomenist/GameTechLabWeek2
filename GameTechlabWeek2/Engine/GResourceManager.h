@@ -6,19 +6,20 @@
 #include "Core.h"
 #include "Container/FString.h"
 #include "Container/Tarray.h"
-#include "../FVertexSimple.h"
+#include "Engine/Renderer/FVertexSimple.h"
+#include "../Engine/Primitive/FMeshResource.h"
 
-struct FMeshResource
-{
-	ID3D11Buffer* VertexBuffer = nullptr;
-	ID3D11Buffer* IndexBuffer = nullptr;
-	UINT VertexCount = 0;
-	UINT IndexCount = 0;
-	UINT Stride = 0;
-
-	TArray<FVertexSimple> vertexs;
-	TArray<uint32> indexes;
-};
+//struct FMeshResource
+//{
+//	ID3D11Buffer* VertexBuffer = nullptr;
+//	ID3D11Buffer* IndexBuffer = nullptr;
+//	UINT VertexCount = 0;
+//	UINT IndexCount = 0;
+//	UINT Stride = 0;
+//
+//	TArray<FVertexSimple> vertexs;
+//	TArray<uint32> indexes;
+//};
 
 struct FShaderResource
 {

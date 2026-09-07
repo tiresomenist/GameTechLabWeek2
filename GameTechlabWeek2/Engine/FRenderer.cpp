@@ -1,16 +1,23 @@
 #pragma once
 #include "FRenderer.h"
 #include "Matrix.h"
-#include "FVertexSimple.h"
+#include "Engine/Renderer/FVertexSimple.h"
+#include "Engine/Editor/Window/UEditorWindow.h"
 #include "Engine/GDevice.h"
 #include "Engine/Scene/UScene.h"
+#include "Engine/Editor/FEditor.h"
+#include "Engine/Gizmo/UGizmo.h"
 #include "Engine/Renderer/RenderUtil.h"
 #include "Engine/Core.h"
 #include "Engine/Object/UCameraComponent.h"
 
+#include "ImGui/imgui.h"
+#include "ImGui/imgui_impl_dx11.h"
+#include "ImGui/imgui_impl_win32.h"
+
 #include <format>
 
-void FRenderer::Create(GDevice* InDevice)
+void FRenderer::Create(HWND HWnd, GDevice* InDevice)
 {
     Device = InDevice;
     DeviceContext = InDevice->GetContext();
@@ -19,6 +26,24 @@ void FRenderer::Create(GDevice* InDevice)
     CreateRasterizerState();
     CreateShaders();
     CreateConstantBuffer();
+
+    // @TEST >>
+    //GenerateSphere(1.0f, 30, 30, SphereVertices, SphereIndices);
+    //const UINT vertexByteWidth = static_cast<UINT>(SphereVertices.size() * sizeof(FVertexTest));
+    //SphereVertexBuffer = CreateVertexBuffer(SphereVertices.data(), vertexByteWidth);
+    //const UINT indexByteWidth = static_cast<UINT>(SphereIndices.size() * sizeof(uint32_t));
+    //SphereIndexBuffer = CreateIndexBuffer(SphereIndices.data(), indexByteWidth);
+    // @TEST <<
+
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplWin32_Init(HWnd);
+    ImGui_ImplDX11_Init(D3DDevice, DeviceContext);
 }
 
 void FRenderer::Shutdown()
@@ -26,6 +51,12 @@ void FRenderer::Shutdown()
     ReleaseConstantBuffer();
     ReleaseShader();
     ReleaseRasterizerState();
+
+    //TESTCODE//
+    ImGui_ImplDX11_Shutdown();
+    ImGui_ImplWin32_Shutdown();
+    ImGui::DestroyContext();
+    ////////////
 
     // 렌더 타겟을 초기화
     DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
@@ -89,6 +120,12 @@ void FRenderer::ReleaseShader()
 
 void FRenderer::PrepareRTVDSV()
 {
+    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+
+    DeviceContext->ClearRenderTargetView(Device->GetFrameBufferRTV(), ClearColor);
+    DeviceContext->ClearDepthStencilView(Device->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     ID3D11RenderTargetView* RTV = Device->GetFrameBufferRTV();
     ID3D11DepthStencilView* DSV = Device->GetDepthStencilView();
 
@@ -97,6 +134,7 @@ void FRenderer::PrepareRTVDSV()
 
     DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+    ViewportInfo = Device->GetViewport(); // 리사이징 된 현재 뷰포트 복사
     DeviceContext->RSSetViewports(1, &ViewportInfo);
     DeviceContext->RSSetState(DefaultRasterizerState);
 
@@ -192,18 +230,23 @@ void FRenderer::BeginFrame()
 
 void FRenderer::EndFrame()
 {
+    ImGui::Render();
+    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    GDevice::GetInstance()->SwapBuffer();
 }
 
-void FRenderer::Render(UScene* Scene)
+void FRenderer::Render(FEditor* Editor, UScene* Scene)
 {
     BeginFrame();
 
-    UCameraComponent* Camera = Scene->GetMainCamera();
+    UCameraComponent* Camera = Editor->GetEditorCamera();
+
     FMatrix ViewProjMatrix = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
-    TArray<FPrimitiveRenderData> RenderList = RenderUtil::GetRenderList(Scene);
+    TArray<FPrimitiveRenderData> RenderList = RenderUtil::GetRenderList(Editor, Scene);
     static float Angle = 0.0f;
     Angle += 0.03f;
     FMatrix Rotation = FMatrix::MakeRotationZMatrix(Angle);
+    Camera->SetAspectRatio(Device->GetViewport().Width / Device->GetViewport().Height); // 리사이징된 카메라 화면에 맞게 종횡비를 맞춥니다.
     for (auto& Item: RenderList)
     {
         FMatrix MVP = Rotation * (*Item.WorldMatrix) * ViewProjMatrix;
@@ -215,13 +258,17 @@ void FRenderer::Render(UScene* Scene)
         RenderPrimitive(Item);
     }
 
+    // 2. Editor Window 렌더
+    for (auto Item : Editor->GetWindows())
+    {
+        Item->Render();
+    }
+
     // Gizmo vertices are already in world space (identity world transform).
     UpdateConstantBuffer(ViewProjMatrix);
-    Scene->RenderGizmos(*this);
-
-    GDevice::GetInstance()->SwapBuffer();
     EndFrame();
 }
+////////////////
 
 void FRenderer::UpdateConstantBuffer(const FMatrix& MVP)
 {
@@ -231,6 +278,7 @@ void FRenderer::UpdateConstantBuffer(const FMatrix& MVP)
 
         DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR);
         FConstants* constants = (FConstants*)constantbufferMSR.pData;
+
         constants->MVP = MVP;//.Transpose(); 그냥 Shader에서 row_major 키워드 넣기로 함
         DeviceContext->Unmap(ConstantBuffer, 0);
     }

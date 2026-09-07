@@ -6,6 +6,8 @@
 #include "../../GResourceManager.h"
 
 
+struct FMeshResource;
+
 class UPrimitiveComponent : public USceneComponent
 {
 
@@ -14,7 +16,7 @@ class UPrimitiveComponent : public USceneComponent
 public:
 
     // 렌더러에게 전달할 렌더 정보
-    virtual FPrimitiveRenderData GetRenderData(FStringView Type = "");
+    virtual FPrimitiveRenderData GetRenderData(FStringView Text = "");
 
     FMeshResource* GetMeshResource() const
     {

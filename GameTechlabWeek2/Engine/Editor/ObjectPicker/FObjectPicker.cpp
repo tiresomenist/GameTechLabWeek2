@@ -2,8 +2,9 @@
 #include "../../InputManager/GInputManager.h"
 #include "../../../FVector.h"
 #include "../../../Matrix.h"
-#include "../../../FVertexSimple.h"
+#include "Engine/Renderer/FVertexSimple.h"
 #include "../../Scene/UScene.h"
+#include "Engine/Log.h"
 
 bool FObjectPicker::MakeWorldRay(FRay& OutRay) {
 

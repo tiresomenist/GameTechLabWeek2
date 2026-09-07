@@ -18,7 +18,4 @@ public:
 
 	virtual void EndPlay() override;
 
-private:
-	FCameraController CameraController;
-	FObjectPicker* ObjectPicker = nullptr;
 };

@@ -6,13 +6,21 @@
 #include "Engine/Object/UObject.h"
 #include "Engine/Core.h"
 
+#include "Engine/Editor/FEditor.h"
 #include "Engine/GSceneManager.h"
 #include "Engine/FConsole.h"
+
+#include "Engine/Primitive/GPrimitive.h"
 
 #include "GDevice.h"
 #include "GResourceManager.h"
 
 #include <chrono>
+
+#include "Editor/Window/UConsoleWindow.h"
+#include "Editor/Window/UEditorWindow.h"
+#include "Editor/Window/UPropertyWindow.h"
+#include "Editor/Window/USceneWindow.h"
 
 float GEngine::GetTime()
 {
@@ -35,11 +43,33 @@ void GEngine::Initialize(HWND InHwnd)
 	Console = new FConsole();
 	Console->Initialize();
 
+	// Device 초기화
+	// DirectX 백버퍼 크기를 실제 윈도우 클라이언트 크기에 맞춥니다.
+	// Main() { CreateWindwoExW(... 1024,1024 ...) }  -> 제목 표시줄과 테두리를 포함한 전체 창 크기
+	// GetClientRect() -> 제목 표시줄과 테두리를 제외한 클라이언트 영역
+	// 이를 사용함으로 프로그램 사용 초기 Imgui출력 위치가 이상한 문제가 해결됩니다.
+	RECT ClientRect{};
+	GetClientRect(InHwnd, &ClientRect);
+	const uint32 ClientWidth = static_cast<uint32>(ClientRect.right - ClientRect.left);
+	const uint32 ClientHeight = static_cast<uint32>(ClientRect.bottom - ClientRect.top);
+	GDevice& Device = *GDevice::GetInstance();
+	Device.Initialize(InHwnd, ClientWidth, ClientHeight);
+
+	// 리소스 매니저 초기화
+	GResourceManager& ResourceManager = *GResourceManager::GetInstance();
+	GPrimitive::Initialize(&Device);
+	ResourceManager.Initialize(&Device);
+	
+	// 렌더러 초기화
+	Renderer.Create(InHwnd, &Device);
+	
 	// 씬 매니저 초기화
-	GDevice::GetInstance()->Initialize(InHwnd, 1024, 1024);
-	GResourceManager::GetInstance()->Initialize(GDevice::GetInstance());
-	Renderer.Create(GDevice::GetInstance());GSceneManager* SceneManager = GSceneManager::GetInstance();
+	GSceneManager* SceneManager = GSceneManager::GetInstance();
 	SceneManager->Initialize();
+
+	// 에디터 초기화
+	Editor = new FEditor();
+	Editor->Initialize();
 
 	StartTime = GetTime();
 	LastTickTime = GetTime();
@@ -54,14 +84,21 @@ void GEngine::Tick()
 	GSceneManager* SceneManager = GSceneManager::GetInstance();
 	SceneManager->Tick(DeltaTime);
 
+	Editor->Tick(DeltaTime);
+
 	// 게임 화면을 렌더링합니다.
 	UScene* CurrentScene = SceneManager->GetScene();
-	Renderer.Render(CurrentScene);
+	Renderer.Render(Editor, CurrentScene);
 }
 
 // 엔진의 자원을 정리합니다.
 void GEngine::Destroy()
 {
+	// 에디터 정리
+	Editor->Release();
+	delete Editor;
+	Editor = nullptr;
+
 	// 씬 매니저 정리
 	GSceneManager* SceneManager = GSceneManager::GetInstance();
 	SceneManager->Release();

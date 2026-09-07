@@ -6,10 +6,11 @@
 
 class USphereComponent : public UPrimitiveComponent
 {
-    
+
 	UCLASS(USphereComponent, "Sphere", UPrimitiveComponent)
 
 public:
 
 	virtual FPrimitiveRenderData GetRenderData(FStringView Type = "") override;
+
 };

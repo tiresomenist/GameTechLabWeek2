@@ -10,7 +10,13 @@
 #include "Engine/Object/Primitive/UArrowGreenComponent.h"
 #include "Engine/Object/Primitive/UArrowBlueComponent.h"
 #include "Engine/Object/UCameraComponent.h"
-#include "Engine/Gizmo/UWorldAxisGizmo.h"
+// TEMP(UI test): Gizmo implementation is currently excluded from the build.
+// #include "Engine/Gizmo/UWorldAxisGizmo.h"
+
+#include "Engine/Object/Primitive/USphereComponent.h"
+#include "Engine/Object/Primitive/UCubeComponent.h"
+#include "Engine/Object/Primitive/UPlaneComponent.h"
+
 #include <format>
 
 //////////////////
@@ -22,12 +28,7 @@ void UMainScene::BeginPlay()
 
 	
     CreateMainCamera();
-    // Temporary world-axis display. Remove this spawn to disable it.
-    SpawnObject<UWorldAxisGizmo*>(UWorldAxisGizmo::GetClass());
-    CameraController.SetCamera(GetMainCamera());
-	GetMainCamera()->SetRelativeLocation(FVector(-5.0f, 0.0f, 0.0f));
 
-	ObjectPicker = new FObjectPicker(GetMainCamera(), this);
 	USphereComponent* SphereComponent = SpawnObject<USphereComponent*>(USphereComponent::GetClass());
 	SphereComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 
@@ -45,39 +46,21 @@ void UMainScene::BeginPlay()
 
 	UArrowBlueComponent* BlueArrowComponent = SpawnObject<UArrowBlueComponent*>(UArrowBlueComponent::GetClass());
 	BlueArrowComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 3.0f));
+
+	UPepeComponent* BPepeComponent = SpawnObject<UPepeComponent*>(UPepeComponent::GetClass());
+	BPepeComponent->SetRelativeLocation(FVector(0.0f, 3.0f, 3.0f));
 }
 
 void UMainScene::Tick(float DeltaTime)
 {
     //UScene::Tick(DeltaTime);
 
-
-	GEngine& Engine = *GEngine::GetInstance();
-	GInputManager& Input = *GInputManager::GetInstance();
-	
-	float Time = Engine.GetTime();
-	if (Input.ConsumeLeftClick()) {
-		//UE_LOG(std::format("[{}] 좌클릭 좌표:{}, {}", Time,
-		//	Input.GetLeftCursorX(),
-		//	Input.GetLeftCursorY()));
-		UPrimitiveComponent* Selected = ObjectPicker->Pick();
-		if (Selected != nullptr) {
-			UE_LOG(std::format("[{}] : [{}번째 오브젝트 선택]",Time,Selected->UUID));
-		}
-	}
-	if (Input.GetKey(GInputManager::EI_RMOUSE)) {
-		//UE_LOG(std::format("[{}] 우클릭 좌표:{}, {}", Time,
-		//	GInputManager::GetInstance()->GetRightCursorX(),
-		//	GInputManager::GetInstance()->GetRightCursorY()));
-	}
-	CameraController.Tick(DeltaTime);
+	//CameraController.Tick(DeltaTime);
 
 }
 
 void UMainScene::EndPlay()
 {
 	//UScene::EndPlay();
-	CameraController.SetCamera(nullptr);
-	delete ObjectPicker;
-	ObjectPicker = nullptr;
+	//CameraController.SetCamera(nullptr);
 }
