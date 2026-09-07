@@ -39,6 +39,7 @@ void FRenderer::Create(HWND HWnd, GDevice* InDevice)
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
+    io.Fonts->AddFontFromFileTTF("Assets/Pretendard-Regular.ttf", 16.0f);
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 
     // Setup Platform/Renderer backends
