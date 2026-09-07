@@ -17,6 +17,7 @@
 #include "../Matrix.h"
 #include "../FQuaternion.h"
 //#include "../FVertexSimple.h"
+#include "Container/TArray.h"
 
 //struct FVertexSimple;
 struct FConstants

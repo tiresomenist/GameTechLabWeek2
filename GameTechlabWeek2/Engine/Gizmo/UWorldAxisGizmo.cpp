@@ -1,3 +1,4 @@
+#include "../Core.h"
 #include "UWorldAxisGizmo.h"
 #include "Engine/Primitive/GPrimitive.h"
 
