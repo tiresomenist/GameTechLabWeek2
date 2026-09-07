@@ -182,7 +182,7 @@ public:
 	//ID3D11Buffer* SphereIndexBuffer = nullptr;
 
 
-    void Create(GDevice* InDevice);					// 렌더러 초기화 함수
+    void Create(HWND HWnd, GDevice* InDevice);					// 렌더러 초기화 함수
 
     void Shutdown();                                // 렌더러에 사용된 모든 리소스를 해제하는 함수
 

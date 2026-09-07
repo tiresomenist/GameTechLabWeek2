@@ -14,14 +14,11 @@ private:
 	uint32 prevLogIndex = 0;
 	uint32 displayStartIndex = 0;
 public:
-	~UConsoleWindow() = default;
-
 	void AddDebugText();
 	void AddDebugError();
 	void Clear(uint32 prevlogindex);
 	void Copy();
 	void Option();
-	void UpdateEditorWindow(const FConsole& console);
 	void Render() override;
 };
 

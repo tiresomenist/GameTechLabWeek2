@@ -2,6 +2,7 @@
 #include "../../FConsole.h"
 #include "../../../FVector.h"
 #include "ImGui/imgui.h"
+#include "Engine/GEngine.h"
 
 void UConsoleWindow::AddDebugText()
 {
@@ -25,7 +26,8 @@ void UConsoleWindow::Option()
 }
 void UConsoleWindow::Render()
 {
-	TArray<FString> logs = console.Get(Filter);
+	FConsole* console = GEngine::GetInstance()->GetConsole();
+	TArray<FString> logs = console->Get(Filter);
 	ImGui::Begin("Example: Console");
 	{
 		ImGui::Text("This example implements a console with basic coloring, completion (TAB key) and history (Up/Down keys), A more elaborate implementation may want to store entries along with extra data such as timestamp, emitter, etc.");
@@ -73,6 +75,8 @@ void UConsoleWindow::Render()
 			ImGui::SetScrollHereY(1.0f);
 		}
 		prevLogIndex = logs.Size();
+
+		ImGui::EndChild();
 	}
 	ImGui::End();
 }

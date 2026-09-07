@@ -1,7 +1,7 @@
 #include "FEditor.h"
 
 #include "Engine/Object/UCameraComponent.h"
-#include "Engine/Editor/UEditorWindow.h"
+#include "Engine/Editor/Window/UEditorWindow.h"
 
 #include "Engine/Editor/Window/UConsoleWindow.h"
 #include "Engine/Editor/Window/UPropertyWindow.h"
@@ -12,6 +12,9 @@
 #include "Engine/Gizmo/UWorldGridGizmo.h"
 
 #include "Engine/Object/FObjectFactory.h"
+#include "Engine/Log.h"
+
+#include "Engine/InputManager/GInputManager.h"
 
 void FEditor::Initialize()
 {
@@ -27,7 +30,7 @@ void FEditor::Initialize()
 	// TODO 생성자 고칠 것
 	RegisterWindow(new UConsoleWindow());
 	RegisterWindow(new UPropertyWindow());
-	//RegisterWindow(new USceneWindow());
+	RegisterWindow(new USceneWindow());
 }
 
 void FEditor::Tick(float DeltaTime)

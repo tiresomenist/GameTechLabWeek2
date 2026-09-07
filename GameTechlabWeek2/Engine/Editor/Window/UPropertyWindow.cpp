@@ -4,6 +4,10 @@
 
 void UPropertyWindow::Render()
 {
+	FVector translation;
+	FVector rotation;
+	FVector scale;
+
 	ImGui::Begin("Jungle Property Window");
 	{
 		ImGui::DragFloat("##translationX", &translation.X, 0.001f);

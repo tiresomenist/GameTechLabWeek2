@@ -1,15 +1,12 @@
 #pragma once
 #include "FRenderer.h"
-#include "../Matrix.h"
-#include "../FVertexSimple.h"
-#include "Engine/Editor/Window/UEditorWindow.h"
 #include "Matrix.h"
 #include "FVertexSimple.h"
+#include "Engine/Editor/Window/UEditorWindow.h"
 #include "Engine/GDevice.h"
 #include "Engine/Scene/UScene.h"
 #include "Engine/Editor/FEditor.h"
 #include "Engine/Gizmo/UGizmo.h"
-#include "Engine/Editor/UEditorWindow.h"
 #include "Engine/Renderer/RenderUtil.h"
 #include "Engine/Core.h"
 #include "Engine/Object/UCameraComponent.h"
@@ -80,7 +77,7 @@ void GenerateSphere(float Radius, int Slices, int Stacks, std::vector<FVertexTes
     }
 }
 
-void FRenderer::Create(GDevice* InDevice)
+void FRenderer::Create(HWND HWnd, GDevice* InDevice)
 {
     Device = InDevice;
     DeviceContext = InDevice->GetContext();
@@ -99,22 +96,14 @@ void FRenderer::Create(GDevice* InDevice)
     // @TEST <<
 
 
-    //////////////////////////
-    /// 임시 테스트 코드    //
-    //////////////////////////
-
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 
     // Setup Platform/Renderer backends
-    ImGui_ImplWin32_Init(hWindow);
-    ImGui_ImplDX11_Init(Device, DeviceContext);
-
-    //////////////////////////
-    /// 임시 테스트 코드    //
-    //////////////////////////
+    ImGui_ImplWin32_Init(HWnd);
+    ImGui_ImplDX11_Init(D3DDevice, DeviceContext);
 }
 
 void FRenderer::Shutdown()
@@ -138,13 +127,6 @@ void FRenderer::Shutdown()
 
     // 렌더 타겟을 초기화
     DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
-}
-
-void FRenderer::SwapBuffer()
-{
-    ImGui::Render();
-    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-    SwapChain->Present(1, 0); // 1: VSync 활성화
 }
 
 void FRenderer::CreateShader()
@@ -201,8 +183,8 @@ void FRenderer::Prepare()
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    DeviceContext->ClearRenderTargetView(FrameBufferRTV, ClearColor);
-    DeviceContext->ClearDepthStencilView(DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+    DeviceContext->ClearRenderTargetView(Device->GetFrameBufferRTV(), ClearColor);
+    DeviceContext->ClearDepthStencilView(Device->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     ID3D11RenderTargetView* RTV = Device->GetFrameBufferRTV();
     ID3D11DepthStencilView* DSV = Device->GetDepthStencilView();
 
@@ -318,23 +300,13 @@ void FRenderer::BeginFrame()
 
 void FRenderer::EndFrame()
 {
+    ImGui::Render();
+    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    GDevice::GetInstance()->SwapBuffer();
 }
 
 void FRenderer::Render(FEditor* Editor, UScene* Scene)
 {
-}
-
-void FRenderer::RenderUI(TArray<UEditorWindow*>& WindowArray)
-{
-    for (auto item : WindowArray)
-    {
-        item->UpdateEditorWindow();
-    }
-
-    ImGui::ShowDemoWindow();
-}
-
-// @TEST <<
     BeginFrame();
 
     UCameraComponent* Camera = Editor->GetEditorCamera();
@@ -343,7 +315,7 @@ void FRenderer::RenderUI(TArray<UEditorWindow*>& WindowArray)
     TArray<FPrimitiveRenderData> RenderList = RenderUtil::GetRenderList(Editor, Scene);
 
     // 1. Scene Object, Editor Gizmo 렌더
-    for (auto& Item: RenderList)
+    for (auto& Item : RenderList)
     {
         FMatrix MVP = (*Item.WorldMatrix) * ViewProjMatrix;
         UpdateConstantBuffer(MVP);
@@ -358,29 +330,6 @@ void FRenderer::RenderUI(TArray<UEditorWindow*>& WindowArray)
 
     // Gizmo vertices are already in world space (identity world transform).
     UpdateConstantBuffer(ViewProjMatrix);
-
-void FRenderer::Render()
-{
-    //BeginFrame();
-
-    XMMATRIX View = XMMatrixLookAtLH({ 0.0f, 0.0f, -5.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f });
-    const float AspectRatio = ViewportInfo.Width / ViewportInfo.Height;
-    XMMATRIX Proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, AspectRatio, 0.1f, 100.0f);
-    XMMATRIX WorldMat = XMMatrixIdentity();
-    XMMATRIX MVP = WorldMat * View * Proj;
-
-    FPrimitiveRenderData Data{};
-    Data.VertexBuffer = SphereVertexBuffer;
-    Data.IndexBuffer = SphereIndexBuffer;
-    Data.IndexCount = static_cast<UINT>(SphereIndices.size());
-    Data.Stride = sizeof(FVertexTest);
-    Data.Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-
-    UpdateConstantBuffer(MVP);
-    RenderPrimitive(Data);
-
-    //EndFrame();
-    GDevice::GetInstance()->SwapBuffer();
     EndFrame();
 }
 

@@ -48,7 +48,7 @@ void GEngine::Initialize(HWND InHwnd)
 	ResourceManager.Initialize(&Device);
 	
 	// 렌더러 초기화
-	Renderer.Create(&Device);
+	Renderer.Create(InHwnd, &Device);
 	
 	// 씬 매니저 초기화
 	GSceneManager* SceneManager = GSceneManager::GetInstance();

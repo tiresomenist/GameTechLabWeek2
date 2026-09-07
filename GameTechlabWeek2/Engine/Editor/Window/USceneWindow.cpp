@@ -35,8 +35,15 @@ TArray<FClassType> Spawnables
 };
 */
 
-void USceneWindow::UpdateEditorWindow(float fps, bool& bIsOrthogonal, float& fov, FVector& cameralocation, FVector& camerarotation)
+void USceneWindow::Render()
 {
+	// TODO: Editor에 연결
+	float fps = 60.f;
+	bool bIsOrthogonal = true;
+	float fov = 75.0f;
+	FVector cameralocation;
+	FVector camerarotation;
+
 	ImGui::Begin("Jungle Control Panel");
 	{
 		ImGui::Text("Hello Jungle World!");
