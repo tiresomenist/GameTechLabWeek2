@@ -51,6 +51,7 @@ void FEditor::Tick(float DeltaTime)
 		//	Input.GetLeftCursorY()));
 		UPrimitiveComponent* Selected = ObjectPicker->Pick();
 		if (Selected != nullptr) {
+			SelectedSceneComponent = Selected;
 			UE_LOG("[{}] : [{}번째 오브젝트 선택]", Time, Selected->UUID);
 		}
 	}

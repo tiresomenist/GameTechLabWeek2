@@ -250,7 +250,7 @@ void FRenderer::Render(FEditor* Editor, UScene* Scene)
     Camera->SetAspectRatio(Device->GetViewport().Width / Device->GetViewport().Height); // 리사이징된 카메라 화면에 맞게 종횡비를 맞춥니다.
     for (auto& Item: RenderList)
     {
-        FMatrix MVP = Rotation * (*Item.WorldMatrix) * ViewProjMatrix;
+        FMatrix MVP =  (*Item.WorldMatrix) * ViewProjMatrix;
         UpdateConstantBuffer(MVP);
         if (Item.isSelected)
         {

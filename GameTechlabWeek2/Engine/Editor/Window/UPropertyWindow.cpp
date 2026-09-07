@@ -1,6 +1,8 @@
 #include "UPropertyWindow.h"
 #include "../../../FVector.h"
 #include "ImGui/imgui.h"
+#include "Engine/Editor/FEditor.h"
+#include "FQuaternion.h"
 
 void UPropertyWindow::UpdateTranslation()
 {
@@ -47,6 +49,17 @@ void UPropertyWindow::Render()
 	const ImGuiStyle& Style = ImGui::GetStyle();
 	ImVec2 ItemSpacing = Style.ItemSpacing; // 아이템간 패딩 값
 	float ButtonWidth = Available.x * 0.2f; // Button, DragFloat
+
+
+	USceneComponent* SelectedComponent = Editor->GetSelectedSceneComponent();
+	if (SelectedComponent != nullptr)
+	{
+		Translation = SelectedComponent->GetRelativeLocation();
+
+		const FQuaternion& Quaternion = SelectedComponent->GetRelativeRotation();
+		Rotation = FQuaternion::ToEuler(Quaternion);
+		OScale = SelectedComponent->GetRelativeScale3D();
+	}
 
 	ImGui::Begin("Jungle Property Window");
 	{
@@ -103,4 +116,11 @@ void UPropertyWindow::Render()
 		ImGui::PopStyleVar();
 	}
 	ImGui::End();
+
+	if (SelectedComponent != nullptr)
+	{
+		SelectedComponent->SetRelativeLocation(Translation);
+		SelectedComponent->SetRelativeRotation(FQuaternion::FromEuler(Rotation));
+		SelectedComponent->SetRelativeScale3D(OScale);
+	}
 }
