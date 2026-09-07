@@ -4,15 +4,21 @@
 #include "../FRenderer.h"
 #include <Windows.h>
 
+class FEditor;
 
 class UEditorWindow
 {
-public:
-	UEditorWindow() = default;
-	virtual ~UEditorWindow() = default;
+private: 
+	
+	FEditor* Editor;
 
+public:
 	void startEditor(HWND Hwnd, ID3D11Device* device, ID3D11DeviceContext* device_context);
-	virtual void updateEditor(FRenderer &renderer) = 0;
+	virtual void updateEditor() {}
 	void endEditor();
+
+	void Initialize(FEditor* InEditor);
+
+	virtual void Render() {}
 };
 

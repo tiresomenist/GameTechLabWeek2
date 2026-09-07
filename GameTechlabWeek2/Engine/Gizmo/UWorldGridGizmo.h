@@ -4,11 +4,8 @@
 
 class UWorldGridGizmo : public UGizmo
 {
+
     UCLASS(UWorldGridGizmo, "WorldGridGizmo", UGizmo)
-
-public:
-    virtual ~UWorldGridGizmo() = default;
-
 
 private:
     // Grid 중심으로부터 양쪽에 몇 칸까지 만들 것인지

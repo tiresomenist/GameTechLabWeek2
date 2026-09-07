@@ -1,6 +1,8 @@
 #pragma once
 
 #include "UGizmo.h"
+#include "Container/TArray.h"
+#include "Engine/Renderer/FPrimitiveRenderData.h"
 
 class UWorldAxisGizmo : public UGizmo
 {
@@ -8,7 +10,8 @@ class UWorldAxisGizmo : public UGizmo
 	UCLASS(UWorldAxisGizmo, "WorldAxisGizmo", UGizmo)
 
 public:
-    void Create(FRenderer& Renderer) override;
+
+	virtual TArray<FPrimitiveRenderData> GetRenderData() override;
 
 };
 

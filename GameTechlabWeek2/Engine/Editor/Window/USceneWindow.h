@@ -1,9 +1,9 @@
 #pragma once
 
-#include "UEditorWindow.h"
-#include "../../../Matrix.h"
-#include "../../Object/Primitive/UPrimitiveComponent.h"
-#include "../../../Container/FString.h"
+#include "Engine/Editor/UEditorWindow.h"
+#include "Matrix.h"
+#include "Engine/Object/Primitive/UPrimitiveComponent.h"
+#include "Container/FString.h"
 
 class USceneWindow : public UEditorWindow
 {
@@ -19,13 +19,11 @@ private:
 	FQuaternion cameraRotation; // Todo : 카메라 객체에서 값을 받아와서 초기값 설정
 	/*             */
 public:
-	USceneWindow() = default;
-	~USceneWindow() = default;
 
-	void SpawnPrimitive();
-	void MakeNewScene();
-	void SaveCurrentScene();
-	void LoadSavedScene();
-	void UpdateCamerInfo();
+	//void SpawnPrimitive();
+	//void MakeNewScene();
+	//void SaveCurrentScene();
+	//void LoadSavedScene();
+	//void UpdateCamerInfo();
 };
 

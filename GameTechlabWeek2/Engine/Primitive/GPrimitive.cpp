@@ -13,6 +13,7 @@
 #include "Mesh/Cylinder.h"
 #include "Mesh/Cone.h"
 #include "Mesh/Plane.h"
+#include "Mesh/Line.h"
 
 
 template <uint32 N>
@@ -42,4 +43,7 @@ void GPrimitive::Initialize(GDevice* Device)
     SetFMeshResource(Device, Plane, Mesh::Plane);
     SetFMeshResource(Device, Cylinder, Mesh::Cylinder);
     SetFMeshResource(Device, Cone, Mesh::Cone);
+    SetFMeshResource(Device, Line, Mesh::Line);
+
+    
 }

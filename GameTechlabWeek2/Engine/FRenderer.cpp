@@ -4,6 +4,9 @@
 #include "FVertexSimple.h"
 #include "Engine/GDevice.h"
 #include "Engine/Scene/UScene.h"
+#include "Engine/Editor/FEditor.h"
+#include "Engine/Gizmo/UGizmo.h"
+#include "Engine/Editor/UEditorWindow.h"
 #include "Engine/Renderer/RenderUtil.h"
 #include "Engine/Core.h"
 #include "Engine/Object/UCameraComponent.h"
@@ -273,14 +276,16 @@ void FRenderer::EndFrame()
 {
 }
 
-void FRenderer::Render(UScene* Scene)
+void FRenderer::Render(FEditor* Editor, UScene* Scene)
 {
     BeginFrame();
 
-    UCameraComponent* Camera = Scene->GetMainCamera();
+    UCameraComponent* Camera = Editor->GetEditorCamera();
+
     FMatrix ViewProjMatrix = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
-    TArray<FPrimitiveRenderData> RenderList = RenderUtil::GetRenderList(Scene);
-    
+    TArray<FPrimitiveRenderData> RenderList = RenderUtil::GetRenderList(Editor, Scene);
+
+    // 1. Scene Object, Editor Gizmo 렌더
     for (auto& Item: RenderList)
     {
         FMatrix MVP = (*Item.WorldMatrix) * ViewProjMatrix;
@@ -288,9 +293,14 @@ void FRenderer::Render(UScene* Scene)
         RenderPrimitive(Item);
     }
 
+    // 2. Editor Window 렌더
+    for (auto Item : Editor->GetWindows())
+    {
+        Item->Render();
+    }
+
     // Gizmo vertices are already in world space (identity world transform).
     UpdateConstantBuffer(ViewProjMatrix);
-    Scene->RenderGizmos(*this);
 
     GDevice::GetInstance()->SwapBuffer();
     EndFrame();
@@ -340,6 +350,7 @@ void FRenderer::UpdateConstantBuffer(const FMatrix& MVP)
 
         DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR);
         FConstants* constants = (FConstants*)constantbufferMSR.pData;
+
         constants->MVP = MVP;//.Transpose(); 그냥 Shader에서 row_major 키워드 넣기로 함
         DeviceContext->Unmap(ConstantBuffer, 0);
     }

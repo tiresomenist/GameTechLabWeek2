@@ -24,6 +24,7 @@ struct FConstants
 	FMatrix MVP;
 };
 class UScene;
+class FEditor;
 struct FPrimitiveRenderData;
 
 #include <cmath>
@@ -202,7 +203,7 @@ public:
 	void BeginFrame();
 	void EndFrame();
 
-	void Render(UScene* Scene);
+	void Render(FEditor* Editor, UScene* Scene);
 	void RenderPrimitive(const FPrimitiveRenderData& Data);
 
 	//// @TEST >>
