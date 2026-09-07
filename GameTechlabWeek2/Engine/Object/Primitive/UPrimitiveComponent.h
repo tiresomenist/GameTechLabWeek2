@@ -14,11 +14,7 @@ class UPrimitiveComponent : public USceneComponent
 public:
 
     // 렌더러에게 전달할 렌더 정보
-    virtual FPrimitiveRenderData GetRenderData();
-
-protected:
-
-    static FPrimitiveRenderData CreateRenderData(UPrimitiveComponent* self, FMeshResource* Resource);
+    virtual FPrimitiveRenderData GetRenderData(FStringView Text = "");
 
 };
 

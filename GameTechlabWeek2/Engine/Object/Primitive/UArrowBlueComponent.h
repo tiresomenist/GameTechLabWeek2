@@ -11,6 +11,6 @@ class UArrowBlueComponent : public UPrimitiveComponent
 
 public:
 
-	virtual FPrimitiveRenderData GetRenderData(FStringView Type = "") override;
+	FPrimitiveRenderData GetRenderData(FStringView Type = "") override;
 
 };

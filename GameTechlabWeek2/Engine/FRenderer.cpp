@@ -1,7 +1,7 @@
 #pragma once
 #include "FRenderer.h"
 #include "Matrix.h"
-#include "FVertexSimple.h"
+#include "Engine/Renderer/FVertexSimple.h"
 #include "Engine/Editor/Window/UEditorWindow.h"
 #include "Engine/GDevice.h"
 #include "Engine/Scene/UScene.h"
@@ -17,7 +17,7 @@
 
 #include <format>
 
-void FRenderer::Create(GDevice* InDevice)
+void FRenderer::Create(HWND HWnd, GDevice* InDevice)
 {
     Device = InDevice;
     DeviceContext = InDevice->GetContext();
@@ -242,7 +242,7 @@ void FRenderer::Render(FEditor* Editor, UScene* Scene)
     UCameraComponent* Camera = Editor->GetEditorCamera();
 
     FMatrix ViewProjMatrix = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
-    TArray<FPrimitiveRenderData> RenderList = RenderUtil::GetRenderList(Scene);
+    TArray<FPrimitiveRenderData> RenderList = RenderUtil::GetRenderList(Editor, Scene);
     static float Angle = 0.0f;
     Angle += 0.03f;
     FMatrix Rotation = FMatrix::MakeRotationZMatrix(Angle);
