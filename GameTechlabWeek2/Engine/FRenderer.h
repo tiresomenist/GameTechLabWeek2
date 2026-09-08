@@ -17,6 +17,7 @@
 #include "../Matrix.h"
 #include "../FQuaternion.h"
 //#include "../FVertexSimple.h"
+#include "Engine/Primitive/FMeshResource.h"
 #include "Container/TArray.h"
 
 
@@ -24,6 +25,11 @@
 struct FConstants
 {
 	FMatrix MVP;
+};
+struct FGridConstants
+{
+	FVector CameraPos;
+	float Padding;
 };
 class UScene;
 class FEditor;
@@ -43,7 +49,10 @@ public:
 	ID3D11RasterizerState* CullFrontRasterizerState = nullptr;   // 래스터라이저 상태(컬링, 채우기 모드 등 정의)
 	ID3D11BlendState* AlphaBlendState = nullptr;
 
-	ID3D11Buffer* ConstantBuffer = nullptr;             // 쉐이더에 데이터를 전달하기 위한 상수 버퍼
+	ID3D11Buffer* TransformConstantBuffer = nullptr;     
+	ID3D11Buffer* GridConstantBuffer = nullptr;          
+
+
 	FLOAT                   ClearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 	D3D11_VIEWPORT          ViewportInfo;               // 렌더링 영역을 정의하는 뷰포트 정보
 
@@ -52,7 +61,9 @@ public:
 	ID3D11InputLayout* SimpleInputLayout = nullptr;
 	ID3D11VertexShader* HighlightVertexShader = nullptr;
 	ID3D11PixelShader* HighlightPixelShader = nullptr;
-
+	ID3D11VertexShader* GridVertexShader = nullptr;
+	ID3D11PixelShader* GridPixelShader = nullptr;
+	
 	unsigned int Stride;
 
 	void Create(HWND HWnd, GDevice* InDevice);					// 렌더러 초기화 함수
@@ -69,7 +80,8 @@ public:
 
 	void CreateConstantBuffer();								// 상수 버퍼 생성 함수
 	void ReleaseConstantBuffer();								// 상수 버퍼 소멸 함수
-	void UpdateConstantBuffer(const FMatrix& WorldMatrix);      // 상수 버퍼 업데이트 함수
+	void UpdateTransformConstantBuffer(const FMatrix& WorldMatrix);      // 상수 버퍼 업데이트 함수
+	void UpdateGridConstantBuffer(const FVector& CameraPos);
 
 	void CreateRasterizerState();
 	void ReleaseRasterizerState();
@@ -83,5 +95,5 @@ public:
 	void Render(FEditor* Editor, UScene* Scene);
 	void RenderPrimitive(const FPrimitiveRenderData& Data);
 	void RenderHighlight(const FPrimitiveRenderData& Data);
-	void RenderGrid();
+	void RenderGrid(FMeshResource* Data);
 };

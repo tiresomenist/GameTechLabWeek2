@@ -11,6 +11,7 @@
 #include "Engine/Renderer/RenderUtil.h"
 #include "Engine/Core.h"
 #include "Engine/Object/UCameraComponent.h"
+#include "Engine/Primitive/FMeshResource.h"
 
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_impl_dx11.h"
@@ -75,6 +76,14 @@ void FRenderer::CreateShaders()
     D3DCompileFromFile(L"GameTechlabWeek2/ShaderW0.hlsl", nullptr, nullptr, "PS_Highlight", "ps_5_0", 0, 0, &pixelshaderCSO, nullptr);
 
     D3DDevice->CreatePixelShader(pixelshaderCSO->GetBufferPointer(), pixelshaderCSO->GetBufferSize(), nullptr, &HighlightPixelShader);
+    
+    D3DCompileFromFile(L"GameTechlabWeek2/GridShader.hlsl", nullptr, nullptr, "VS_Grid", "vs_5_0", 0, 0, &vertexshaderCSO, nullptr);
+
+    D3DDevice->CreateVertexShader(vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(), nullptr, &GridVertexShader);
+
+    D3DCompileFromFile(L"GameTechlabWeek2/GridShader.hlsl", nullptr, nullptr, "PS_Grid", "ps_5_0", 0, 0, &pixelshaderCSO, nullptr);
+
+    D3DDevice->CreatePixelShader(pixelshaderCSO->GetBufferPointer(), pixelshaderCSO->GetBufferSize(), nullptr, &GridPixelShader);
 
     D3D11_INPUT_ELEMENT_DESC layout[] =
     {
@@ -143,9 +152,9 @@ void FRenderer::PrepareShader()
 
     // 상수 버퍼 사용시 호출
     // 버텍스 쉐이더에 상수 버퍼를 설정합니다.
-    if (ConstantBuffer)
+    if (TransformConstantBuffer)
     {
-        DeviceContext->VSSetConstantBuffers(0, 1, &ConstantBuffer);
+        DeviceContext->VSSetConstantBuffers(0, 1, &TransformConstantBuffer);
     }
 }
 
@@ -181,15 +190,15 @@ void FRenderer::CreateConstantBuffer()
     constantbufferdesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     constantbufferdesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
-    D3DDevice->CreateBuffer(&constantbufferdesc, nullptr, &ConstantBuffer);
+    D3DDevice->CreateBuffer(&constantbufferdesc, nullptr, &TransformConstantBuffer);
 }
 
 void FRenderer::ReleaseConstantBuffer()
 {
-    if (ConstantBuffer)
+    if (TransformConstantBuffer)
     {
-        ConstantBuffer->Release();
-        ConstantBuffer = nullptr;
+        TransformConstantBuffer->Release();
+        TransformConstantBuffer = nullptr;
     }
 }
 
@@ -270,8 +279,8 @@ void FRenderer::Render(FEditor* Editor, UScene* Scene)
     Camera->SetAspectRatio(Device->GetViewport().Width / Device->GetViewport().Height); // 리사이징된 카메라 화면에 맞게 종횡비를 맞춥니다.
     for (auto& Item: RenderList)
     {
-        FMatrix MVP = Rotation * (*Item.WorldMatrix) * ViewProjMatrix;
-        UpdateConstantBuffer(MVP);
+        FMatrix MVP = (*Item.WorldMatrix) * ViewProjMatrix;
+        UpdateTransformConstantBuffer(MVP);
         if (Item.isSelected)
         {
             RenderHighlight(Item);
@@ -289,30 +298,49 @@ void FRenderer::Render(FEditor* Editor, UScene* Scene)
     for (auto Item : Editor->GetGrids())
     {
         Item->Render();
+        UpdateGridConstantBuffer(Camera->GetWorldLocation());
+        RenderGrid(Item->GetMeshResource()); // @TODO FPrimitiveData는..? FMeshResource ResourceManager에 방문하세요..
     }
 
     // Gizmo vertices are already in world space (identity world transform).
-    UpdateConstantBuffer(ViewProjMatrix);
+    UpdateTransformConstantBuffer(ViewProjMatrix);
     EndFrame();
 }
 
-void FRenderer::UpdateConstantBuffer(const FMatrix& MVP)
+void FRenderer::UpdateTransformConstantBuffer(const FMatrix& MVP)
 {
-    if (ConstantBuffer)
+    if (TransformConstantBuffer)
     {
         D3D11_MAPPED_SUBRESOURCE constantbufferMSR;
 
-        DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR);
+        DeviceContext->Map(TransformConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR);
         FConstants* constants = (FConstants*)constantbufferMSR.pData;
 
         constants->MVP = MVP;//.Transpose(); 그냥 Shader에서 row_major 키워드 넣기로 함
-        DeviceContext->Unmap(ConstantBuffer, 0);
+        DeviceContext->Unmap(TransformConstantBuffer, 0);
+    }
+}
+
+void FRenderer::UpdateGridConstantBuffer(const FVector& CameraPos) 
+{
+    if (GridConstantBuffer)
+    {
+        D3D11_MAPPED_SUBRESOURCE constantbufferMSR;
+
+        DeviceContext->Map(GridConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR);
+
+        FGridConstants* constants = (FGridConstants*)constantbufferMSR.pData;
+
+        constants->CameraPos = CameraPos;
+        constants->Padding = 0.0f;
+
+        DeviceContext->Unmap(GridConstantBuffer, 0);
     }
 }
 
 void FRenderer::RenderPrimitive(const FPrimitiveRenderData& Data)
 {
-    DeviceContext->VSSetConstantBuffers(0, 1, &ConstantBuffer);
+    DeviceContext->VSSetConstantBuffers(0, 1, &TransformConstantBuffer);
 
     // 지오메트리 바인딩
     UINT Offset = 0;
@@ -333,7 +361,7 @@ void FRenderer::RenderPrimitive(const FPrimitiveRenderData& Data)
 
 void FRenderer::RenderHighlight(const FPrimitiveRenderData& Data)
 {
-    DeviceContext->VSSetConstantBuffers(0, 1, &ConstantBuffer);
+    DeviceContext->VSSetConstantBuffers(0, 1, &TransformConstantBuffer);
 
     UINT Offset = 0;
     DeviceContext->IASetVertexBuffers(0, 1, &Data.VertexBuffer, &Data.Stride, &Offset);
@@ -348,15 +376,33 @@ void FRenderer::RenderHighlight(const FPrimitiveRenderData& Data)
     DeviceContext->DrawIndexed(Data.IndexCount, 0, 0);
 }
 
-void FRenderer::RenderGrid()
+void FRenderer::RenderGrid(FMeshResource* Data)
 {
-    // 알파 블렌딩 켜기 (OM: Output Merger 단계)
+    DeviceContext->VSSetConstantBuffers(0, 1, &TransformConstantBuffer);
+    DeviceContext->PSSetConstantBuffers(1, 1, &GridConstantBuffer);
+    // 픽셀 셰이더에도 카메라 위치가 필요하다면 PSSetConstantBuffers 추가
+
+    // 알파 블렌딩 켜기
     float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
     UINT sampleMask = 0xffffffff;
-
     DeviceContext->OMSetBlendState(AlphaBlendState, blendFactor, sampleMask);
 
-    // DeviceContext->DrawIndexed(...);
+    // 지오메트리 바인딩
+    UINT Offset = 0;
+    DeviceContext->IASetVertexBuffers(0, 1, &Data->VertexBuffer, &Data->Stride, &Offset);
+    DeviceContext->IASetIndexBuffer(Data->IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+    DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); // @HARD
 
+    // 그리드 전용 셰이더 바인딩
+    DeviceContext->VSSetShader(GridVertexShader, nullptr, 0);
+    DeviceContext->PSSetShader(GridPixelShader, nullptr, 0);
+
+    // 뒷면을 안 그리는 기본 래스터라이저 상태 적용 (판때기니까 양면 다 그리려면 CullNone을 써도 됨)
+    DeviceContext->RSSetState(DefaultRasterizerState);
+
+    // Draw 명령
+    DeviceContext->DrawIndexed(Data->IndexCount, 0, 0);
+
+    // 알파 블렌딩 끄기 (원상복구)
     DeviceContext->OMSetBlendState(nullptr, blendFactor, sampleMask);
 }

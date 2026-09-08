@@ -24,6 +24,11 @@ public:
     void SetRelativeScale3D(const FVector& Scale3D);
 
     const FMatrix& GetWorldMatrix() const;
+    FVector GetWorldLocation() const
+    {
+        const FMatrix& WorldMat = GetWorldMatrix();
+        return GetWorldMatrix().GetOrigin();
+    }
 
     virtual void Serialize(FArchive& Archive) override;
     virtual void Deserialize(FArchive& Archive) override;
