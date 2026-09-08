@@ -17,6 +17,8 @@
 #include "Engine/InputManager/GInputManager.h"
 
 #include "Engine/Editor/ObjectPicker/FObjectPicker.h"
+#include "Engine/Editor/ObjectPicker/FGizmoPicker.h"	
+
 #include "Engine/GSceneManager.h"
 
 #include "Engine/Scene/UScene.h"
@@ -32,6 +34,7 @@ void FEditor::Initialize()
 
 	ObjectPicker = new FObjectPicker(this);
 	SelectedSceneComponent = nullptr;
+	GizmoPicker = new FGizmoPicker(this);
 
 	RegisterGizmo(UObjectAxisGizmo::GetClass());
 	RegisterGizmo(UWorldAxisGizmo::GetClass());
@@ -58,12 +61,20 @@ void FEditor::Tick(float DeltaTime)
 		//UE_LOG(std::format("[{}] 좌클릭 좌표:{}, {}", Time,
 		//	Input.GetLeftCursorX(),
 		//	Input.GetLeftCursorY()));
-		UPrimitiveComponent* Selected = ObjectPicker->Pick();
-		SetSelectedSceneComponent(Selected);
-		if (Selected != nullptr) {
-			SelectedSceneComponent = Selected;
-			UE_LOG("[{}] : [{}번째 오브젝트 선택]", Time, Selected->UUID);
+		int32 SelectedGizmo = GizmoPicker->Pick(ObjectAxisGizmo);
+		if (SelectedGizmo != -1) {
+			TArray<char> temp = { 'X','Y','Z' };
+			UE_LOG("{}축 선택됨!",temp[SelectedGizmo]);
 		}
+		else {
+			UPrimitiveComponent* Selected = ObjectPicker->Pick();
+			SetSelectedSceneComponent(Selected);
+			if (Selected != nullptr) {
+				//SelectedSceneComponent = Selected;
+				UE_LOG("[{}] : [{}번째 오브젝트 선택]", Time, Selected->UUID);
+			}
+		}
+
 	}
 	if (Input.GetKey(GInputManager::EI_RMOUSE)) {
 		//UE_LOG("[{}] 우클릭 좌표:{}, {}", Time,
@@ -84,6 +95,8 @@ void FEditor::Release()
 	CameraController.SetCamera(nullptr);
 	delete ObjectPicker;
 	ObjectPicker = nullptr;
+	delete GizmoPicker;
+	GizmoPicker = nullptr;
 }
 
 void FEditor::SpawnPrimitive(FClassType* PrimitiveType, int Count)
@@ -143,7 +156,9 @@ void FEditor::RegisterGizmo(FClassType* Type)
 	UGizmo* Gizmo = static_cast<UGizmo*>(Object);
 
 	Gizmo->Initialize(this);
-
+	if (Gizmo->IsA(UObjectAxisGizmo::GetClass())) {
+		SetObjectAxisGizmo(Gizmo);
+	}
 	Gizmos.Add(Gizmo);
 }
 
@@ -151,4 +166,14 @@ void FEditor::RegisterWindow(UEditorWindow* Window)
 {
 	Window->Initialize(this);
 	Windows.Add(Window);
+}
+
+void FEditor::SetObjectAxisGizmo(UGizmo* InGizmo)
+{
+	ObjectAxisGizmo = InGizmo;
+}
+
+UGizmo* FEditor::GetObjectAxisGizmo() const
+{
+	return ObjectAxisGizmo;
 }

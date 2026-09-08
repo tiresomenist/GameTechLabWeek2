@@ -12,7 +12,7 @@ TArray<FPrimitiveRenderData> UObjectAxisGizmo::GetRenderData()
 	
 	auto* SelectedObject = Editor->GetSelectedSceneComponent();
 	if (SelectedObject == nullptr) {
-		
+		//선택된 오브젝트가 없으면 그려지지 않도록.
 		return Result;
 	}
 	

@@ -15,6 +15,7 @@ class UCameraComponent;
 class UEditorWindow;
 class UGizmo;
 class FObjectPicker;
+class FGizmoPicker;
 
 class FEditor
 {
@@ -24,11 +25,13 @@ private:
 	UCameraComponent* EditorCamera;
 	FCameraController CameraController;
 	FObjectPicker* ObjectPicker = nullptr;
+	FGizmoPicker* GizmoPicker = nullptr;
 
 	USceneComponent* SelectedSceneComponent;
 	TArray<UGizmo*> Gizmos;
 	TArray<UEditorWindow*> Windows;
 
+	UGizmo* ObjectAxisGizmo;
 
 
 public:
@@ -66,6 +69,10 @@ public:
 	void SetCamerRotation(FQuaternion NewCameraRotation) { EditorCamera->SetRelativeRotation(NewCameraRotation); }
 	float GetCameraFOV() { return GetEditorCamera()->GetFOV() * 180.0f / PI; }
 	void SetCameraFOV(float NewFOV) { EditorCamera->SetFOVByDegree(NewFOV); }
+	void SpawnPrimitives(FClassType* ClassType, uint32 num) { GEngine::GetInstance()->GetConsole()->Append(std::format("Make {}, {} times",ClassType->Name,num)); }
+	
+	void SetObjectAxisGizmo(UGizmo* InGizmo);
+	UGizmo* GetObjectAxisGizmo()const;
 
 public:
 	friend TArray<FPrimitiveRenderData> RenderUtil::GetRenderList(FEditor* Editor, UScene* Scene);
