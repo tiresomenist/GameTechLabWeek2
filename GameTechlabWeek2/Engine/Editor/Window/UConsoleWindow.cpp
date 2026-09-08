@@ -63,7 +63,47 @@ void UConsoleWindow::Render(float DeltaTime)
 		ImGuiCond_Once
 	);
 
-	ImGui::Begin("Example: Console");
+	ImGui::PushStyleColor(
+		ImGuiCol_WindowBg,
+		ImVec4(0.01f, 0.01f, 0.01f, 1.0f)
+	);
+
+	ImGui::PushStyleColor(
+		ImGuiCol_TitleBgActive,
+		ImVec4(0.01f, 0.01f, 0.01f, 1.0f)
+	);
+
+	ImGui::PushStyleColor(
+		ImGuiCol_Text,
+		ImVec4(1.0f, 0.9f, 0.7f, 1.0f)
+	);
+
+	ImGui::PushStyleColor(
+		ImGuiCol_Button,
+		ImVec4(0.05f, 0.05f, 0.05f, 1.0f)
+	);
+
+	ImGui::PushStyleColor(
+		ImGuiCol_FrameBg,
+		ImVec4(0.05f, 0.05f, 0.05f, 1.0f)
+	);
+
+	ImGui::PushStyleColor(
+		ImGuiCol_FrameBgHovered,
+		ImVec4(0.09f, 0.09f, 0.09f, 1.0f)
+	);
+
+	ImGui::PushStyleColor(
+		ImGuiCol_ButtonHovered,
+		ImVec4(0.09f, 0.09f, 0.09f, 1.0f)
+	);
+
+	ImGui::PushStyleColor(
+		ImGuiCol_ButtonActive,
+		ImVec4(0.05f, 0.05f, 0.05f, 1.0f)
+	);
+
+	ImGui::Begin("Console");
 	{
 		ImGui::Text("This example implements a console with basic coloring, completion (TAB key) and history (Up/Down keys), A more elaborate implementation may want to store entries along with extra data such as timestamp, emitter, etc.");
 		ImGui::Text("Enter 'HELP for help.");
@@ -117,4 +157,5 @@ void UConsoleWindow::Render(float DeltaTime)
 		ImGui::EndChild();
 	}
 	ImGui::End();
+	ImGui::PopStyleColor(8);
 }

@@ -21,7 +21,8 @@ private:
 	float MaxFOV = 175.0f;
 	float MinFOV = 5.0f;
 	FVector CameraLocation = { 0.0f, 0.0f, 0.0f };
-	FQuaternion CameraRotation;
+	FVector CameraRotationDegree;
+	bool bEditingCameraRotation = false;
 	/*             */
 public:
 	void SpawnPrimitive();
@@ -30,6 +31,5 @@ public:
 	void LoadScene();
 
 	virtual void Initialize(FEditor* InEditor) override;
-
 	void Render(float DeltaTime) override;
 };

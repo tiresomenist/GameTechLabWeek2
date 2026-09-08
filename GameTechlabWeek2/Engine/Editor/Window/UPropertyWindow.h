@@ -8,8 +8,9 @@ class UPropertyWindow : public UEditorWindow
 {
 private:
 	FVector Translation;
-	FVector Rotation;
+	FVector RotationDegree;
 	FVector OScale;
+	bool bEditingRotation = false;
 	float SnapSize = 0.001f;
 	int SelectedSnapIndex = 0;
 	TArray<float> SnapSizeList = {0.001f, 0.01f, 0.1f, 1.0f, 5.0f};
@@ -17,7 +18,7 @@ private:
 public:
 
 	void GetSelectedValue();
-	void SetSelectedValue();
+	void SetSelectedValue(bool bSetRotation);
 
 	void DeleteSelected();
 

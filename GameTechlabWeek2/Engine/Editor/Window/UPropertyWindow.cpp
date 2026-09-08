@@ -11,21 +11,27 @@ void UPropertyWindow::GetSelectedValue()
 	if (SelectedComponent != nullptr)
 	{
 		Translation = SelectedComponent->GetRelativeLocation();
-
-		const FQuaternion& Quaternion = SelectedComponent->GetRelativeRotation();
-		Rotation = FQuaternion::ToEuler(Quaternion);
+		if (!bEditingRotation)
+		{
+			const FQuaternion& Quaternion = SelectedComponent->GetRelativeRotation();
+			RotationDegree = FQuaternion::ToEuler(Quaternion) * (180.0f / PI);
+		}
 		OScale = SelectedComponent->GetRelativeScale3D();
 	}
 }
 
-void UPropertyWindow::SetSelectedValue()
+void UPropertyWindow::SetSelectedValue(bool bSetRotation)
 {
 	USceneComponent* SelectedComponent = Editor->GetSelectedSceneComponent();
 
 	if (SelectedComponent != nullptr)
 	{
 		SelectedComponent->SetRelativeLocation(Translation);
-		SelectedComponent->SetRelativeRotation(FQuaternion::FromEuler(Rotation));
+		if (bSetRotation)
+		{
+			const FVector EulerRadian = RotationDegree * (PI / 180.0f);
+			SelectedComponent->SetRelativeRotation(FQuaternion::FromEuler(EulerRadian));
+		}
 		SelectedComponent->SetRelativeScale3D(OScale);
 	}
 }
@@ -70,22 +76,38 @@ void UPropertyWindow::Render(float DeltaTime)
 	float ComboWidth = Available.x * 0.3f;
 
 	GetSelectedValue();
+	bool bRotationChanged = false;
+	bool bRotationActive = false;
+	bool bRotationFinished = false;
 
-	ImGui::Begin("Jungle Property Window");
+	ImGui::Begin("Property Window");
 	{
 		ImGui::PushItemWidth(ButtonWidth);
 		ImGui::DragFloat("##translationX", &Translation.X, SnapSize);
+		DrawItemBottomLine(IM_COL32(255, 40, 40, 255), 2.0f);
 		ImGui::SameLine();
 		ImGui::DragFloat("##translationY", &Translation.Y, SnapSize);
+		DrawItemBottomLine(IM_COL32(40, 255, 40, 255),2.0f);
 		ImGui::SameLine();
 		ImGui::DragFloat("##translationZ", &Translation.Z, SnapSize);
+		DrawItemBottomLine(IM_COL32(20, 30, 255, 255), 2.0f);
 		ImGui::SameLine();
 		ImGui::Text("Translation");
-		ImGui::DragFloat("##rotationR", &Rotation.X, 0.001f);
+		constexpr ImGuiSliderFlags RotationFlags = ImGuiSliderFlags_WrapAround | ImGuiSliderFlags_AlwaysClamp;
+		bRotationChanged |= ImGui::DragFloat("##rotationR", &RotationDegree.X, 0.1f, -180.0f, 180.0f, "%.3f", RotationFlags);
+		bRotationActive |= ImGui::IsItemActive();
+		bRotationFinished |= ImGui::IsItemDeactivatedAfterEdit();
+		DrawItemBottomLine(IM_COL32(255, 40, 40, 255), 2.0f);
 		ImGui::SameLine();
-		ImGui::DragFloat("##rotationP", &Rotation.Y, 0.001f);
+		bRotationChanged |= ImGui::DragFloat("##rotationP", &RotationDegree.Y, 0.1f, -180.0f, 180.0f, "%.3f", RotationFlags);
+		bRotationActive |= ImGui::IsItemActive();
+		bRotationFinished |= ImGui::IsItemDeactivatedAfterEdit();
+		DrawItemBottomLine(IM_COL32(40, 255, 40, 255), 2.0f);
 		ImGui::SameLine();
-		ImGui::DragFloat("##rotationY", &Rotation.Z, 0.001f);
+		bRotationChanged |= ImGui::DragFloat("##rotationY", &RotationDegree.Z, 0.1f, -180.0f, 180.0f, "%.3f", RotationFlags);
+		bRotationActive |= ImGui::IsItemActive();
+		bRotationFinished |= ImGui::IsItemDeactivatedAfterEdit();
+		DrawItemBottomLine(IM_COL32(20, 30, 255, 255), 2.0f);
 		ImGui::SameLine();
 		ImGui::Text("Rotation");
 		float PrevScaleX = OScale.X;
@@ -98,6 +120,7 @@ void UPropertyWindow::Render(float DeltaTime)
 				OScale.Z *= ScaleRatio;
 			}
 		}
+		DrawItemBottomLine(IM_COL32(255, 40, 40, 255), 2.0f);
 		ImGui::SameLine();
 		float PrevScaleY = OScale.Y;
 		if (ImGui::DragFloat("##scaleY", &OScale.Y, 0.001f))
@@ -109,6 +132,7 @@ void UPropertyWindow::Render(float DeltaTime)
 				OScale.Z *= ScaleRatio;
 			}
 		}
+		DrawItemBottomLine(IM_COL32(40, 255, 40, 255), 2.0f);
 		ImGui::SameLine();
 		float PrevScaleZ = OScale.Z;
 		if (ImGui::DragFloat("##scaleZ", &OScale.Z, 0.001f))
@@ -120,6 +144,7 @@ void UPropertyWindow::Render(float DeltaTime)
 				OScale.Y *= ScaleRatio;
 			}
 		}
+		DrawItemBottomLine(IM_COL32(20, 30, 255, 255), 2.0f);
 		ImGui::SameLine();
 		ImGui::Text("Scale");
 		ImGui::PopItemWidth();
@@ -159,5 +184,6 @@ void UPropertyWindow::Render(float DeltaTime)
 	}
 	ImGui::End();
 
-	SetSelectedValue();
+	bEditingRotation = bRotationActive;
+	SetSelectedValue(bRotationChanged || bRotationFinished);
 }
