@@ -39,16 +39,14 @@ FMatrix UCameraComponent::GetViewMatrix() const
 
 FMatrix UCameraComponent::GetProjectionMatrix() const
 {
-	switch (ProjectionMode)
+	if (bIsPerspective)
 	{
-	case EProjectionMode::Perspective:
 		return GetPerspectiveProjectionMatrix();
-
-	case EProjectionMode::Orthographic:
+	}
+	else
+	{
 		return GetOrthographicProjectionMatrix();
 	}
-	assert(false && "Invalid projection mode.");
-	return GetPerspectiveProjectionMatrix();
 }
 
 
@@ -71,6 +69,16 @@ float UCameraComponent::GetNearZ() const
 float UCameraComponent::GetFarZ() const
 {
 	return FarZ;
+}
+
+bool UCameraComponent::GetIsPerspective() const
+{
+	return bIsPerspective;
+}
+
+void UCameraComponent::SetIsPerspective(bool Value)
+{
+	bIsPerspective = Value;
 }
 
 void UCameraComponent::SetFOVByRadian(const float& InRadian)
@@ -113,6 +121,7 @@ void UCameraComponent::Serialize(FArchive& Archive)
 	Archive.SetFloat("Far", FarZ);
 	Archive.SetFloat("MoveSpeed", MoveSpeed);
 	Archive.SetFloat("OrthogonalHeight", OrthoHeight);
+	Archive.SetBool("Perspective", bIsPerspective);
 }
 
 void UCameraComponent::Deserialize(FArchive& Archive)
@@ -125,6 +134,7 @@ void UCameraComponent::Deserialize(FArchive& Archive)
 	FarZ = Archive.GetFloat("Far");
 	MoveSpeed = Archive.GetFloat("MoveSpeed");
 	OrthoHeight = Archive.GetFloat("OrthogonalHeight");
+	bIsPerspective = Archive.GetBool("Perspective");
 }
 
 float UCameraComponent::GetOrthoHeight() const

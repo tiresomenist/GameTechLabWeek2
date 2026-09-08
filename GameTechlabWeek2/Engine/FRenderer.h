@@ -1,11 +1,5 @@
 #pragma once
 #include <vector>
-#include <directxmath.h>
-
-// D3D11 librarys
-#pragma comment(lib, "user32")
-#pragma comment(lib, "d3d11")
-#pragma comment(lib, "d3dcompiler")
 
 // D3D11 headers
 #include <d3d11.h>
@@ -67,17 +61,17 @@ public:
 	
 	unsigned int Stride;
 
-	void Create(HWND HWnd, GDevice* InDevice);					// 렌더러 초기화 함수
+    void Create(HWND HWnd, GDevice* InDevice);					// 렌더러 초기화 함수
 
-	void Shutdown();                                // 렌더러에 사용된 모든 리소스를 해제하는 함수
+    void Shutdown();                                // 렌더러에 사용된 모든 리소스를 해제하는 함수
 
-	void CreateShaders();
-	void ReleaseShader();
-	void PrepareRTVDSV();
-	void PrepareShader();
+    void CreateShaders();
+    void ReleaseShader();
+    void PrepareRTVDSV();
+    void PrepareShader();
 
-	ID3D11Buffer* CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidth);
-	void ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer);
+    ID3D11Buffer* CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidth);
+    void ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer);
 
 	void CreateConstantBuffer();								// 상수 버퍼 생성 함수
 	void ReleaseConstantBuffer();								// 상수 버퍼 소멸 함수
@@ -87,13 +81,10 @@ public:
 	void CreateRasterizerState();
 	void ReleaseRasterizerState();
 
-	void CreateAlphaBlendState();
-	void ReleaseAlphaBlendState();
-
 	void BeginFrame();
 	void EndFrame();
 
-	void Render(FEditor* Editor, UScene* Scene);
+	void Render(float DeltaTime, FEditor* Editor, UScene* Scene);
 	void RenderPrimitive(const FPrimitiveRenderData& Data);
 	void RenderHighlight(const FPrimitiveRenderData& Data);
 	void RenderGrid(FMeshResource* Data);

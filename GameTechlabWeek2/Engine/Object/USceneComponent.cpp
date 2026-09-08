@@ -105,7 +105,7 @@ void USceneComponent::Deserialize(FArchive& Archive)
     RelativeLocation.Z = Location[2];
 
     // Rotation
-    TArray<float> Rotation = Archive.GetArray<float>("Location");
+    TArray<float> Rotation = Archive.GetArray<float>("Rotation");
     FVector EulerRotation
     {
         Rotation[0],

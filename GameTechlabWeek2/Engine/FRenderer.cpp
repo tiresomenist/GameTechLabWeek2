@@ -30,10 +30,13 @@ void FRenderer::Create(HWND HWnd, GDevice* InDevice)
 	CreateConstantBuffer();
 	CreateAlphaBlendState();
 
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+
+
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.Fonts->AddFontFromFileTTF("Assets/Pretendard-Regular.ttf", 16.0f);
 
 	// Setup Platform/Renderer backends
 	ImGui_ImplWin32_Init(HWnd);
@@ -122,9 +125,6 @@ void FRenderer::ReleaseShader()
 
 void FRenderer::PrepareRTVDSV()
 {
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
 
 	DeviceContext->ClearRenderTargetView(Device->GetFrameBufferRTV(), ClearColor);
 	DeviceContext->ClearDepthStencilView(Device->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
@@ -267,8 +267,11 @@ void FRenderer::ReleaseAlphaBlendState()
 
 void FRenderer::BeginFrame()
 {
-	PrepareRTVDSV();
-	PrepareShader();
+    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+    PrepareRTVDSV();
+    PrepareShader();
 }
 
 void FRenderer::EndFrame()
@@ -278,7 +281,7 @@ void FRenderer::EndFrame()
 	GDevice::GetInstance()->SwapBuffer();
 }
 
-void FRenderer::Render(FEditor* Editor, UScene* Scene)
+void FRenderer::Render(float DeltaTime, FEditor* Editor, UScene* Scene)
 {
 	BeginFrame();
 
@@ -301,11 +304,15 @@ void FRenderer::Render(FEditor* Editor, UScene* Scene)
 		RenderPrimitive(Item);
 	}
 
-	// 2. Editor Window 렌더
-	for (auto Item : Editor->GetWindows())
-	{
-		Item->Render();
-	}
+    // 2. Editor Window 렌더
+    for (auto Item : Editor->GetWindows())
+    {
+        Item->Render(DeltaTime);
+    }
+
+    for (auto Item : Editor->GetGizmos()) {
+        Item->GetRenderData();
+    }
 
 	// Grid 랜더
 	UpdateTransformConstantBuffer(ViewProjMatrix);
@@ -320,6 +327,7 @@ void FRenderer::Render(FEditor* Editor, UScene* Scene)
 	UpdateTransformConstantBuffer(ViewProjMatrix);
 	EndFrame();
 }
+////////////////
 
 void FRenderer::UpdateTransformConstantBuffer(const FMatrix& MVP)
 {

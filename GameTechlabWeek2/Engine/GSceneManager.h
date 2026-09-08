@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Container/FString.h"
+
+struct FClassType;
 class UScene;
 
 // Singleton
@@ -13,9 +16,8 @@ public:
 
 	void Tick(float DeltaTime);
 
-	void ChangeLevel(UScene* InNextScene);
-
-	void SaveScene();
+	void LoadScene(FClassType* SceneType, FStringView SerializedName = "");
+	void SaveScene(FStringView SerializedName);
 
 	UScene* GetScene() { return CurrentScene; };
 

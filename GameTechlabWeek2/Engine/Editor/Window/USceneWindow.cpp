@@ -6,7 +6,9 @@
 #include "Engine/Object/FClassType.h"
 #include "Engine/Object/Primitive/USphereComponent.h"
 #include "Engine/Object/Primitive/UCubeComponent.h"
-#include "Engine/Object/Primitive/UPlaneComponent.h"
+#include "Engine/Object/Primitive/UPepeComponent.h"
+#include "Engine/Object/Primitive/UOctopusComponent.h"
+#include "Engine/Object/UCameraComponent.h"
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_internal.h"
 #include "ImGui/imgui_impl_dx11.h"
@@ -17,35 +19,42 @@
 
 void USceneWindow::SpawnPrimitive() 
 {
-	//테스트 코드
-	Editor->SpawnPrimitives(SelectedClass, NumberOfSpawn);
+	Editor->SpawnPrimitive(SelectedClass, NumberOfSpawn);
 }
-void USceneWindow::MakeNewScene()
-{
-	//UEditor에 JSON 파일로 씬 생성 요청 (SceneName 입력값)
-}
-void USceneWindow::SaveCurrentScene()
-{
-	//UEditor에 JSON 파일로 저장 요청
-}
-void USceneWindow::LoadSavedScene()
-{
-	//UEditor에 JSON 파일이 저장된곳에서 JSON 파일 로드해서 USceneComponent에 전달요청
-}
-void USceneWindow::Render()
-{
-	float FPS = 60.0f;
 
-	if (Spawnables.IsEmpty())
-	{
-		Spawnables.Empty();
-		Spawnables.Add(USphereComponent::GetClass());
-		Spawnables.Add(UCubeComponent::GetClass());
-		Spawnables.Add(UPlaneComponent::GetClass());
-		SelectedClass = *Spawnables.begin();
-	}
-	CameraLocation = Editor->GetCameraLocation();
-	CameraRotation = Editor->GetCamerRotation();
+void USceneWindow::NewScene()
+{
+	Editor->NewScene();
+}
+void USceneWindow::SaveScene()
+{
+	Editor->SaveScene(SceneName);
+}
+void USceneWindow::LoadScene()
+{
+	Editor->LoadScene(SceneName);
+}
+void USceneWindow::Initialize(FEditor* Editor)
+{
+	UEditorWindow::Initialize(Editor);
+
+	Spawnables.Add(USphereComponent::GetClass());
+	Spawnables.Add(UCubeComponent::GetClass());
+	Spawnables.Add(UPepeComponent::GetClass());
+	Spawnables.Add(UOctopusComponent::GetClass());
+
+	SelectedClass = *Spawnables.begin();
+
+	SceneName.reserve(128);
+}
+
+
+void USceneWindow::Render(float DeltaTime)
+{
+	UCameraComponent* EditorCamera = Editor->GetEditorCamera();
+
+	CameraLocation = EditorCamera->GetRelativeLocation();
+	CameraRotation = EditorCamera->GetRelativeRotation();
 	FOV = Editor->GetCameraFOV();
 
 	const ImGuiViewport* Viewport = ImGui::GetMainViewport();
@@ -80,14 +89,10 @@ void USceneWindow::Render()
 	
 	ImGui::Begin("Jungle Control Panel", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
 	{
+		float MilliSeconds = DeltaTime * 1000;
 		ImGui::Text("Hello Jungle World!");
-		ImGui::Text("FPS %.0f (%.0f ms)", FPS, 1000.0f / FPS);
+		ImGui::Text("FPS %.00f (%.00f ms)", 1000 / MilliSeconds, MilliSeconds);
 		ImGui::Separator();
-
-		if (ImGui::Button("Save"))
-		{
-			GSceneManager::GetInstance()->SaveScene();
-		}
 
 		ImGui::PushItemWidth(WideItemWidth);
 		if (ImGui::BeginCombo("Primitive", SelectedClass->Name.c_str()))
@@ -114,25 +119,31 @@ void USceneWindow::Render()
 			SpawnPrimitive();
 		}
 		ImGui::SameLine();
+		ImGui::PushItemWidth(200);
 		ImGui::InputScalar("Number Of Spawn", ImGuiDataType_U32, &NumberOfSpawn);
+		ImGui::PopItemWidth();
 		ImGui::Separator();
 		ImGui::PushItemWidth(WideItemWidth);
-		ImGui::InputScalar("Scene Name", ImGuiDataType_S32, &SceneName);
+
+		ImGui::InputText("Scene Name", SceneName.data(), 128);
+
 		ImGui::PopItemWidth();
 		if(ImGui::Button("New Scene"))
 		{
-			MakeNewScene();
+			NewScene();
 		}
 		if(ImGui::Button("Save Scene"))
 		{
-			SaveCurrentScene();
+			SaveScene();
 		}
 		if(ImGui::Button("Load Scene"))
 		{
-			LoadSavedScene();
+			LoadScene();
 		}
 		ImGui::Separator();
 		ImGui::Checkbox("Orthogonal", &bOrthogonal);
+
+		EditorCamera->SetIsPerspective(!bOrthogonal);
 
 		ImGui::PushItemWidth(WideItemWidth); // Item 너비 설정
 		if (ImGui::DragFloat("FOV", &FOV, 1.0f, MinFOV, MaxFOV))

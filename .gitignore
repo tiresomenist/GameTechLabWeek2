@@ -412,3 +412,7 @@ FodyWeavers.xsd
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.users
+
+
+## Imgui
+imgui.ini

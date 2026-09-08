@@ -19,9 +19,45 @@ project "GameTechlabWeek2"
 		"**.hpp",
 		"**.c" 
 	}
+
+
+	-- Precompiled Header
+	-- 아래 헤더들은 한번만 컴파일 후 변경 없음
+	enablepch "Off"
+
+	-- pchheader "windows.h"
+	-- pchheader "d3d11.h"
+	-- pchheader "d3dcompiler.h"
+	-- 
+	-- pchheader "imgui.h"
+	-- pchheader "imgui_impl_dx11.h"
+	-- pchheader "imgui_impl_win32.h"
+	-- 
+	-- pchheader "iostream"
+	-- pchheader "fstream"
+	-- pchheader "sstream"
+	-- pchheader "cstddef"
+	-- pchheader "cstdint"
+	-- pchheader "vector"
+	-- pchheader "format"
+	-- pchheader "string"
+	-- pchheader "chrono"
+	-- pchheader "unordered_map"
+	-- pchheader "map"
+	-- pchheader "utility"
+	-- 
+	-- pchheader "SimpleJSON.hpp"
+
+
+	-- 멀티 프로세싱 컴파일
+	-- 한번에 여러 cpp 파일 컴파일로 컴파일 속도 향상
+	multiprocessorcompile "On"
 	
 	filter "toolset:msc*"
+		-- 호출 규약이 팀원마다 다른(?) 기이한 버그 때문에 추가
 		callingconvention "Cdecl"
+
+		-- 한글 인코딩 문제를 UTF-8로 강제하여 해결
         buildoptions { "/utf-8" }
 	
 	filter "configurations:Debug"
@@ -32,6 +68,7 @@ project "GameTechlabWeek2"
 		defines { "NDEBUG" }
 		optimize "On"
 	
+	-- 동적 링킹
 	links {
 		"d3d11",			-- DirectX11 
 		"d3d11compiler",	-- DirectX11

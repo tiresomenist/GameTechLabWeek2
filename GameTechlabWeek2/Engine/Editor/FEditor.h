@@ -16,6 +16,7 @@ class UEditorWindow;
 class UGizmo;
 class UGrid;
 class FObjectPicker;
+class FGizmoPicker;
 
 class FEditor
 {
@@ -25,12 +26,16 @@ private:
 	UCameraComponent* EditorCamera;
 	FCameraController CameraController;
 	FObjectPicker* ObjectPicker = nullptr;
+	FGizmoPicker* GizmoPicker = nullptr;
 
 	USceneComponent* SelectedSceneComponent;
 	TArray<UGizmo*> Gizmos;
 	TArray<UEditorWindow*> Windows;
 	TArray<UGrid*> Grids;
 	
+
+	UGizmo* ObjectAxisGizmo;
+
 
 public:
 
@@ -43,13 +48,16 @@ public:
 	void SpawnPrimitive(FClassType* PrimitiveType, int Count);
 
 	void NewScene();
-	void LoadScene(FString SceneName);
-	void SaveScene(FString SceneName);
+	void LoadScene(FStringView SceneName);
+	void SaveScene(FStringView SceneName);
 
+	UScene* GetCurrentScene();
 	UCameraComponent* GetEditorCamera() { return EditorCamera; }
 
 	USceneComponent* GetSelectedSceneComponent() const { return SelectedSceneComponent; }
 	void SetSelectedSceneComponent(USceneComponent* Component);
+
+	void DeleteSelectedSceneComponent();
 
 	void RegisterGizmo(FClassType* Type);
 	void RegisterWindow(UEditorWindow* Window);
@@ -67,6 +75,9 @@ public:
 	float GetCameraFOV() { return GetEditorCamera()->GetFOV() * 180.0f / PI; }
 	void SetCameraFOV(float NewFOV) { EditorCamera->SetFOVByDegree(NewFOV); }
 	void SpawnPrimitives(FClassType* ClassType, uint32 num) { GEngine::GetInstance()->GetConsole()->Append(std::format("Make {}, {} times",ClassType->Name,num)); }
+	
+	void SetObjectAxisGizmo(UGizmo* InGizmo);
+	UGizmo* GetObjectAxisGizmo()const;
 
 public:
 	friend TArray<FPrimitiveRenderData> RenderUtil::GetRenderList(FEditor* Editor, UScene* Scene);

@@ -7,14 +7,15 @@
 class UPropertyWindow : public UEditorWindow
 {
 private:
-	FVector Translation = { 0.0f, 0.0f, 0.0f };
-	FQuaternion Rotation;
-	FVector OScale = { 0.0f, 0.0f, 0.0f };
+	FVector Translation;
+	FVector Rotation;
+	FVector OScale;
 public:
-	
-	void UpdateTranslation();
-	void UpdateRotation();
-	void UpdateScale();
 
-	void Render() override;
+	void GetSelectedValue();
+	void SetSelectedValue();
+
+	void DeleteSelected();
+
+	void Render(float DeltaTime) override;
 };
