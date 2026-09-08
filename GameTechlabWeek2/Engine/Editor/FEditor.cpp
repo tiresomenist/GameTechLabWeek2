@@ -21,6 +21,8 @@
 
 #include "Engine/Scene/UScene.h"
 
+#include "../../ImGui/imgui.h"
+
 void FEditor::Initialize()
 {
 	EditorCamera = static_cast<UCameraComponent*>(FObjectFactory::ConstructObject(UCameraComponent::GetClass()));
@@ -47,8 +49,12 @@ void FEditor::Tick(float DeltaTime)
 	GEngine& Engine = *GEngine::GetInstance();
 	GInputManager& Input = *GInputManager::GetInstance();
 
+	ImGuiIO& IO = ImGui::GetIO();
+	bool bWantToCaptureMouse = IO.WantCaptureMouse;
+	bool bWantToCaptureKeyboard = IO.WantCaptureKeyboard;
+
 	float Time = Engine.GetTime();
-	if (Input.ConsumeLeftClick()) {
+	if (Input.ConsumeLeftClick() && !bWantToCaptureMouse) {
 		//UE_LOG(std::format("[{}] 좌클릭 좌표:{}, {}", Time,
 		//	Input.GetLeftCursorX(),
 		//	Input.GetLeftCursorY()));
@@ -60,11 +66,17 @@ void FEditor::Tick(float DeltaTime)
 		}
 	}
 	if (Input.GetKey(GInputManager::EI_RMOUSE)) {
-		//UE_LOG(std::format("[{}] 우클릭 좌표:{}, {}", Time,
+		//UE_LOG("[{}] 우클릭 좌표:{}, {}", Time,
 		//	GInputManager::GetInstance()->GetRightCursorX(),
-		//	GInputManager::GetInstance()->GetRightCursorY()));
+		//	GInputManager::GetInstance()->GetRightCursorY());
 	}
-	CameraController.Tick(DeltaTime);
+
+	bool bRightClickDragging = Input.GetKey(GInputManager::EI_RMOUSE);
+	bool bAllowCameraMouse = !bWantToCaptureMouse;
+	bool bAllowCameraKeyboard = !bWantToCaptureKeyboard || (bAllowCameraMouse && bRightClickDragging);
+
+	if(bAllowCameraKeyboard && bAllowCameraMouse)
+		CameraController.Tick(DeltaTime);
 }
 
 void FEditor::Release()
