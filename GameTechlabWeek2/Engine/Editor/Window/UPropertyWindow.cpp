@@ -62,22 +62,23 @@ void UPropertyWindow::Render(float DeltaTime)
 	);
 
 	ImVec2 Available = ImGui::GetContentRegionAvail();
-	float Scale = std::clamp(WindowWidth / 400.0f, 0.1f, 5.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f * Scale, 2.0f * Scale)); // 버튼 안쪽 여백 증가
+	//float Scale = std::clamp(WindowWidth / 400.0f, 0.1f, 5.0f);
+	//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f * Scale, 2.0f * Scale)); // 버튼 안쪽 여백 증가
 	const ImGuiStyle& Style = ImGui::GetStyle();
 	ImVec2 ItemSpacing = Style.ItemSpacing; // 아이템간 패딩 값
 	float ButtonWidth = Available.x * 0.2f; // Button, DragFloat
+	float ComboWidth = Available.x * 0.3f;
 
 	GetSelectedValue();
 
 	ImGui::Begin("Jungle Property Window");
 	{
 		ImGui::PushItemWidth(ButtonWidth);
-		ImGui::DragFloat("##translationX", &Translation.X, 0.001f);
+		ImGui::DragFloat("##translationX", &Translation.X, SnapSize);
 		ImGui::SameLine();
-		ImGui::DragFloat("##translationY", &Translation.Y, 0.001f);
+		ImGui::DragFloat("##translationY", &Translation.Y, SnapSize);
 		ImGui::SameLine();
-		ImGui::DragFloat("##translationZ", &Translation.Z, 0.001f);
+		ImGui::DragFloat("##translationZ", &Translation.Z, SnapSize);
 		ImGui::SameLine();
 		ImGui::Text("Translation");
 		ImGui::DragFloat("##rotationR", &Rotation.X, 0.001f);
@@ -87,16 +88,70 @@ void UPropertyWindow::Render(float DeltaTime)
 		ImGui::DragFloat("##rotationY", &Rotation.Z, 0.001f);
 		ImGui::SameLine();
 		ImGui::Text("Rotation");
-		ImGui::DragFloat("##scaleX", &OScale.X, 0.001f);
+		float PrevScaleX = OScale.X;
+		if (ImGui::DragFloat("##scaleX", &OScale.X, 0.001f))
+		{
+			if (bScaleLock)
+			{
+				float ScaleRatio = OScale.X / PrevScaleX;
+				OScale.Y *= ScaleRatio;
+				OScale.Z *= ScaleRatio;
+			}
+		}
 		ImGui::SameLine();
-		ImGui::DragFloat("##scaleY", &OScale.Y, 0.001f);
+		float PrevScaleY = OScale.Y;
+		if (ImGui::DragFloat("##scaleY", &OScale.Y, 0.001f))
+		{
+			if (bScaleLock)
+			{
+				float ScaleRatio = OScale.Y / PrevScaleY;
+				OScale.X *= ScaleRatio;
+				OScale.Z *= ScaleRatio;
+			}
+		}
 		ImGui::SameLine();
-		ImGui::DragFloat("##scaleZ", &OScale.Z, 0.001f);
+		float PrevScaleZ = OScale.Z;
+		if (ImGui::DragFloat("##scaleZ", &OScale.Z, 0.001f))
+		{
+			if (bScaleLock)
+			{
+				float ScaleRatio = OScale.Z / PrevScaleZ;
+				OScale.X *= ScaleRatio;
+				OScale.Y *= ScaleRatio;
+			}
+		}
 		ImGui::SameLine();
 		ImGui::Text("Scale");
 		ImGui::PopItemWidth();
-		ImGui::PopStyleVar();
+		//ImGui::PopStyleVar();
+		ImGui::PushItemWidth(ComboWidth);
+		char SnapPrev[32];
+		snprintf(SnapPrev, sizeof(SnapPrev), "%g", SnapSizeList[SelectedSnapIndex]);
+		if (ImGui::BeginCombo("SnapSize", SnapPrev))
+		{
+			for (int i = 0; i < SnapSizeList.Size(); i++)
+			{
+				bool bSelected = (SelectedSnapIndex == i);
 
+				char ItemName[32];
+				snprintf(ItemName, sizeof(ItemName), "%g", SnapSizeList[i]);
+
+				if (ImGui::Selectable(ItemName, bSelected))
+				{
+					SelectedSnapIndex = i;
+				}
+
+				if (bSelected)
+				{
+					ImGui::SetItemDefaultFocus();
+				}
+				SnapSize = SnapSizeList[SelectedSnapIndex];
+			}
+			ImGui::EndCombo();
+		}
+		ImGui::PopItemWidth();
+		ImGui::SameLine();
+		ImGui::Checkbox("Scale Lock", &bScaleLock);
 		if (ImGui::Button("Delete"))
 		{
 			DeleteSelected();

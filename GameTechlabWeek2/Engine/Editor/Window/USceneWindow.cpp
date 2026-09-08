@@ -80,8 +80,8 @@ void USceneWindow::Render(float DeltaTime)
 	);
 	
 	ImVec2 Available = ImGui::GetContentRegionAvail();
-	float Scale = std::clamp(WindowWidth / 400.0f, 0.1f, 5.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,ImVec2(3.0f * Scale , 2.0f * Scale)); // 버튼 안쪽 여백 증가
+	//float Scale = std::clamp(WindowWidth / 400.0f, 0.1f, 5.0f);
+	//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,ImVec2(3.0f * Scale , 2.0f * Scale)); // 버튼 안쪽 여백 증가
 	const ImGuiStyle& Style = ImGui::GetStyle();
 	ImVec2 ItemSpacing = Style.ItemSpacing; // 아이템간 패딩 값
 
@@ -168,7 +168,7 @@ void USceneWindow::Render(float DeltaTime)
 		ImGui::SameLine();
 		ImGui::Text("Camera Rotation");
 		ImGui::PopItemWidth();
-		ImGui::PopStyleVar();
+		//ImGui::PopStyleVar();
 	}
 	Editor->SetCameraLocation(CameraLocation);
 	Editor->SetCamerRotation(CameraRotation);
