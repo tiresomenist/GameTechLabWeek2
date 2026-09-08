@@ -104,7 +104,7 @@ UPrimitiveComponent* FObjectPicker::Pick()
 
 
 				// 현재 오브젝트의 WorldMatrix를 반영
-				A = FVector(FVector4(A,1.0f) * Primitive->GetWorldMatrix());
+				A = FVector(FVector4(A, 1.0f) * Primitive->GetWorldMatrix());
 				B = FVector(FVector4(B, 1.0f) * Primitive->GetWorldMatrix());
 				C = FVector(FVector4(C, 1.0f) * Primitive->GetWorldMatrix());
 

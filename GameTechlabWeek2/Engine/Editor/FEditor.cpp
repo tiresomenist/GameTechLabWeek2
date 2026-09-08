@@ -29,6 +29,7 @@ void FEditor::Initialize()
 	CameraController.SetCamera(EditorCamera);
 
 	ObjectPicker = new FObjectPicker(this);
+	SelectedSceneComponent = nullptr;
 
 	RegisterGizmo(UObjectAxisGizmo::GetClass());
 	RegisterGizmo(UWorldAxisGizmo::GetClass());
@@ -52,6 +53,7 @@ void FEditor::Tick(float DeltaTime)
 		//	Input.GetLeftCursorX(),
 		//	Input.GetLeftCursorY()));
 		UPrimitiveComponent* Selected = ObjectPicker->Pick();
+		SetSelectedSceneComponent(Selected);
 		if (Selected != nullptr) {
 			SelectedSceneComponent = Selected;
 			UE_LOG("[{}] : [{}번째 오브젝트 선택]", Time, Selected->UUID);

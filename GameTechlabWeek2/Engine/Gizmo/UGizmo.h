@@ -9,7 +9,7 @@ class UGizmo : public UObject
 
     UCLASS(UGizmo, "Gizmo", UObject)
 
-private:
+protected:
 
 	FEditor* Editor = nullptr;
 
