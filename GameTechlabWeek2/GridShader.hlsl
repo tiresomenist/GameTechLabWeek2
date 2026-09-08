@@ -47,7 +47,7 @@ VS_OUTPUT VS_Grid(VS_INPUT input)
 float4 PS_Grid(VS_OUTPUT input) : SV_Target
 {
     // =====================================
-    // 1. Z축 전용 패스 — 그리드 없이 축 한 줄만, 양의 방향으로만
+    // Z축 전용 패스 — 그리드 없이 축 한 줄만, 양의 방향으로만
     // =====================================
     if (GridPlaneType == 1)
     {
@@ -55,9 +55,7 @@ float4 PS_Grid(VS_OUTPUT input) : SV_Target
         float antiAliasWidth = max(fwidth(input.WorldPos.y), 0.0001f);
 
         float distToZAxis = abs(input.WorldPos.y);
-        float zAxisWeight = 1.0f - smoothstep(axisThickness - antiAliasWidth,
-                                               axisThickness + antiAliasWidth,
-                                               distToZAxis);
+        float zAxisWeight = 1.0f - smoothstep(axisThickness - antiAliasWidth, axisThickness + antiAliasWidth, distToZAxis);
 
         // 라인이 뻗어나가는 방향(local X, 회전 후 world Z)이 양수일 때만 표시
         float aaAlongLine = max(fwidth(input.WorldPos.x), 0.0001f);
@@ -67,14 +65,15 @@ float4 PS_Grid(VS_OUTPUT input) : SV_Target
         if (zAxisWeight <= 0.0f)
             discard;
 
-        float dist = distance(CameraPos.yz, input.WorldPos.yz);
+        // Fade Out
+        float dist = distance(CameraPos.zx, input.WorldPos.zx);
         float alpha = 1.0f - smoothstep(20.0f, 40.0f, dist);
 
         return float4(0.0f, 0.0f, 1.0f, alpha * zAxisWeight);
     }
 
     // =====================================
-    // 2. 기존 XY 평면 — 그리드 + X/Y축, 양의 방향으로만
+    // XY 평면 — 그리드 + X/Y축, 양의 방향으로만
     // =====================================
     float2 gridUV = input.WorldPos.xy;
 
