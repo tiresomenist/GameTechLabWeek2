@@ -6,22 +6,24 @@
 
 void UPropertyWindow::GetSelectedValue()
 {
-	USceneComponent* SelectedComponent = Editor->GetSelectedSceneComponent();
+	USceneComponent* NewComponent = Editor->GetSelectedSceneComponent();
 
-	if (SelectedComponent != nullptr)
+	if (SelectedComponent != NewComponent)
 	{
-		Translation = SelectedComponent->GetRelativeLocation();
+		SelectedComponent = NewComponent;
 
-		const FQuaternion& Quaternion = SelectedComponent->GetRelativeRotation();
-		Rotation = FQuaternion::ToEuler(Quaternion);
-		OScale = SelectedComponent->GetRelativeScale3D();
+		if (SelectedComponent)
+		{
+			Translation = SelectedComponent->GetRelativeLocation();
+			const FQuaternion& Quaternion = SelectedComponent->GetRelativeRotation();
+			Rotation = FQuaternion::ToEuler(Quaternion);
+			OScale = SelectedComponent->GetRelativeScale3D();
+		}
 	}
 }
 
 void UPropertyWindow::SetSelectedValue()
 {
-	USceneComponent* SelectedComponent = Editor->GetSelectedSceneComponent();
-
 	if (SelectedComponent != nullptr)
 	{
 		SelectedComponent->SetRelativeLocation(Translation);

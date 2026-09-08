@@ -4,9 +4,12 @@
 #include "../../../FQuaternion.h"
 #include "../../../Container/FString.h"
 
+class USceneComponent;
+
 class UPropertyWindow : public UEditorWindow
 {
 private:
+	USceneComponent* SelectedComponent;
 	FVector Translation;
 	FVector Rotation;
 	FVector OScale;
