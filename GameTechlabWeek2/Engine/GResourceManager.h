@@ -40,8 +40,7 @@ public:
 
 	void Initialize(GDevice* InDevice);
 	void Shutdown();
-	FMeshResource* CreateMesh(const FString& MeshName,
-		const TArray<FVertexSimple>& Vertices, const TArray<uint32>& Indices);
+	FMeshResource* CreateMesh(const FString& MeshName,const TArray<FVertexSimple>& Vertices, const TArray<uint32>& Indices);
 
 	template <size_t VCount, size_t ICount>
 	FMeshResource* CreateMesh(

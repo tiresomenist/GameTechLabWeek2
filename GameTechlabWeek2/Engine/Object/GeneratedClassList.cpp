@@ -6,6 +6,8 @@
 #include "Engine/Gizmo/UWorldAxisGizmo.h"
 #include "Engine/Gizmo/UWorldGridGizmo.h"
 
+#include "Engine/Editor/UGrid.h"
+
 #include "Engine/Object/UObject.h"
 #include "Engine/Object/USceneComponent.h"
 #include "Engine/Object/UCameraComponent.h"

@@ -5,12 +5,14 @@
 #include "../../../Container/TArray.h"
 #include "../../FConsole.h"
 #include "../../Core.h"
+#include "ImGui/imgui.h"
 #include "../../../Matrix.h"
 
 class UConsoleWindow : public UEditorWindow
 {
 private:
-	FString Filter;
+	ImGuiTextFilter Filter;
+	TArray<FString> logs;
 public:
 	void AddDebugText(FString DebugText);
 	void AddDebugError(FString ErrorText);

@@ -42,6 +42,8 @@ struct FMatrix
 	FMatrix operator*(const FMatrix& Rhs) const;
 	//벡터*행렬
 	FVector4 TransformVector4(const FVector4& V) const;
+	// 3D 위치(Position) 변환 (W=1.0)
+	FVector TransformPosition(const FVector& V) const;
 
 	//전치행렬,역행렬,행렬식
 	FMatrix Transpose() const;

@@ -13,6 +13,7 @@
 #include "ImGui/imgui_internal.h"
 #include "ImGui/imgui_impl_dx11.h"
 #include "ImGui/imgui_impl_win32.h"
+#include "ImGui/imgui_stdlib.h"
 #include "Engine/InputManager/GInputManager.h"
 
 #include "Engine/GSceneManager.h"
@@ -79,8 +80,8 @@ void USceneWindow::Render(float DeltaTime)
 	);
 	
 	ImVec2 Available = ImGui::GetContentRegionAvail();
-	float Scale = std::clamp(WindowWidth / 400.0f, 0.1f, 5.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,ImVec2(3.0f * Scale , 2.0f * Scale)); // 버튼 안쪽 여백 증가
+	//float Scale = std::clamp(WindowWidth / 400.0f, 0.1f, 5.0f);
+	//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,ImVec2(3.0f * Scale , 2.0f * Scale)); // 버튼 안쪽 여백 증가
 	const ImGuiStyle& Style = ImGui::GetStyle();
 	ImVec2 ItemSpacing = Style.ItemSpacing; // 아이템간 패딩 값
 
@@ -125,7 +126,7 @@ void USceneWindow::Render(float DeltaTime)
 		ImGui::Separator();
 		ImGui::PushItemWidth(WideItemWidth);
 
-		ImGui::InputText("Scene Name", SceneName.data(), 128);
+		ImGui::InputText("Scene Name", &SceneName);
 
 		ImGui::PopItemWidth();
 		if(ImGui::Button("New Scene"))
@@ -167,7 +168,7 @@ void USceneWindow::Render(float DeltaTime)
 		ImGui::SameLine();
 		ImGui::Text("Camera Rotation");
 		ImGui::PopItemWidth();
-		ImGui::PopStyleVar();
+		//ImGui::PopStyleVar();
 	}
 	Editor->SetCameraLocation(CameraLocation);
 	Editor->SetCamerRotation(CameraRotation);

@@ -17,6 +17,7 @@
 #include "Models/RotateRed.h"
 #include "Models/RotateGreen.h"
 #include "Models/RotateBlue.h"
+#include "Models/Grid.h"
 
 GResourceManager* GResourceManager::GetInstance()
 {
@@ -44,7 +45,7 @@ void GResourceManager::Initialize(GDevice* InDevice)
     CreateMesh("RotateRed", rotate_red_vertices, rotate_red_indices);
     CreateMesh("RotateGreen", rotate_green_vertices, rotate_green_indices);
     CreateMesh("RotateBlue", rotate_blue_vertices, rotate_blue_indices);
-
+    CreateMesh("Grid", grid_vertices, grid_indices);
 }
 
 FMeshResource* GResourceManager::CreateMesh(const FString& MeshName,
@@ -66,6 +67,7 @@ FMeshResource* GResourceManager::CreateMesh(const FString& MeshName,
     Mesh->IndexBuffer = Device->CreateIndexBuffer(&Mesh->indexes[0], sizeof(uint32) * Mesh->IndexCount);
     PrimitiveCache[MeshName] = Mesh;
     return Mesh;
+    
 }
 
 void GResourceManager::Shutdown()

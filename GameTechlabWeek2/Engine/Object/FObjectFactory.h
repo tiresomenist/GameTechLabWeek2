@@ -23,7 +23,9 @@ public:
 		uint32 InternalIndex = GObjects::GetNextIndex();
 
 		UObject* Object = Type->ClassConstructor(UUID, InternalIndex, Type);
+
 		Object->Initialize();
+
 		GObjects::AddObject(Object);
 		
 		return Object;

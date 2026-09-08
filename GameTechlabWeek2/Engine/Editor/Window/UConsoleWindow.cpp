@@ -19,14 +19,16 @@ void UConsoleWindow::Clear()
 void UConsoleWindow::Copy()
 {
 	FString ClipBoardText;
-	/*
 	for (uint32 i = 0; i < logs.Size(); i++)
 	{
+		if (!Filter.PassFilter(logs[i].c_str()))
+		{
+			continue;
+		}
 		ClipBoardText += logs[i];
 		ClipBoardText += "\n";
 	}
 	ImGui::SetClipboardText(ClipBoardText.c_str()); // 클립보드로 복사
-	*/
 }
 void UConsoleWindow::Option()
 {
@@ -35,7 +37,7 @@ void UConsoleWindow::Option()
 void UConsoleWindow::Render(float DeltaTime)
 {
 	FConsole* console = GEngine::GetInstance()->GetConsole();
-	TArray<FString> logs = console->Get(Filter);
+	logs = console->Get("");
 
 	const ImGuiViewport* Viewport = ImGui::GetMainViewport();
 	const ImVec2 WorkPosition = Viewport->WorkPos; // 메뉴창을 제외한 제일 왼쪽 위 위치
@@ -91,7 +93,7 @@ void UConsoleWindow::Render(float DeltaTime)
 			Option();
 		}
 		ImGui::SameLine();
-		ImGui::InputScalar("##SearchFilter", ImGuiDataType_S32, &Filter);
+		Filter.Draw("##SearchFilter", 180.f);
 		ImGui::SameLine();
 		ImGui::Text("Filter (\"incl,-excl\") (\"error\")");
 		ImGui::Separator();
@@ -102,6 +104,10 @@ void UConsoleWindow::Render(float DeltaTime)
 
 		for (auto & i : logs)
 		{
+			if (!Filter.PassFilter(i.c_str()))
+			{
+				continue;
+			}
 			ImGui::TextUnformatted(i.c_str());
 		}
 		if (bWasAtBottom)

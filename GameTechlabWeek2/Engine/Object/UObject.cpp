@@ -2,6 +2,7 @@
 #include "Engine/Object/GObjects.h"
 #include "Engine/GAllocator.h"
 #include "Engine/Object/FArchive.h"
+#include "Engine/Log.h"
 
 FClassType* UObject::GetClass()
 {
@@ -24,6 +25,7 @@ UObject::UObject(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
 	, InternalIndex{ InInternalIndex }
 	, ClassType{ InClassType }
 {
+	UE_LOG("Object Created: {}", InClassType->Name);
 }
 
 bool UObject::IsA(FClassType* InClassType) const
@@ -42,6 +44,10 @@ bool UObject::IsA(FClassType* InClassType) const
 	}
 
 	return false;
+}
+
+void UObject::Initialize()
+{
 }
 
 void* UObject::operator new(size_t Size)
@@ -68,8 +74,4 @@ void UObject::Serialize(FArchive& Archive)
 void UObject::Deserialize(FArchive& Archive)
 {
 	
-}
-
-void UObject::Initialize()
-{
 }

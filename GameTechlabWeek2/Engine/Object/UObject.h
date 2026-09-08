@@ -76,6 +76,11 @@ public:
 	/// <param name="InClassType">자식 여부를 확인하려는 타입</param>
 	/// <returns>자식 여부</returns>
 	bool IsA(FClassType* InClassType) const;
+
+	/// <summary>
+	/// 객체의 초기화를 실행합니다.
+	/// </summary>
+	virtual void Initialize();
 	
 	/// <summary>
 	/// 객체에 담긴 정보를 직렬화하여 Archive에 저장합니다.
@@ -89,7 +94,6 @@ public:
 	/// <param name="Archive"></param>
 	virtual void Deserialize(FArchive& Archive);
 
-	virtual void Initialize();
 
 	void* operator new(size_t Size);
 	void operator delete(void* Ptr);
