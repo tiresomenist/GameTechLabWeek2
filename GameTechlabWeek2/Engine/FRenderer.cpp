@@ -286,6 +286,7 @@ void FRenderer::Render(float DeltaTime, FEditor* Editor, UScene* Scene)
 	UCameraComponent* Camera = Editor->GetEditorCamera();
 
 	FMatrix ViewProjMatrix = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
+	
 	TArray<FPrimitiveRenderData> RenderList = RenderUtil::GetRenderList(Editor, Scene);
 	static float Angle = 0.0f;
 	Angle += 0.03f;

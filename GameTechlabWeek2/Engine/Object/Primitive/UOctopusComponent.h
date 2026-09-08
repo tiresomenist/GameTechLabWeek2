@@ -9,8 +9,4 @@ class UOctopusComponent : public UPrimitiveComponent
 
 	UCLASS(UOctopusComponent, "Octopus", UPrimitiveComponent)
 
-public:
-
-	virtual FPrimitiveRenderData GetRenderData(FStringView Type = "") override;
-
 };

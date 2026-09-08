@@ -9,8 +9,4 @@ class UArrowRedComponent : public UPrimitiveComponent
 
 	UCLASS(UArrowRedComponent, "ArrowRed", UPrimitiveComponent)
 
-public:
-
-	virtual FPrimitiveRenderData GetRenderData(FStringView Type = "") override;
-
 };
