@@ -13,6 +13,7 @@
 #include "ImGui/imgui_internal.h"
 #include "ImGui/imgui_impl_dx11.h"
 #include "ImGui/imgui_impl_win32.h"
+#include "ImGui/imgui_stdlib.h"
 #include "Engine/InputManager/GInputManager.h"
 
 #include "Engine/GSceneManager.h"
@@ -125,7 +126,7 @@ void USceneWindow::Render(float DeltaTime)
 		ImGui::Separator();
 		ImGui::PushItemWidth(WideItemWidth);
 
-		ImGui::InputText("Scene Name", SceneName.data(), 128);
+		ImGui::InputText("Scene Name", &SceneName);
 
 		ImGui::PopItemWidth();
 		if(ImGui::Button("New Scene"))
