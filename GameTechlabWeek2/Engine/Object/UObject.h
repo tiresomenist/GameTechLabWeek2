@@ -89,6 +89,8 @@ public:
 	/// <param name="Archive"></param>
 	virtual void Deserialize(FArchive& Archive);
 
+	virtual void Initialize();
+
 	void* operator new(size_t Size);
 	void operator delete(void* Ptr);
 

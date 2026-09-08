@@ -69,3 +69,7 @@ void UObject::Deserialize(FArchive& Archive)
 {
 	
 }
+
+void UObject::Initialize()
+{
+}

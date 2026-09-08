@@ -9,12 +9,22 @@ class UObjectAxisGizmo : public UGizmo
 	UCLASS(UObjectAxisGizmo, "ObjectAxisGizmo", UGizmo)
 
 public:
+	virtual void Initialize()override;
+	bool UpdateTransform();
+	UObjectAxisGizmo();
 	TArray<FPrimitiveRenderData> GetRenderData() override;
+	TArray<FPrimitiveRenderData> GetTranslateRenderData();
+	TArray<FPrimitiveRenderData> GetRotateRenderData();
+	TArray<FPrimitiveRenderData> GetScaleRenderData();
+	FMatrix GetXAxisWorldMatirx()const;
+	FMatrix GetYAxisWorldMatirx()const;
+	FMatrix GetZAxisWorldMatirx()const;
+	//void Set
 
+	const TArray<FGizmoHandle>& GetHandles() const { return Handles; }
+	void SetMode(EGizmoMode InMode);
 private:
-	FVector GizmoScale = FVector(0.2f,0.2f,0.5f);
-	FMatrix XAxisWorldMatrix = FMatrix::MakeRotationYMatrix(PI / 2);
-	FMatrix YAxisWorldMatrix = FMatrix::MakeRotationXMatrix(-PI / 2);
-	FMatrix ZAxisWorldMatrix = FMatrix::Identity;
+	// X,Y,Z 핸들
+	FVector GizmoScale = FVector(1.0f,1.0f,2.5f);
 };
 
