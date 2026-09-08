@@ -23,7 +23,7 @@ struct FConstants
 struct FGridConstants
 {
 	FVector CameraPos;
-	float Padding;
+	int GridPlaneType;
 };
 class UScene;
 class FEditor;
@@ -76,7 +76,7 @@ public:
 	void CreateConstantBuffer();								// 상수 버퍼 생성 함수
 	void ReleaseConstantBuffer();								// 상수 버퍼 소멸 함수
 	void UpdateTransformConstantBuffer(const FMatrix& WorldMatrix);      // 상수 버퍼 업데이트 함수
-	void UpdateGridConstantBuffer(const FVector& CameraPos);
+	void UpdateGridConstantBuffer(const FGridConstants& GridConstants);
 
 	void CreateRasterizerState();
 	void ReleaseRasterizerState();
