@@ -316,12 +316,29 @@ void FRenderer::Render(float DeltaTime, FEditor* Editor, UScene* Scene)
 	UpdateTransformConstantBuffer(ViewProjMatrix);
 	for (auto Item : Editor->GetGrids())
 	{
-		Item->Render();
-		UpdateGridConstantBuffer(Camera->GetWorldLocation());
-		RenderGrid(Item->GetMeshResource()); // @TODO FPrimitiveData는..? FMeshResource ResourceManager에 방문하세요..
+		FGridConstants ConstantsXY;
+		ConstantsXY.CameraPos = Camera->GetWorldLocation();
+		ConstantsXY.GridPlaneType = 0;
+		UpdateGridConstantBuffer(ConstantsXY);
+
+		// XY 평면용 월드 행렬 세팅 및 렌더링
+		RenderGrid(Item->GetMeshResource());
+
+		// 2. 새로 세워둔 Z축용 평면 그리기
+		FGridConstants ConstantsZ;
+		ConstantsZ.CameraPos = Camera->GetWorldLocation();
+		ConstantsZ.GridPlaneType = 1;
+		UpdateGridConstantBuffer(ConstantsZ);
+
+		// 기존 판을 Y축 기준으로 90도(PI/2) 회전 (YZ 평면)
+		float theta = atan2f(Camera->GetWorldLocation().Y, Camera->GetWorldLocation().X);
+		FMatrix Z_WorldMatrix = 
+			FMatrix::MakeRotationYMatrix(PI / 2.0f) *   // 판을 세워서 Z축에 정렬
+			FMatrix::MakeRotationZMatrix(theta);         // Z축을 축으로 카메라 쪽으로 회전
+		UpdateTransformConstantBuffer(Z_WorldMatrix * ViewProjMatrix);
+		RenderGrid(Item->GetMeshResource());
 	}
 
-	// Gizmo vertices are already in world space (identity world transform).
 	UpdateTransformConstantBuffer(ViewProjMatrix);
 	EndFrame();
 }
@@ -341,7 +358,7 @@ void FRenderer::UpdateTransformConstantBuffer(const FMatrix& MVP)
 	}
 }
 
-void FRenderer::UpdateGridConstantBuffer(const FVector& CameraPos) 
+void FRenderer::UpdateGridConstantBuffer(const FGridConstants& GridConstants)
 {
 	if (GridConstantBuffer)
 	{
@@ -351,8 +368,8 @@ void FRenderer::UpdateGridConstantBuffer(const FVector& CameraPos)
 
 		FGridConstants* constants = (FGridConstants*)constantbufferMSR.pData;
 
-		constants->CameraPos = CameraPos;
-		constants->Padding = 0.0f;
+		constants->CameraPos = GridConstants.CameraPos;
+		constants->GridPlaneType = GridConstants.GridPlaneType;
 
 		DeviceContext->Unmap(GridConstantBuffer, 0);
 	}
