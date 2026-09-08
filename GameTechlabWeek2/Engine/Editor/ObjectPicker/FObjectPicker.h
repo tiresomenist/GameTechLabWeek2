@@ -17,6 +17,7 @@ public:
 	~FObjectPicker();
 	void Tick();
 	bool MakeWorldRay(FRay& OutRay);
+	bool RayTriangleIntersect(const FRay& Ray, FVector A, FVector B, FVector C, float& OutDistance);
 	UPrimitiveComponent* Pick();
 private:
 	UCameraComponent* Camera;

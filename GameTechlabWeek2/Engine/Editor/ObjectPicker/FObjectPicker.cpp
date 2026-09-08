@@ -37,7 +37,7 @@ bool FObjectPicker::MakeWorldRay(FRay& OutRay) {
 	return true;
 }
 
-bool RayTriangleIntersect(const FRay& Ray,FVector A, FVector B, FVector C ,float& OutDistance ) {
+bool FObjectPicker::RayTriangleIntersect(const FRay& Ray,FVector A, FVector B, FVector C ,float& OutDistance ) {
 	const FVector Edge1 = B - A;
 	const FVector Edge2 = C - A;
 

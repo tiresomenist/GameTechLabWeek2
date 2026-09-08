@@ -17,6 +17,8 @@
 #include "Engine/InputManager/GInputManager.h"
 
 #include "Engine/Editor/ObjectPicker/FObjectPicker.h"
+#include "Engine/Editor/ObjectPicker/FGizmoPicker.h"	
+
 #include "Engine/GSceneManager.h"
 
 void FEditor::Initialize()
@@ -27,7 +29,7 @@ void FEditor::Initialize()
 	CameraController.SetCamera(EditorCamera);
 	SelectedSceneComponent = nullptr;
 	ObjectPicker = new FObjectPicker(EditorCamera, GSceneManager::GetInstance()->GetScene());
-
+	GizmoPicker = new FGizmoPicker(EditorCamera);
 	RegisterGizmo(UObjectAxisGizmo::GetClass());
 	RegisterGizmo(UWorldAxisGizmo::GetClass());
 	RegisterGizmo(UWorldGridGizmo::GetClass());
@@ -46,15 +48,27 @@ void FEditor::Tick(float DeltaTime)
 
 	float Time = Engine.GetTime();
 	if (Input.ConsumeLeftClick()) {
+
+		//여기에 기즈모 선택 함수 구현하면 됨.
+		//리턴값은 기즈모 포인터? bool? 아무튼 선택됐는가 안됐는가를 확실히 체크해서, 안됐으면 아래 코드로 넘어갈것
+
 		//UE_LOG(std::format("[{}] 좌클릭 좌표:{}, {}", Time,
 		//	Input.GetLeftCursorX(),
 		//	Input.GetLeftCursorY()));
-		UPrimitiveComponent* Selected = ObjectPicker->Pick();
-		SetSelectedSceneComponent(Selected);
-		if (Selected != nullptr) {
-			SelectedSceneComponent = Selected;
-			UE_LOG("[{}] : [{}번째 오브젝트 선택]", Time, Selected->UUID);
+		int32 SelectedGizmo = GizmoPicker->Pick(ObjectAxisGizmo);
+		if (SelectedGizmo != -1) {
+			TArray<char> temp = { 'X','Y','Z' };
+			UE_LOG("{}축 선택됨!",temp[SelectedGizmo]);
 		}
+		else {
+			UPrimitiveComponent* Selected = ObjectPicker->Pick();
+			SetSelectedSceneComponent(Selected);
+			if (Selected != nullptr) {
+				//SelectedSceneComponent = Selected;
+				UE_LOG("[{}] : [{}번째 오브젝트 선택]", Time, Selected->UUID);
+			}
+		}
+
 	}
 	if (Input.GetKey(GInputManager::EI_RMOUSE)) {
 		//UE_LOG(std::format("[{}] 우클릭 좌표:{}, {}", Time,
@@ -69,6 +83,8 @@ void FEditor::Release()
 	CameraController.SetCamera(nullptr);
 	delete ObjectPicker;
 	ObjectPicker = nullptr;
+	delete GizmoPicker;
+	GizmoPicker = nullptr;
 }
 
 void FEditor::SpawnPrimitive(FClassType* PrimitiveType, int Count)
@@ -102,7 +118,9 @@ void FEditor::RegisterGizmo(FClassType* Type)
 	UGizmo* Gizmo = static_cast<UGizmo*>(Object);
 
 	Gizmo->Initialize(this);
-
+	if (Gizmo->IsA(UObjectAxisGizmo::GetClass())) {
+		SetObjectAxisGizmo(Gizmo);
+	}
 	Gizmos.Add(Gizmo);
 }
 
@@ -110,4 +128,14 @@ void FEditor::RegisterWindow(UEditorWindow* Window)
 {
 	Window->Initialize(this);
 	Windows.Add(Window);
+}
+
+void FEditor::SetObjectAxisGizmo(UGizmo* InGizmo)
+{
+	ObjectAxisGizmo = InGizmo;
+}
+
+UGizmo* FEditor::GetObjectAxisGizmo() const
+{
+	return ObjectAxisGizmo;
 }
