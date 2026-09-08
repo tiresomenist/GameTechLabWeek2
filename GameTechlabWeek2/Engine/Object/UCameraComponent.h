@@ -5,12 +5,6 @@
 #include "Engine/Object/USceneComponent.h"
 #include "Engine/Object/FArchive.h"
 
-enum class EProjectionMode
-{
-    Orthographic,
-    Perspective
-};
-
 class UCameraComponent : public USceneComponent
 {
 
@@ -35,6 +29,8 @@ public:
     float GetAspectRatio()const;
     float GetNearZ()const;
     float GetFarZ()const;
+    bool GetIsPerspective() const;
+    void SetIsPerspective(bool Value);
 
     void SetFOVByRadian(const float& InRadian);
     void SetFOVByDegree(const float& InDegree);
@@ -43,13 +39,14 @@ public:
 
     //카메라가 원하는 지점을 바라보도록 하는 함수
     void LookAt(const FVector& InTargetPosition);
-    EProjectionMode ProjectionMode = EProjectionMode::Perspective;
     
     virtual void Serialize(FArchive& Archive) override;
     virtual void Deserialize(FArchive& Archive) override;
 
 private:
     FMatrix GetCameraRotationMatrix() const;
+
+    bool bIsPerspective = true;
     float FOV = 60.0f * PI / 180.0f;   //세로 시야각. 저장단위 라디안
     float AspectRatio = 1.0f;          //뷰포트 가로/세로 비율
     float NearZ = 0.1f;

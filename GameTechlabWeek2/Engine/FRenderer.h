@@ -1,11 +1,5 @@
 #pragma once
 #include <vector>
-#include <directxmath.h>
-
-// D3D11 librarys
-#pragma comment(lib, "user32")
-#pragma comment(lib, "d3d11")
-#pragma comment(lib, "d3dcompiler")
 
 // D3D11 headers
 #include <d3d11.h>
@@ -76,7 +70,7 @@ public:
 	void BeginFrame();
 	void EndFrame();
 
-	void Render(FEditor* Editor, UScene* Scene);
+	void Render(float DeltaTime, FEditor* Editor, UScene* Scene);
 	void RenderPrimitive(const FPrimitiveRenderData& Data);
 	void RenderHighlight(const FPrimitiveRenderData& Data);
 };

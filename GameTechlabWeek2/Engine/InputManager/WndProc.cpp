@@ -3,6 +3,8 @@
 #include "Engine/Core.h"
 #include "Engine/Log.h"
 
+#include <windowsx.h>
+
 LRESULT HandleInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	GInputManager& Input = *GInputManager::GetInstance();

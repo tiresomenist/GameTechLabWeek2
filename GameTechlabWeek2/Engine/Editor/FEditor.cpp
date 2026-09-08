@@ -19,6 +19,8 @@
 #include "Engine/Editor/ObjectPicker/FObjectPicker.h"
 #include "Engine/GSceneManager.h"
 
+#include "Engine/Scene/UScene.h"
+
 void FEditor::Initialize()
 {
 	EditorCamera = static_cast<UCameraComponent*>(FObjectFactory::ConstructObject(UCameraComponent::GetClass()));
@@ -26,7 +28,7 @@ void FEditor::Initialize()
 
 	CameraController.SetCamera(EditorCamera);
 
-	ObjectPicker = new FObjectPicker(EditorCamera, GSceneManager::GetInstance()->GetScene());
+	ObjectPicker = new FObjectPicker(this);
 
 	RegisterGizmo(UObjectAxisGizmo::GetClass());
 	RegisterGizmo(UWorldAxisGizmo::GetClass());
@@ -72,27 +74,53 @@ void FEditor::Release()
 
 void FEditor::SpawnPrimitive(FClassType* PrimitiveType, int Count)
 {
-	// TODO
+	UScene* CurrentScene = GetCurrentScene();
+
+	for (int i = 0; i < Count; ++i)
+	{
+		CurrentScene->SpawnObject<UObject*>(PrimitiveType);
+	}
 }
 
 void FEditor::NewScene()
 {
-	// TODO
+	// 똑같이 Scene을 불러오되, Deserialize 과정만 생략
+	LoadScene("");
 }
 
-void FEditor::LoadScene(FString SceneName)
+void FEditor::LoadScene(FStringView SceneName)
 {
-	// TODO
+	GSceneManager* SceneManager = GSceneManager::GetInstance();
+	FClassType* SceneType = GetCurrentScene()->GetClassType();
+
+	SceneManager->LoadScene(SceneType, SceneName);
 }
 
-void FEditor::SaveScene(FString SceneName)
+void FEditor::SaveScene(FStringView SceneName)
 {
-	// TODO
+	GSceneManager* SceneManager = GSceneManager::GetInstance();
+	SceneManager->SaveScene(SceneName);
+}
+
+UScene* FEditor::GetCurrentScene()
+{
+	GSceneManager* SceneManager = GSceneManager::GetInstance();
+	return SceneManager->GetScene();
 }
 
 void FEditor::SetSelectedSceneComponent(USceneComponent* Component)
 {
 	SelectedSceneComponent = Component;
+}
+
+void FEditor::DeleteSelectedSceneComponent()
+{
+	if (SelectedSceneComponent == nullptr) { return; }
+
+	UScene* CurrentScene = GetCurrentScene();
+	CurrentScene->Destroy(SelectedSceneComponent);
+
+	SelectedSceneComponent = nullptr;
 }
 
 void FEditor::RegisterGizmo(FClassType* Type)
