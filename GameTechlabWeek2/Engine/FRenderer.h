@@ -47,6 +47,7 @@ public:
 
 	ID3D11RasterizerState* DefaultRasterizerState = nullptr;   // 래스터라이저 상태(컬링, 채우기 모드 등 정의)
 	ID3D11RasterizerState* CullFrontRasterizerState = nullptr;   // 래스터라이저 상태(컬링, 채우기 모드 등 정의)
+	ID3D11RasterizerState* CullNoneRasterizerState = nullptr;   // 래스터라이저 상태(컬링, 채우기 모드 등 정의)
 	ID3D11BlendState* AlphaBlendState = nullptr;
 
 	ID3D11Buffer* TransformConstantBuffer = nullptr;     
