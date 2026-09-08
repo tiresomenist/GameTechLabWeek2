@@ -14,34 +14,7 @@ GSceneManager* GSceneManager::GetInstance()
 
 void GSceneManager::Initialize()
 {
-	UObject* RawPtr = FObjectFactory::ConstructObject(UMainScene::GetClass());
-	UScene* Scene = static_cast<UScene*>(RawPtr);
-
-	// TODO: 적절한 예외처리가 없음
-	FString FileText = File::ReadText("TestScene.json");
-	json::JSON FileJSON = json::JSON::Load(FileText);
-
-	TArray<FArchive> ObjectInfoList;
-
-	json::JSON& List = FileJSON["Primitives"];
-	for (auto& Item : List.ObjectRange())
-	{
-		uint32 UUID = std::stoi(Item.first);
-		FArchive Archive{ Item.second };
-		Archive.SetUInt32("UUID", UUID);
-
-		ObjectInfoList.Add(Archive);
-	}
-
-	Scene->Deserialize(ObjectInfoList);
-
-	// Scene
-	CurrentScene = Scene;
-
-	if (CurrentScene)
-	{
-		CurrentScene->BeginPlay();
-	}
+	LoadScene(UMainScene::GetClass(), "TestScene");
 }
 
 void GSceneManager::Release()
@@ -79,14 +52,53 @@ void GSceneManager::Tick(float DeltaTime)
 	}
 }
 
-void GSceneManager::ChangeLevel(UScene* InNextScene)
+void GSceneManager::LoadScene(FClassType* SceneType, FStringView SerializedName)
 {
-	NextScene = InNextScene;
+	// UScene의 자식인지 체크
+	if (!SceneType->IsA(UScene::GetClass())) { return; }
+
+	UObject* RawPtr = FObjectFactory::ConstructObject(SceneType);
+	UScene* Scene = static_cast<UScene*>(RawPtr);
+
+	if (SerializedName != "")
+	{
+		// TODO: 적절한 예외처리가 없음
+		FString FileName{ SerializedName };
+		FileName += ".json";
+
+		FString FileText = File::ReadText(FileName);
+		json::JSON FileJSON = json::JSON::Load(FileText);
+
+		TArray<FArchive> ObjectInfoList;
+
+		json::JSON& List = FileJSON["Primitives"];
+		for (auto& Item : List.ObjectRange())
+		{
+			uint32 UUID = std::stoi(Item.first);
+			FArchive Archive{ Item.second };
+			Archive.SetUInt32("UUID", UUID);
+
+			ObjectInfoList.Add(Archive);
+		}
+
+		Scene->Deserialize(ObjectInfoList);
+	}
+
+	if (CurrentScene)
+	{
+		NextScene = Scene;
+	}
+	else
+	{
+		CurrentScene = Scene;
+		CurrentScene->BeginPlay();
+	}
 }
 
-void GSceneManager::SaveScene()
+void GSceneManager::SaveScene(FStringView SerializedName)
 {
 	if (CurrentScene == nullptr) { return; }
+	if (SerializedName == "") { return; }
 
 	// TODO: 적절한 예외처리가 없음
 	TArray<FArchive> ObjectInfoList;
@@ -105,6 +117,9 @@ void GSceneManager::SaveScene()
 	FileJSON["NextUUID"] = 100; // TODO: 수정!!!
 	FileJSON["Primitives"] = ObjectArray;
 
+	FString FileName{ SerializedName };
+	FileName += ".json";
+
 	FString FileText = FileJSON.dump();
-	File::WriteText("TestScene.json", FileText);
+	File::WriteText(FileName, FileText);
 }

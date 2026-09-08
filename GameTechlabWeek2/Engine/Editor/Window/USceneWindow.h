@@ -1,16 +1,18 @@
 #pragma once
 
 #include "UEditorWindow.h"
-#include "../../../Engine/Object/FClassType.h"
-#include "../../../Matrix.h"
-#include "../../../Container/FString.h"
-#include "../../../FQuaternion.h"
+#include "Engine/Object/FClassType.h"
+#include "Matrix.h"
+#include "Container/FString.h"
+#include "FQuaternion.h"
+
+class FEditor;
 
 class USceneWindow : public UEditorWindow
 {
 private:
 	uint32 NumberOfSpawn = 1;
-	FWideString SceneName = L"Default";
+	FString SceneName{"TestScene"};
 	bool bOrthogonal = false;
 	TArray<FClassType*> Spawnables;
 	FClassType* SelectedClass;
@@ -23,9 +25,11 @@ private:
 	/*             */
 public:
 	void SpawnPrimitive();
-	void MakeNewScene();
-	void SaveCurrentScene();
-	void LoadSavedScene();
+	void NewScene();
+	void SaveScene();
+	void LoadScene();
 
-	void Render() override;
+	virtual void Initialize(FEditor* InEditor) override;
+
+	void Render(float DeltaTime) override;
 };

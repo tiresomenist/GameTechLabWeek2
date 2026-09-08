@@ -13,8 +13,8 @@ protected:
 
 public:
 
-	void Initialize(FEditor* InEditor);
+	virtual void Initialize(FEditor* InEditor);
 
-	virtual void Render() {}
+	virtual void Render(float DeltaTime) {}
 };
 

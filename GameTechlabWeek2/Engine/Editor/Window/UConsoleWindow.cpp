@@ -32,7 +32,7 @@ void UConsoleWindow::Option()
 {
 	//과제 시연 영상에는 있었는데 뭐하는지는 모르는 함수
 }
-void UConsoleWindow::Render()
+void UConsoleWindow::Render(float DeltaTime)
 {
 	FConsole* console = GEngine::GetInstance()->GetConsole();
 	TArray<FString> logs = console->Get(Filter);

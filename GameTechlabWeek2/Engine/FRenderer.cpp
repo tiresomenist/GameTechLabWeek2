@@ -235,7 +235,7 @@ void FRenderer::EndFrame()
     GDevice::GetInstance()->SwapBuffer();
 }
 
-void FRenderer::Render(FEditor* Editor, UScene* Scene)
+void FRenderer::Render(float DeltaTime, FEditor* Editor, UScene* Scene)
 {
     BeginFrame();
 
@@ -262,7 +262,7 @@ void FRenderer::Render(FEditor* Editor, UScene* Scene)
     // 2. Editor Window 렌더
     for (auto Item : Editor->GetWindows())
     {
-        Item->Render();
+        Item->Render(DeltaTime);
     }
 
     for (auto Item : Editor->GetGizmos()) {

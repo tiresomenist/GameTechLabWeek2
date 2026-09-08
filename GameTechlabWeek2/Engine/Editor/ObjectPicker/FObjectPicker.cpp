@@ -1,12 +1,21 @@
 #include "FObjectPicker.h"
-#include "../../InputManager/GInputManager.h"
-#include "../../../FVector.h"
-#include "../../../Matrix.h"
+#include "FVector.h"
+#include "Matrix.h"
+#include "Engine/InputManager/GInputManager.h"
 #include "Engine/Renderer/FVertexSimple.h"
-#include "../../Scene/UScene.h"
+#include "Engine/Scene/UScene.h"
 #include "Engine/Log.h"
+#include "Engine/Object/UCameraComponent.h"
+#include "Engine/Object/Primitive/UPrimitiveComponent.h"
+#include "Engine/Editor/FEditor.h"
+
+FObjectPicker::FObjectPicker(FEditor* InEditor)
+	: Editor{ InEditor }
+{
+}
 
 bool FObjectPicker::MakeWorldRay(FRay& OutRay) {
+	UCameraComponent* Camera = Editor->GetEditorCamera();
 
 	auto& Input = *GInputManager::GetInstance();
 	float NDCX = Input.GetLeftCursorX();
@@ -65,6 +74,7 @@ bool RayTriangleIntersect(const FRay& Ray,FVector A, FVector B, FVector C ,float
 
 UPrimitiveComponent* FObjectPicker::Pick()
 {
+	UScene* Scene = Editor->GetCurrentScene();
 	FRay Ray;
 	if (!MakeWorldRay(Ray)) return nullptr;	//Ray 계산 실패
 
@@ -112,15 +122,4 @@ UPrimitiveComponent* FObjectPicker::Pick()
 		}
 	);
 	return SelectedObject;
-}
-
-FObjectPicker::FObjectPicker(UCameraComponent* InCamera, UScene* InScene)
-{
-	Camera = InCamera;
-	Scene = InScene;
-
-}
-
-FObjectPicker::~FObjectPicker()
-{
 }

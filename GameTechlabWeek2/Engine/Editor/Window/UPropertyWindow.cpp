@@ -4,20 +4,38 @@
 #include "Engine/Editor/FEditor.h"
 #include "FQuaternion.h"
 
-void UPropertyWindow::UpdateTranslation()
+void UPropertyWindow::GetSelectedValue()
 {
+	USceneComponent* SelectedComponent = Editor->GetSelectedSceneComponent();
 
+	if (SelectedComponent != nullptr)
+	{
+		Translation = SelectedComponent->GetRelativeLocation();
+
+		const FQuaternion& Quaternion = SelectedComponent->GetRelativeRotation();
+		Rotation = FQuaternion::ToEuler(Quaternion);
+		OScale = SelectedComponent->GetRelativeScale3D();
+	}
 }
-void UPropertyWindow::UpdateRotation()
+
+void UPropertyWindow::SetSelectedValue()
 {
+	USceneComponent* SelectedComponent = Editor->GetSelectedSceneComponent();
 
+	if (SelectedComponent != nullptr)
+	{
+		SelectedComponent->SetRelativeLocation(Translation);
+		SelectedComponent->SetRelativeRotation(FQuaternion::FromEuler(Rotation));
+		SelectedComponent->SetRelativeScale3D(OScale);
+	}
 }
-void UPropertyWindow::UpdateScale()
+
+void UPropertyWindow::DeleteSelected()
 {
-
+	Editor->DeleteSelectedSceneComponent();
 }
 
-void UPropertyWindow::Render()
+void UPropertyWindow::Render(float DeltaTime)
 {
 	const ImGuiViewport* Viewport = ImGui::GetMainViewport();
 	const ImVec2 WorkPosition = Viewport->WorkPos; // 메뉴창을 제외한 제일 왼쪽 위 위치
@@ -50,77 +68,41 @@ void UPropertyWindow::Render()
 	ImVec2 ItemSpacing = Style.ItemSpacing; // 아이템간 패딩 값
 	float ButtonWidth = Available.x * 0.2f; // Button, DragFloat
 
-
-	USceneComponent* SelectedComponent = Editor->GetSelectedSceneComponent();
-	if (SelectedComponent != nullptr)
-	{
-		Translation = SelectedComponent->GetRelativeLocation();
-
-		const FQuaternion& Quaternion = SelectedComponent->GetRelativeRotation();
-		Rotation = FQuaternion::ToEuler(Quaternion);
-		OScale = SelectedComponent->GetRelativeScale3D();
-	}
+	GetSelectedValue();
 
 	ImGui::Begin("Jungle Property Window");
 	{
 		ImGui::PushItemWidth(ButtonWidth);
-		if (ImGui::DragFloat("##translationX", &Translation.X, 0.001f))
-		{
-			UpdateTranslation();
-		}
+		ImGui::DragFloat("##translationX", &Translation.X, 0.001f);
 		ImGui::SameLine();
-		if(ImGui::DragFloat("##translationY", &Translation.Y, 0.001f))
-		{
-			UpdateTranslation();
-		}
+		ImGui::DragFloat("##translationY", &Translation.Y, 0.001f);
 		ImGui::SameLine();
-		if(ImGui::DragFloat("##translationZ", &Translation.Z, 0.001f))
-		{
-			UpdateTranslation();
-		}
+		ImGui::DragFloat("##translationZ", &Translation.Z, 0.001f);
 		ImGui::SameLine();
 		ImGui::Text("Translation");
-		if(ImGui::DragFloat("##rotationR", &Rotation.X, 0.001f))
-		{
-			UpdateRotation();
-		}
+		ImGui::DragFloat("##rotationR", &Rotation.X, 0.001f);
 		ImGui::SameLine();
-		if(ImGui::DragFloat("##rotationP", &Rotation.Y, 0.001f))
-		{
-			UpdateRotation();
-		}
+		ImGui::DragFloat("##rotationP", &Rotation.Y, 0.001f);
 		ImGui::SameLine();
-		if(ImGui::DragFloat("##rotationY", &Rotation.Z, 0.001f))
-		{
-			UpdateRotation();
-		}
+		ImGui::DragFloat("##rotationY", &Rotation.Z, 0.001f);
 		ImGui::SameLine();
 		ImGui::Text("Rotation");
-		if(ImGui::DragFloat("##scaleX", &OScale.X, 0.001f))
-		{
-			UpdateScale();
-		}
+		ImGui::DragFloat("##scaleX", &OScale.X, 0.001f);
 		ImGui::SameLine();
-		if(ImGui::DragFloat("##scaleY", &OScale.Y, 0.001f))
-		{
-			UpdateScale();
-		}
+		ImGui::DragFloat("##scaleY", &OScale.Y, 0.001f);
 		ImGui::SameLine();
-		if(ImGui::DragFloat("##scaleZ", &OScale.Z, 0.001f))
-		{
-			UpdateScale();
-		}
+		ImGui::DragFloat("##scaleZ", &OScale.Z, 0.001f);
 		ImGui::SameLine();
 		ImGui::Text("Scale");
 		ImGui::PopItemWidth();
 		ImGui::PopStyleVar();
+
+		if (ImGui::Button("Delete"))
+		{
+			DeleteSelected();
+		}
 	}
 	ImGui::End();
 
-	if (SelectedComponent != nullptr)
-	{
-		SelectedComponent->SetRelativeLocation(Translation);
-		SelectedComponent->SetRelativeRotation(FQuaternion::FromEuler(Rotation));
-		SelectedComponent->SetRelativeScale3D(OScale);
-	}
+	SetSelectedValue();
 }

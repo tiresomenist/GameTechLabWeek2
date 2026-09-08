@@ -11,10 +11,11 @@ private:
 	FVector Rotation;
 	FVector OScale;
 public:
-	
-	void UpdateTranslation();
-	void UpdateRotation();
-	void UpdateScale();
 
-	void Render() override;
+	void GetSelectedValue();
+	void SetSelectedValue();
+
+	void DeleteSelected();
+
+	void Render(float DeltaTime) override;
 };

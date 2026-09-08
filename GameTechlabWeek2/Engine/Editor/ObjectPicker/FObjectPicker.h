@@ -1,9 +1,10 @@
 #pragma once
-#include "../../Object/UCameraComponent.h"
-#include "../../GResourceManager.h"
-#include "../../Object/Primitive/UPrimitiveComponent.h"
+
+#include "FVector.h"
 
 class UScene;
+class FEditor;
+class UPrimitiveComponent;
 
 struct FRay {
 	FVector Origin;
@@ -13,14 +14,13 @@ struct FRay {
 class FObjectPicker
 {
 public:
-	FObjectPicker(UCameraComponent* InCamera, UScene* InScene);
-	~FObjectPicker();
+	FObjectPicker(FEditor* InEditor);
 	void Tick();
 	bool MakeWorldRay(FRay& OutRay);
 	UPrimitiveComponent* Pick();
+
 private:
-	UCameraComponent* Camera;
-	UScene* Scene;
+	FEditor* Editor;
 };
 
 

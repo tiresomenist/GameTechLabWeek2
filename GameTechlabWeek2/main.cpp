@@ -2,30 +2,11 @@
 
 // ImGui 관련 헤더 삽입
 #include "ImGui/imgui.h"
-#include "ImGui/imgui_internal.h"
-#include "ImGui/imgui_impl_dx11.h"
-#include "imGui/imgui_impl_win32.h"
-
-#include "Matrix.h"
-
-// 구체 배열 헤더 파일
-#include "Engine/Renderer/FVertexSimple.h"
-#include "Models/Sphere.h"
-#include "Models/Cube.h"
-#include "Models/Triangle.h"
-#include "Models/PePe.h"
-#include "Models/Octopus.h"
-#include "Models/ArrowRed.h"
-#include "Models/ArrowGreen.h"
-#include "Models/ArrowBlue.h"
 
 //렌더러 헤더파일
-#include "Engine/FRenderer.h"
 #include "Engine/GEngine.h"
 #include "Engine/InputManager/WndProc.h"
 #include "Engine/Log.h"
-
-#include <iostream>
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 

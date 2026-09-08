@@ -42,13 +42,16 @@ public:
 	void SpawnPrimitive(FClassType* PrimitiveType, int Count);
 
 	void NewScene();
-	void LoadScene(FString SceneName);
-	void SaveScene(FString SceneName);
+	void LoadScene(FStringView SceneName);
+	void SaveScene(FStringView SceneName);
 
+	UScene* GetCurrentScene();
 	UCameraComponent* GetEditorCamera() { return EditorCamera; }
 
 	USceneComponent* GetSelectedSceneComponent() const { return SelectedSceneComponent; }
 	void SetSelectedSceneComponent(USceneComponent* Component);
+
+	void DeleteSelectedSceneComponent();
 
 	void RegisterGizmo(FClassType* Type);
 	void RegisterWindow(UEditorWindow* Window);
@@ -63,7 +66,6 @@ public:
 	void SetCamerRotation(FQuaternion NewCameraRotation) { EditorCamera->SetRelativeRotation(NewCameraRotation); }
 	float GetCameraFOV() { return GetEditorCamera()->GetFOV() * 180.0f / PI; }
 	void SetCameraFOV(float NewFOV) { EditorCamera->SetFOVByDegree(NewFOV); }
-	void SpawnPrimitives(FClassType* ClassType, uint32 num) { GEngine::GetInstance()->GetConsole()->Append(std::format("Make {}, {} times",ClassType->Name,num)); }
 
 public:
 	friend TArray<FPrimitiveRenderData> RenderUtil::GetRenderList(FEditor* Editor, UScene* Scene);

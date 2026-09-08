@@ -18,6 +18,6 @@ public:
 	void Copy();
 	void Option();
 
-	void Render() override;
+	void Render(float DeltaTime) override;
 };
 
