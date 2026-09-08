@@ -30,7 +30,7 @@ LRESULT HandleInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
 
-		GInputManager::EInputStatus Key = GInputManager::EI_W;
+		GInputManager::EInputStatus Key = GInputManager::KEY_COUNT;
 
 		switch (wParam)
 		{
@@ -40,6 +40,11 @@ LRESULT HandleInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case 'D': { Key = GInputManager::EI_D; break; }
 		case 'Q': { Key = GInputManager::EI_Q; break; }
 		case 'E': { Key = GInputManager::EI_E; break; }
+		}
+
+		if (Key == GInputManager::KEY_COUNT)
+		{
+			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
 
 		if (message == WM_KEYDOWN)
