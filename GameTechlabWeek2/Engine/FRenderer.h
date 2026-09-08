@@ -81,6 +81,9 @@ public:
 	void CreateRasterizerState();
 	void ReleaseRasterizerState();
 
+	void CreateAlphaBlendState();
+	void ReleaseAlphaBlendState();
+
 	void BeginFrame();
 	void EndFrame();
 
