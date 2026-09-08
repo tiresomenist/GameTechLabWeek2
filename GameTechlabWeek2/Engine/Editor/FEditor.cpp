@@ -11,6 +11,8 @@
 #include "Engine/Gizmo/UWorldAxisGizmo.h"
 #include "Engine/Gizmo/UWorldGridGizmo.h"
 
+#include "Engine/Editor/UGrid.h"
+
 #include "Engine/Object/FObjectFactory.h"
 #include "Engine/Log.h"
 
@@ -44,6 +46,8 @@ void FEditor::Initialize()
 	RegisterWindow(new UConsoleWindow());
 	RegisterWindow(new UPropertyWindow());
 	RegisterWindow(new USceneWindow());
+
+	RegisterGrid(UGrid::GetClass());
 }
 
 void FEditor::Tick(float DeltaTime)
@@ -176,4 +180,13 @@ void FEditor::SetObjectAxisGizmo(UGizmo* InGizmo)
 UGizmo* FEditor::GetObjectAxisGizmo() const
 {
 	return ObjectAxisGizmo;
+}
+
+void FEditor::RegisterGrid(FClassType* Type)
+{
+	UObject* Object = FObjectFactory::ConstructObject(Type);
+	UGrid* Grid = static_cast<UGrid*>(Object);
+
+	Grid->Initialize(this);
+	Grids.Add(Grid);
 }

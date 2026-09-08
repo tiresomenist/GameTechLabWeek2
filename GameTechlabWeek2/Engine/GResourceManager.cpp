@@ -8,6 +8,7 @@
 #include "Models/ArrowRed.h"
 #include "Models/ArrowGreen.h"
 #include "Models/ArrowBlue.h"
+#include "Models/Grid.h"
 
 GResourceManager* GResourceManager::GetInstance()
 {
@@ -26,6 +27,7 @@ void GResourceManager::Initialize(GDevice* InDevice)
     CreateMesh("ArrowRed", arrow_red_vertices, arrow_red_indices);
     CreateMesh("ArrowGreen", arrow_green_vertices, arrow_green_indices);
     CreateMesh("ArrowBlue", arrow_blue_vertices, arrow_blue_indices);
+    CreateMesh("Grid", grid_vertices, grid_indices);
 }
 
 void GResourceManager::Shutdown()

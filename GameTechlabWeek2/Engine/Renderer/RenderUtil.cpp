@@ -5,6 +5,7 @@
 #include "Engine/Scene/UScene.h"
 #include "Engine/Editor/FEditor.h"
 #include "Engine/Gizmo/UGizmo.h"
+#include "Engine/Editor/UGrid.h"
 
 TArray<FPrimitiveRenderData> RenderUtil::GetRenderList(FEditor* Editor, UScene* Scene)
 {
@@ -16,6 +17,16 @@ TArray<FPrimitiveRenderData> RenderUtil::GetRenderList(FEditor* Editor, UScene* 
 		{
 			UPrimitiveComponent* Primitive = static_cast<UPrimitiveComponent*>(Item);
 			RenderList.Add(Primitive->GetRenderData());
+		}
+	}
+
+	for (auto Item : Editor->Grids)
+	{
+		TArray<FPrimitiveRenderData> Array = Item->GetRenderData();
+
+		for (auto& Data : Array)
+		{
+			RenderList.Add(Data);
 		}
 	}
 
