@@ -53,7 +53,7 @@ void USceneWindow::Render(float DeltaTime)
 
 	CameraLocation = EditorCamera->GetRelativeLocation();
 	CameraRotation = EditorCamera->GetRelativeRotation();
-	FOV = EditorCamera->GetFOV();
+	FOV = Editor->GetCameraFOV();
 
 	const ImGuiViewport* Viewport = ImGui::GetMainViewport();
 	const ImVec2 WorkPosition = Viewport->WorkPos; // 메뉴창을 제외한 제일 왼쪽 위 위치

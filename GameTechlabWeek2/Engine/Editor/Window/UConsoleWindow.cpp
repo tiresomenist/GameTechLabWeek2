@@ -14,7 +14,7 @@ void UConsoleWindow::AddDebugError(FString ErrorText)
 }
 void UConsoleWindow::Clear()
 {
-
+	GEngine::GetInstance()->GetConsole()->Clear();
 }
 void UConsoleWindow::Copy()
 {
