@@ -333,10 +333,7 @@ void FRenderer::Render(float DeltaTime, FEditor* Editor, UScene* Scene)
 
 		// 카메라의 월드 위치를 Z평면의 로컬 공간(Local Space)으로 변환
 		FVector WorldCameraPos = Camera->GetWorldLocation();
-		FVector4 WorldCameraPos4D(WorldCameraPos.X, WorldCameraPos.Y, WorldCameraPos.Z, 1.0f);
-		FMatrix InverseMat = Z_WorldMatrix.Inverse();
-		FVector4 LocalCameraPos4D = InverseMat.TransformVector4(WorldCameraPos4D);
-		FVector LocalCameraPos(LocalCameraPos4D.X, LocalCameraPos4D.Y, LocalCameraPos4D.Z);
+		FVector LocalCameraPos = Z_WorldMatrix.Inverse().TransformPosition(WorldCameraPos);
 
 		// 셰이더 상수 버퍼에 '로컬 카메라 위치'를 전달
 		FGridConstants ConstantsZ;
