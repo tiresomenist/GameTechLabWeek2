@@ -1,6 +1,7 @@
 #include "UPrimitiveComponent.h"
 #include "Engine/GResourceManager.h"
 #include "Engine/Primitive/FMeshResource.h"
+#include "Engine/Renderer/FPrimitiveRenderData.h"
 
 FPrimitiveRenderData UPrimitiveComponent::GetRenderData(FStringView Type)
 {
@@ -19,4 +20,11 @@ FPrimitiveRenderData UPrimitiveComponent::GetRenderData(FStringView Type)
 
 	return RenderData;
 
+}
+
+FPrimitiveRenderData UPrimitiveComponent::SetSelectedState(bool InSelected)
+{
+	FPrimitiveRenderData RenderData{};
+	RenderData.isSelected = InSelected;
+	return RenderData;
 }

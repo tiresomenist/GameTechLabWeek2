@@ -287,10 +287,8 @@ void FRenderer::Render(float DeltaTime, FEditor* Editor, UScene* Scene)
 
 	FMatrix ViewProjMatrix = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
 	TArray<FPrimitiveRenderData> RenderList = RenderUtil::GetRenderList(Editor, Scene);
-	static float Angle = 0.0f;
-	Angle += 0.03f;
-	FMatrix Rotation = FMatrix::MakeRotationZMatrix(Angle);
 	Camera->SetAspectRatio(Device->GetViewport().Width / Device->GetViewport().Height); // 리사이징된 카메라 화면에 맞게 종횡비를 맞춥니다.
+
 	for (auto& Item: RenderList)
 	{
 		FMatrix MVP = (*Item.WorldMatrix) * ViewProjMatrix;

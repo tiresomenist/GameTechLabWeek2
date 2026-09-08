@@ -17,6 +17,7 @@ public:
 
     // 렌더러에게 전달할 렌더 정보
     virtual FPrimitiveRenderData GetRenderData(FStringView Text = "");
+    virtual FPrimitiveRenderData SetSelectedState(bool InSelected);
 
     FMeshResource* GetMeshResource() const
     {

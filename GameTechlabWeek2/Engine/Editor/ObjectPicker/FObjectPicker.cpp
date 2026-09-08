@@ -115,7 +115,10 @@ UPrimitiveComponent* FObjectPicker::Pick()
 					if (T < ClosestDistance)
 					{
 						ClosestDistance = T;
+						Primitive->SetSelectedState(false);
 						SelectedObject = Primitive;
+						SelectedObject->SetSelectedState(true);
+						// @todo
 					}
 				}
 			}
