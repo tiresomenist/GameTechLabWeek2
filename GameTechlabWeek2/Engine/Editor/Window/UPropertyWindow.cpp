@@ -6,7 +6,7 @@
 
 void UPropertyWindow::GetSelectedValue()
 {
-	USceneComponent* SelectedComponent = Editor->GetSelectedSceneComponent();
+	USceneComponent* NewComponent = Editor->GetSelectedSceneComponent();
 
 	if (SelectedComponent != nullptr)
 	{
@@ -22,8 +22,6 @@ void UPropertyWindow::GetSelectedValue()
 
 void UPropertyWindow::SetSelectedValue(bool bSetRotation)
 {
-	USceneComponent* SelectedComponent = Editor->GetSelectedSceneComponent();
-
 	if (SelectedComponent != nullptr)
 	{
 		SelectedComponent->SetRelativeLocation(Translation);

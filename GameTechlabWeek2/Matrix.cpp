@@ -85,6 +85,13 @@ FVector4 FMatrix::TransformVector4(const FVector4& V) const
 	);
 }
 
+FVector FMatrix::TransformPosition(const FVector& V) const
+{
+	FVector4 V4(V.X, V.Y, V.Z, 1.0f);
+	FVector4 Result = TransformVector4(V4);
+	return FVector(Result.X, Result.Y, Result.Z);
+}
+
 FMatrix FMatrix::Transpose() const
 {
 	return FMatrix(M[0][0], M[1][0], M[2][0], M[3][0],

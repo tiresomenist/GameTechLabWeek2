@@ -1,9 +1,33 @@
-#include "EnGine/Editor/ObjectPicker/FGizmoPicker.h"
+﻿#include "EnGine/Editor/ObjectPicker/FGizmoPicker.h"
 #include "Engine/InputManager/GInputManager.h"
 #include "Engine/Log.h"
+#include "Engine/GDevice.h"
 #include "Engine/Scene/UScene.h"
 #include "Engine/Gizmo/UObjectAxisGizmo.h"
 #include "Engine/Editor/ObjectPicker/FObjectPicker.h"
+
+
+namespace
+{	//VP행렬->에디터의카메라참조 Viewport->GDevice 참조
+	bool WorldToPixel(const FVector& Position, const FMatrix& ViewProjection, const D3D11_VIEWPORT& Viewport, FVector& OutPixel)
+	{
+		const FVector4 Clip = FVector4(Position, 1.0f) * ViewProjection;
+
+		if (!std::isfinite(Clip.W) || Clip.W <= 1.0e-6f)
+			return false;
+
+		const float NDCX = Clip.X / Clip.W;
+		const float NDCY = Clip.Y / Clip.W;
+
+		OutPixel = FVector(
+			Viewport.TopLeftX + (NDCX + 1.0f) * 0.5f * Viewport.Width,
+			Viewport.TopLeftY + (1.0f - NDCY) * 0.5f * Viewport.Height, 0.0f
+		);
+
+		return std::isfinite(OutPixel.X) && std::isfinite(OutPixel.Y);
+	}
+}
+
 
 FGizmoPicker::FGizmoPicker(FEditor* InEditor)
 	: Editor{ InEditor }
@@ -19,30 +43,79 @@ void FGizmoPicker::Tick()
 {
 }
 
-bool FGizmoPicker::RayTriangleIntersect(const FRay& Ray, FVector A, FVector B, FVector C, float& OutDistance) {
-	const FVector Edge1 = B - A;
-	const FVector Edge2 = C - A;
+bool FGizmoPicker::RaySegmentIntersect(const FRay& Ray, FVector A, FVector B, float Radius, float&OutRayT,float& OutDistance) {
+	OutRayT = 0.0f;
+	OutDistance = std::numeric_limits<float>::infinity();
 
-	const FVector P = Ray.Direction.Cross(Edge2);
-	const float Determinant = Edge1.Dot(P);
-
-	if (std::fabs(Determinant) < 1.0e-6f)
-		return false; // 평행 또는 퇴화 삼각형
-
-	const float InverseDeterminant = 1.0f / Determinant;
-
-	const FVector T = Ray.Origin - A;
-	const float U = T.Dot(P) * InverseDeterminant;
-	if (U < 0.0f || U > 1.0f)
+	if (!std::isfinite(Radius) || Radius < 0.0f)
 		return false;
 
-	const FVector Q = T.Cross(Edge1);
-	const float V = Ray.Direction.Dot(Q) * InverseDeterminant;
-	if (V < 0.0f || U + V > 1.0f)
-		return false;
+	const FVector D = Ray.Direction;
+	const FVector E = B - A;
+	const FVector W = Ray.Origin - A;
 
-	OutDistance = Edge2.Dot(Q) * InverseDeterminant;
-	return OutDistance > 1.0e-6f;
+	const double a = D.Dot(D);
+	const double b = D.Dot(E);
+	const double c = E.Dot(E);
+	const double d = D.Dot(W);
+	const double e = E.Dot(W);
+
+	if (!std::isfinite(a) || !std::isfinite(b) ||!std::isfinite(c) || !std::isfinite(d) ||!std::isfinite(e) || a <= 0.0)
+	{
+		return false;
+	}
+
+	double BestDistanceSquared =std::numeric_limits<double>::infinity();
+
+	double BestT = 0.0;
+
+	auto Consider = [&](double t, double u)
+		{
+			// R(t) - S(u)
+			const double DX = double(W.X) + t * D.X - u * E.X;
+			const double DY = double(W.Y) + t * D.Y - u * E.Y;
+			const double DZ = double(W.Z) + t * D.Z - u * E.Z;
+			const double DistanceSquared =DX * DX + DY * DY + DZ * DZ;
+			if (DistanceSquared < BestDistanceSquared)
+			{
+				BestDistanceSquared = DistanceSquared;
+				BestT = t;
+			}
+		};
+
+	if (c <= 0.0)
+	{
+		// 길이가 0인 선분은 점 A로 처리
+		Consider((std::max)(0.0, -d / a), 0.0);
+	}
+	else
+	{
+		const double Denominator = a * c - b * b;
+
+		// 평행하지 않은 경우, 두 무한 직선의 최근접점
+		if (Denominator > 1.0e-12 * a * c)
+		{
+			const double t = (b * e - c * d) / Denominator;
+			const double u = (a * e - b * d) / Denominator;
+
+			if (t >= 0.0 && u >= 0.0 && u <= 1.0)
+				Consider(t, u);
+		}
+
+		// 경계도 검사: 레이 시작점과 선분
+		Consider(0.0, std::clamp(e / c, 0.0, 1.0));
+
+		// 선분 시작점 A와 레이
+		Consider((std::max)(0.0, -d / a), 0.0);
+
+		// 선분 끝점 B와 레이
+		Consider((std::max)(0.0, (b - d) / a), 1.0);
+	}
+
+	OutRayT = float(BestT);
+	OutDistance = float(std::sqrt(BestDistanceSquared));
+
+	return BestDistanceSquared <= double(Radius) * Radius;
 }
 
 bool FGizmoPicker::MakeWorldRay(FRay& OutRay) {
@@ -78,58 +151,53 @@ bool FGizmoPicker::MakeWorldRay(FRay& OutRay) {
 
 int FGizmoPicker::Pick(UGizmo* InGizmos)
 {
-	//-1:선택 실패 0:X 1:Y 2:Z
-	FRay Ray;
-	
-	if (InGizmos==nullptr||!InGizmos->IsA(UObjectAxisGizmo::GetClass())) return -1;	// 들어온 기즈모가 오브젝트 액시스 기즈모가 아님
-	if (!MakeWorldRay(Ray)) return -1;	//Ray 계산 실패
-	UObjectAxisGizmo* InObjectAxisGizmo = dynamic_cast<UObjectAxisGizmo*>(InGizmos);
-	if (InObjectAxisGizmo==nullptr) return -1;	//다이나믹캐스팅 실패
-	int SelectedGizmo = -1;
-	float ClosestDistance = 100000.f;
-	TArray<FMeshResource*> GizmoXYZ = InGizmos->GetMeshResources();
-	TArray<FPrimitiveRenderData> GizmoRenderData =
-		InObjectAxisGizmo->GetRenderData();
-
-	if (GizmoXYZ.Num() != 3 || GizmoRenderData.Num() != 3) return -1;
-
-	for (int32 Cursor = 0;Cursor < 3;Cursor++) {
-		
-		const FMatrix* World = GizmoRenderData[Cursor].WorldMatrix;
-
-		for (uint32 Index = 0; Index + 2 < GizmoXYZ[Cursor]->IndexCount; Index += 3)
-		{
-			const uint32 I0 = GizmoXYZ[Cursor]->indexes[Index];
-			const uint32 I1 = GizmoXYZ[Cursor]->indexes[Index + 1];
-			const uint32 I2 = GizmoXYZ[Cursor]->indexes[Index + 2];
-
-			const FVertexSimple& V0 = GizmoXYZ[Cursor]->vertexs[I0];
-			const FVertexSimple& V1 = GizmoXYZ[Cursor]->vertexs[I1];
-			const FVertexSimple& V2 = GizmoXYZ[Cursor]->vertexs[I2];
-
-			FVector A(V0.x, V0.y, V0.z);
-			FVector B(V1.x, V1.y, V1.z);
-			FVector C(V2.x, V2.y, V2.z);
-
-			
-			// 현재 오브젝트의 WorldMatrix를 반영
-			A = FVector(FVector4(A, 1.0f) * *World);
-			B = FVector(FVector4(B, 1.0f) * *World);
-			C = FVector(FVector4(C, 1.0f) * *World);
-
-			float T;
-
-			if (RayTriangleIntersect(Ray, A, B, C, T))
-			{
-				if (T < ClosestDistance)
-				{
-					ClosestDistance = T;
-					//X,Y,Z축 중 어느걸 골랐는지 체크
-					SelectedGizmo = Cursor;
-				}
-			}
-		}
-	}
-	
-	return SelectedGizmo;
+    auto* Gizmo = dynamic_cast<UObjectAxisGizmo*>(InGizmos);
+    if (!Editor || !Editor->GetEditorCamera() || !Gizmo || !Gizmo->UpdateTransform()) return -1;
+    const auto& Viewport = GDevice::GetInstance()->GetViewport();
+    if (Viewport.Width <= 0 || Viewport.Height <= 0) return -1;
+    auto* Camera = Editor->GetEditorCamera();
+    Camera->SetAspectRatio(Viewport.Width / Viewport.Height);
+    const FMatrix VP = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
+    auto& Input = *GInputManager::GetInstance();
+    // Use the mouse-down position, not the latest drag position.
+    const FVector Click(
+        Viewport.TopLeftX + (Input.GetLeftCursorX() + 1) * 0.5f * Viewport.Width,
+        Viewport.TopLeftY + (1 - Input.GetLeftCursorY()) * 0.5f * Viewport.Height, 0);
+    constexpr float PickRadiusPixels = 6.0f;
+    float BestDistanceSquared = PickRadiusPixels * PickRadiusPixels;
+    int32 SelectedAxis = -1;
+    for (const FGizmoHandle& Handle : Gizmo->GetHandles())
+    {
+        const FMeshResource* Mesh = Handle.Mesh;
+        if (!Mesh || Handle.Axis < 0 || Handle.Axis > 2) continue;
+        const uint32 Count = (std::min)(Mesh->IndexCount, uint32(Mesh->indexes.Num()));
+        for (uint32 Index = 0; Index + 1 < Count; Index += 2)
+        {
+            const uint32 I0 = Mesh->indexes[Index], I1 = Mesh->indexes[Index + 1];
+            if (I0 >= uint32(Mesh->vertexs.Num()) || I1 >= uint32(Mesh->vertexs.Num())) continue;
+            const auto& V0 = Mesh->vertexs[I0];
+            const auto& V1 = Mesh->vertexs[I1];
+            FVector A(FVector4(V0.x, V0.y, V0.z, 1) * Handle.WorldMatrix);
+            FVector B(FVector4(V1.x, V1.y, V1.z, 1) * Handle.WorldMatrix);
+            // Clip against the D3D near plane before screen projection.
+            const FVector4 CA = FVector4(A, 1) * VP;
+            const FVector4 CB = FVector4(B, 1) * VP;
+            if (!std::isfinite(CA.Z) || !std::isfinite(CB.Z) || (CA.Z < 0 && CB.Z < 0)) continue;
+            if (CA.Z < 0) A = A + (B - A) * (CA.Z / (CA.Z - CB.Z));
+            else if (CB.Z < 0) B = A + (B - A) * (CA.Z / (CA.Z - CB.Z));
+            FVector PA, PB;
+            if (!WorldToPixel(A, VP, Viewport, PA) || !WorldToPixel(B, VP, Viewport, PB)) continue;
+            const FVector Edge = PB - PA;
+            const float LengthSquared = Edge.LengthSquared();
+            const float T = LengthSquared > 1.0e-8f
+                ? std::clamp((Click - PA).Dot(Edge) / LengthSquared, 0.0f, 1.0f) : 0.0f;
+            const float DistanceSquared = (Click - (PA + Edge * T)).LengthSquared();
+            if (DistanceSquared < BestDistanceSquared)
+            {
+                BestDistanceSquared = DistanceSquared;
+                SelectedAxis = Handle.Axis;
+            }
+        }
+    }
+    return SelectedAxis;
 }

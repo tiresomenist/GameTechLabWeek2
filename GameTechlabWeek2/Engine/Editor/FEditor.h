@@ -4,6 +4,7 @@
 #include "Engine/Object/FObjectFactory.h"
 #include "Engine/Renderer/RenderUtil.h"
 #include "Engine/Editor/Controller/FCameraController.h"
+#include "Engine/Editor/Controller/FGizmoController.h"
 
 //TESTCODE//
 #include "Engine/Object/UCameraComponent.h"
@@ -27,6 +28,7 @@ private:
 	FCameraController CameraController;
 	FObjectPicker* ObjectPicker = nullptr;
 	FGizmoPicker* GizmoPicker = nullptr;
+	FGizmoController* GizmoController=nullptr;
 
 	USceneComponent* SelectedSceneComponent;
 	TArray<UGizmo*> Gizmos;
@@ -34,7 +36,7 @@ private:
 	TArray<UGrid*> Grids;
 	
 
-	UGizmo* ObjectAxisGizmo;
+	UGizmo* ObjectAxisGizmo = nullptr;
 
 
 public:

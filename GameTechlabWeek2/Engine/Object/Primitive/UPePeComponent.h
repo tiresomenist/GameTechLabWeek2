@@ -9,8 +9,4 @@ class UPepeComponent : public UPrimitiveComponent
 
 	UCLASS(UPepeComponent, "Pepe", UPrimitiveComponent)
 
-public:
-
-	virtual FPrimitiveRenderData GetRenderData(FStringView Type = "") override;
-
 };

@@ -286,6 +286,7 @@ void FRenderer::Render(float DeltaTime, FEditor* Editor, UScene* Scene)
 	UCameraComponent* Camera = Editor->GetEditorCamera();
 
 	FMatrix ViewProjMatrix = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
+	
 	TArray<FPrimitiveRenderData> RenderList = RenderUtil::GetRenderList(Editor, Scene);
 	static float Angle = 0.0f;
 	Angle += 0.03f;
@@ -316,25 +317,30 @@ void FRenderer::Render(float DeltaTime, FEditor* Editor, UScene* Scene)
 	UpdateTransformConstantBuffer(ViewProjMatrix);
 	for (auto Item : Editor->GetGrids())
 	{
+		// XY 평면용 월드 행렬 세팅 및 렌더링
 		FGridConstants ConstantsXY;
 		ConstantsXY.CameraPos = Camera->GetWorldLocation();
 		ConstantsXY.GridPlaneType = 0;
 		UpdateGridConstantBuffer(ConstantsXY);
-
-		// XY 평면용 월드 행렬 세팅 및 렌더링
-		RenderGrid(Item->GetMeshResource());
-
-		// 2. 새로 세워둔 Z축용 평면 그리기
-		FGridConstants ConstantsZ;
-		ConstantsZ.CameraPos = Camera->GetWorldLocation();
-		ConstantsZ.GridPlaneType = 1;
-		UpdateGridConstantBuffer(ConstantsZ);
+		RenderGrid(Item->GetMeshResource()); 
 
 		// 기존 판을 Y축 기준으로 90도(PI/2) 회전 (YZ 평면)
 		float theta = atan2f(Camera->GetWorldLocation().Y, Camera->GetWorldLocation().X);
-		FMatrix Z_WorldMatrix = 
-			FMatrix::MakeRotationYMatrix(PI / 2.0f) *   // 판을 세워서 Z축에 정렬
-			FMatrix::MakeRotationZMatrix(theta);         // Z축을 축으로 카메라 쪽으로 회전
+		FMatrix Z_WorldMatrix =
+			FMatrix::MakeScaleMatrix(FVector(5.0f, 1.0f, 1.0f)) *
+			FMatrix::MakeRotationYMatrix(PI / 2.0f) *
+			FMatrix::MakeRotationZMatrix(theta);
+
+		// 카메라의 월드 위치를 Z평면의 로컬 공간(Local Space)으로 변환
+		FVector WorldCameraPos = Camera->GetWorldLocation();
+		FVector LocalCameraPos = Z_WorldMatrix.Inverse().TransformPosition(WorldCameraPos);
+
+		// 셰이더 상수 버퍼에 '로컬 카메라 위치'를 전달
+		FGridConstants ConstantsZ;
+		ConstantsZ.CameraPos = LocalCameraPos;
+		ConstantsZ.GridPlaneType = 1;
+		UpdateGridConstantBuffer(ConstantsZ);
+
 		UpdateTransformConstantBuffer(Z_WorldMatrix * ViewProjMatrix);
 		RenderGrid(Item->GetMeshResource());
 	}

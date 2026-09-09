@@ -8,6 +8,15 @@
 #include "Models/ArrowRed.h"
 #include "Models/ArrowGreen.h"
 #include "Models/ArrowBlue.h"
+#include "Models/MoveRed.h"
+#include "Models/MoveGreen.h"
+#include "Models/MoveBlue.h"
+#include "Models/ScaleRed.h"
+#include "Models/ScaleGreen.h"
+#include "Models/ScaleBlue.h"
+#include "Models/RotateRed.h"
+#include "Models/RotateGreen.h"
+#include "Models/RotateBlue.h"
 #include "Models/Grid.h"
 
 GResourceManager* GResourceManager::GetInstance()
@@ -27,7 +36,38 @@ void GResourceManager::Initialize(GDevice* InDevice)
     CreateMesh("ArrowRed", arrow_red_vertices, arrow_red_indices);
     CreateMesh("ArrowGreen", arrow_green_vertices, arrow_green_indices);
     CreateMesh("ArrowBlue", arrow_blue_vertices, arrow_blue_indices);
+    CreateMesh("MoveRed", move_red_vertices, move_red_indices);
+    CreateMesh("MoveGreen", move_green_vertices, move_green_indices);
+    CreateMesh("MoveBlue", move_blue_vertices, move_blue_indices);
+    CreateMesh("ScaleRed", scale_red_vertices, scale_red_indices);
+    CreateMesh("ScaleGreen", scale_green_vertices, scale_green_indices);
+    CreateMesh("ScaleBlue", scale_blue_vertices, scale_blue_indices);
+    CreateMesh("RotateRed", rotate_red_vertices, rotate_red_indices);
+    CreateMesh("RotateGreen", rotate_green_vertices, rotate_green_indices);
+    CreateMesh("RotateBlue", rotate_blue_vertices, rotate_blue_indices);
     CreateMesh("Grid", grid_vertices, grid_indices);
+}
+
+FMeshResource* GResourceManager::CreateMesh(const FString& MeshName,
+    const TArray<FVertexSimple>& Vertices, const TArray<uint32>& Indices)
+{
+    auto Existing = PrimitiveCache.find(MeshName);
+    if (Existing != PrimitiveCache.end()) return Existing->second;
+    if (Vertices.IsEmpty() || Indices.IsEmpty()) return nullptr;
+    for (uint32 Index : Indices)
+        if (Index >= static_cast<uint32>(Vertices.Num())) return nullptr;
+
+    FMeshResource* Mesh = new FMeshResource;
+    Mesh->vertexs = Vertices;
+    Mesh->indexes = Indices;
+    Mesh->VertexCount = static_cast<UINT>(Vertices.Num());
+    Mesh->IndexCount = static_cast<UINT>(Indices.Num());
+    Mesh->Stride = sizeof(FVertexSimple);
+    Mesh->VertexBuffer = Device->CreateVertexBuffer(&Mesh->vertexs[0], Mesh->Stride * Mesh->VertexCount);
+    Mesh->IndexBuffer = Device->CreateIndexBuffer(&Mesh->indexes[0], sizeof(uint32) * Mesh->IndexCount);
+    PrimitiveCache[MeshName] = Mesh;
+    return Mesh;
+    
 }
 
 void GResourceManager::Shutdown()
