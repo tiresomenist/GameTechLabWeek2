@@ -24,6 +24,8 @@ public:
 	const TArray<FGizmoHandle>& GetHandles() const { return Handles; }
 	void SetMode(EGizmoMode InMode);
 private:
+	// 이동·스케일: 축 길이, 회전: 링 반지름
+	float GizmoScreenHeightRatio = 0.15f;
 	// X,Y,Z 핸들
 	FVector GizmoScale = FVector(1.0f,1.0f,2.5f);
 };

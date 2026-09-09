@@ -1,6 +1,10 @@
-﻿#include "UObjectAxisGizmo.h"
+#include "UObjectAxisGizmo.h"
 #include "Engine/Object/USceneComponent.h"
 #include "Engine/GResourceManager.h"
+
+#include "Engine/GDevice.h"
+#include "Engine/Object/UCameraComponent.h"
+#include <cmath>
 
 //UObjectAxisGizmo::UObjectAxisGizmo()
 
@@ -19,22 +23,67 @@ bool UObjectAxisGizmo::UpdateTransform() {
 	if (Editor == nullptr || Handles.Num() != 3) return false;
 
 	auto* SelectedObject = Editor->GetSelectedSceneComponent();
-	if (SelectedObject == nullptr) return false;
+	auto* Camera = Editor->GetEditorCamera();
 
-	const FMatrix& ObjectWorld = SelectedObject->GetWorldMatrix();
+	if (!SelectedObject || !Camera)	return false;
 
-	const FVector WorldLocation(ObjectWorld.M[3][0],ObjectWorld.M[3][1],ObjectWorld.M[3][2]);
+	const auto& Viewport = GDevice::GetInstance()->GetViewport();
 
-	const FMatrix ScaleMatrix =	FMatrix::MakeScaleMatrix(GizmoScale);
+	if (!std::isfinite(Viewport.Width) ||!std::isfinite(Viewport.Height) ||	Viewport.Width <= 0.0f ||Viewport.Height <= 0.0f)
+	{
+		return false;
+	}
+
+	const FVector WorldLocation =SelectedObject->GetWorldMatrix().GetOrigin();
+
+	const FVector4 ViewPosition = FVector4(WorldLocation, 1.0f) * Camera->GetViewMatrix();
+
+	const float ViewDepth = ViewPosition.X;
+
+	if (!std::isfinite(ViewDepth) ||ViewDepth <= Camera->GetNearZ() ||ViewDepth >= Camera->GetFarZ())
+	{
+		return false;
+	}
+
+	float VisibleWorldHeight;
+
+	if (Camera->GetIsPerspective())
+	{
+		const float FOV = Camera->GetFOV();
+
+		if (!std::isfinite(FOV) || FOV <= 0.0f || FOV >= PI) return false;
+
+		VisibleWorldHeight = 2.0f * ViewDepth * std::tan(FOV * 0.5f);
+	}
+	else
+	{
+		VisibleWorldHeight = Camera->GetOrthoHeight();
+	}
+
+	if (!std::isfinite(VisibleWorldHeight) ||VisibleWorldHeight <= 0.0f)
+	{
+		return false;
+	}
+
+	const float TargetPixels = Viewport.Height * GizmoScreenHeightRatio;
+
+	const float WorldUnitsPerPixel = VisibleWorldHeight / Viewport.Height;
+
+	const float BaseLength = Mode == EGizmoMode::Rotate ? GizmoScale.X : GizmoScale.Z;
+
+	if (!std::isfinite(BaseLength) || BaseLength <= 0.0f) return false;
+
+	const float DisplayScale = WorldUnitsPerPixel * TargetPixels / BaseLength;
+
+	if (!std::isfinite(DisplayScale) || DisplayScale <= 0.0f) return false;
+
+	const FMatrix ScaleMatrix =	FMatrix::MakeScaleMatrix(GizmoScale * DisplayScale);
 	
 	const FMatrix TranslationMatrix = FMatrix::MakeTranslationMatrix(WorldLocation);
 
-	FMatrix RotationMatirx;
+	FMatrix RotationMatirx = FMatrix::Identity;
 	if (Mode == EGizmoMode::Scale) {
 		RotationMatirx = SelectedObject->GetRelativeRotation().ToRotationMatrix();
-	}
-	else {
-		RotationMatirx = FMatrix::Identity;
 	}
 
 	Handles[0].WorldMatrix = ScaleMatrix * FMatrix::MakeRotationYMatrix(PI / 2) * RotationMatirx * TranslationMatrix;
