@@ -21,6 +21,7 @@ struct VS_OUTPUT
 {
     float4 Pos : SV_POSITION;
     float3 WorldPos : POSITION1;
+    float3 LocalPos : TEXCOORD0;
 };
 
 VS_OUTPUT VS_Grid(VS_INPUT input)
@@ -41,6 +42,7 @@ VS_OUTPUT VS_Grid(VS_INPUT input)
     
     output.Pos = mul(float4(worldPos, 1.0f), MVP);
     output.WorldPos = worldPos;
+    output.LocalPos = input.Pos;
     return output;
 }
 
@@ -75,7 +77,7 @@ float4 PS_Grid(VS_OUTPUT input) : SV_Target
     // =====================================
     // XY 평면 — 그리드 + X/Y축, 양의 방향으로만
     // =====================================
-    float2 gridUV = input.WorldPos.xy;
+    float2 gridUV = input.LocalPos.xy;
 
     float thickness = 0.001f;
     float2 antiAliasWidth = max(fwidth(gridUV), float2(0.0001f, 0.0001f));

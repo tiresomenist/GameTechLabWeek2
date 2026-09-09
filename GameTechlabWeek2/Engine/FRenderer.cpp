@@ -385,11 +385,18 @@ void FRenderer::Render(float DeltaTime, FEditor* Editor, UScene* Scene)
 	for (auto Item : Editor->GetGrids())
 	{
 		// XY 평면용 월드 행렬 세팅 및 렌더링
+		FMatrix XY_WorldMatrix = FMatrix::Identity;
+
+		FVector WorldCameraPos = Camera->GetWorldLocation();
+		FVector LocalCameraPosXY = XY_WorldMatrix.Inverse().TransformPosition(WorldCameraPos);
+
 		FGridConstants ConstantsXY;
-		ConstantsXY.CameraPos = Camera->GetWorldLocation();
+		ConstantsXY.CameraPos = LocalCameraPosXY;
 		ConstantsXY.GridPlaneType = 0;
 		UpdateGridConstantBuffer(ConstantsXY);
-		RenderGrid(Item->GetMeshResource()); 
+
+		UpdateTransformConstantBuffer(XY_WorldMatrix * ViewProjMatrix);
+		RenderGrid(Item->GetMeshResource());
 
 		// 기존 판을 Y축 기준으로 90도(PI/2) 회전 (YZ 평면)
 		float theta = atan2f(Camera->GetWorldLocation().Y, Camera->GetWorldLocation().X);
@@ -399,12 +406,12 @@ void FRenderer::Render(float DeltaTime, FEditor* Editor, UScene* Scene)
 			FMatrix::MakeRotationZMatrix(theta);
 
 		// 카메라의 월드 위치를 Z평면의 로컬 공간(Local Space)으로 변환
-		FVector WorldCameraPos = Camera->GetWorldLocation();
-		FVector LocalCameraPos = Z_WorldMatrix.Inverse().TransformPosition(WorldCameraPos);
+		//FVector WorldCameraPos = Camera->GetWorldLocation();
+		FVector LocalCameraPosZ = Z_WorldMatrix.Inverse().TransformPosition(WorldCameraPos);
 
 		// 셰이더 상수 버퍼에 '로컬 카메라 위치'를 전달
 		FGridConstants ConstantsZ;
-		ConstantsZ.CameraPos = LocalCameraPos;
+		ConstantsZ.CameraPos = LocalCameraPosZ;
 		ConstantsZ.GridPlaneType = 1;
 		UpdateGridConstantBuffer(ConstantsZ);
 
