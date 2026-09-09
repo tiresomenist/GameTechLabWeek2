@@ -4,6 +4,7 @@
 #include <cassert>
 #include <algorithm>
 #include "Engine/UEngineStatics.h"
+#include "Engine/Core.h"
 #include "FVector.h"
 //벡터, 행렬 구조체 선언
 

@@ -1,33 +1,21 @@
 #pragma once
 
-#include <stdexcept>
+#include "Engine/Object/EObjectDomain.h"
+#include "Engine/Core.h"
 
-#include "Engine/Object/FClassType.h"
-#include "Engine/Object/UObject.h"
-#include "Engine/Object/GObjects.h"
-#include "Engine/UEngineStatics.h"
+struct FClassType;
+struct UObject;
 
 class FObjectFactory
 {
 
+private: 
+
+	static UObject* _ConstructObject(FClassType* Type, EObjectDomain Domain, uint32 UUID);
+
 public:
 
-	static UObject* ConstructObject(FClassType* Type)
-	{
-		if (Type == nullptr)
-		{
-			throw std::logic_error("ConstructObject: Type is nullptr");
-		}
-
-		uint32 UUID = UEngineStatics::GenUUID();
-		uint32 InternalIndex = GObjects::GetNextIndex();
-
-		UObject* Object = Type->ClassConstructor(UUID, InternalIndex, Type);
-
-		Object->Initialize();
-
-		GObjects::AddObject(Object);
-		
-		return Object;
-	}
+	static UObject* ConstructSceneObject(FClassType* Type, uint32 UUID = -1);
+	static UObject* ConstructEngineObject(FClassType* Type);
+	static UObject* ConstructEditorObject(FClassType* Type);
 };

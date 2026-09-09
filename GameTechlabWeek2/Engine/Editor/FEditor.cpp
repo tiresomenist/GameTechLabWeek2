@@ -27,10 +27,13 @@
 
 #include "../../ImGui/imgui.h"
 
+
 void FEditor::Initialize()
 {
-	EditorCamera = static_cast<UCameraComponent*>(FObjectFactory::ConstructObject(UCameraComponent::GetClass()));
-	EditorCamera->SetRelativeLocation(FVector(-5.0f, 0.0f, 0.0f));
+
+	EditorCamera = static_cast<UCameraComponent*>(SpawnObject(UCameraComponent::GetClass()));
+	EditorCamera->SetRelativeLocation(FVector(-15.0f, -15.0f, 10.0f));
+	EditorCamera->LookAt(FVector(0.0f, 0.0f, 0.0f));
 
 	CameraController.SetCamera(EditorCamera);
 
@@ -38,9 +41,12 @@ void FEditor::Initialize()
 	SelectedSceneComponent = nullptr;
 	GizmoPicker = new FGizmoPicker(this);
 
+
 	RegisterGizmo(UObjectAxisGizmo::GetClass());
 	RegisterGizmo(UWorldAxisGizmo::GetClass());
 	RegisterGizmo(UWorldGridGizmo::GetClass());
+
+	GizmoController = new FGizmoController(this);
 
 	// TODO 생성자 고칠 것
 	RegisterWindow(new UConsoleWindow());
@@ -61,16 +67,19 @@ void FEditor::Tick(float DeltaTime)
 	bool bWantToCaptureKeyboard = IO.WantCaptureKeyboard;
 
 	float Time = Engine.GetTime();
-	if (Input.ConsumeLeftClick() && !bWantToCaptureMouse) {
-		//UE_LOG(std::format("[{}] 좌클릭 좌표:{}, {}", Time,
-		//	Input.GetLeftCursorX(),
-		//	Input.GetLeftCursorY()));
+	const bool bWasDragging = GizmoController->IsDragging();
+
+	if (Input.ConsumeLeftClick() &&!bWasDragging &&!bWantToCaptureMouse &&!Input.GetKey(GInputManager::EI_RMOUSE))
+	{
 		int32 SelectedGizmo = GizmoPicker->Pick(ObjectAxisGizmo);
+		//기즈모가 선택되면 드래그 시작
 		if (SelectedGizmo != -1) {
-			TArray<char> temp = { 'X','Y','Z' };
-			UE_LOG("{}축 선택됨!",temp[SelectedGizmo]);
+			if (Input.GetKey(GInputManager::EI_LMOUSE))
+				GizmoController->BeginDrag(SelectedGizmo);
 		}
-		else {
+		//기즈모가 선택 안되면 오브젝트 선택
+		else
+		{
 			UPrimitiveComponent* Selected = ObjectPicker->Pick();
 
 			if (SelectedSceneComponent)
@@ -85,28 +94,40 @@ void FEditor::Tick(float DeltaTime)
 			SetSelectedSceneComponent(Selected);
 			if (Selected != nullptr) {
 				//SelectedSceneComponent = Selected;
-				UE_LOG("[{}] : [{}번째 오브젝트 선택]", Time, Selected->UUID);
+				UE_LOG("[{}] : [{}번째 오브젝트 선택]", Time, Selected->GetUUID());
 				Selected->RenderData.isSelected = true;
 			}
 		}
-
-	}
-	if (Input.GetKey(GInputManager::EI_RMOUSE)) {
-		//UE_LOG("[{}] 우클릭 좌표:{}, {}", Time,
-		//	GInputManager::GetInstance()->GetRightCursorX(),
-		//	GInputManager::GetInstance()->GetRightCursorY());
 	}
 
+	const bool bGizmoOwnsInput = bWasDragging || GizmoController->IsDragging();
+
+	GizmoController->Tick();
+	if (bGizmoOwnsInput|| bWantToCaptureMouse)
+	{
+		// 카메라를 막는 동안 쌓인 회전 입력 폐기
+		int32 DX, DY;
+		Input.ConsumeRightDragDelta(DX, DY);
+	}
 	bool bRightClickDragging = Input.GetKey(GInputManager::EI_RMOUSE);
 	bool bAllowCameraMouse = !bWantToCaptureMouse;
 	bool bAllowCameraKeyboard = !bWantToCaptureKeyboard || (bAllowCameraMouse && bRightClickDragging);
 
-	if(bAllowCameraKeyboard && bAllowCameraMouse)
+	if (!bGizmoOwnsInput && bAllowCameraKeyboard && bAllowCameraMouse)
+	{
 		CameraController.Tick(DeltaTime);
+	}
+	const bool bSpacePressed = Input.ConsumeSpacePress();
+	if (bSpacePressed && !IO.WantCaptureKeyboard)
+	{
+		GizmoController->ChangeMod();
+	}
 }
 
 void FEditor::Release()
 {
+	delete GizmoController;
+	GizmoController = nullptr;
 	CameraController.SetCamera(nullptr);
 	delete ObjectPicker;
 	ObjectPicker = nullptr;
@@ -132,8 +153,9 @@ void FEditor::NewScene()
 
 void FEditor::LoadScene(FStringView SceneName)
 {
+	SetSelectedSceneComponent(nullptr);
 	GSceneManager* SceneManager = GSceneManager::GetInstance();
-	FClassType* SceneType = GetCurrentScene()->GetClassType();
+	FClassType* SceneType = GetCurrentScene()->GetInstanceClass();
 
 	SceneManager->LoadScene(SceneType, SceneName);
 }
@@ -153,6 +175,7 @@ UScene* FEditor::GetCurrentScene()
 void FEditor::SetSelectedSceneComponent(USceneComponent* Component)
 {
 	SelectedSceneComponent = Component;
+	if (GizmoController != nullptr)GizmoController->SetSelectedObject(Component);
 }
 
 void FEditor::DeleteSelectedSceneComponent()
@@ -162,12 +185,12 @@ void FEditor::DeleteSelectedSceneComponent()
 	UScene* CurrentScene = GetCurrentScene();
 	CurrentScene->Destroy(SelectedSceneComponent);
 
-	SelectedSceneComponent = nullptr;
+	SetSelectedSceneComponent(nullptr);
 }
 
 void FEditor::RegisterGizmo(FClassType* Type)
 {
-	UObject* Object = FObjectFactory::ConstructObject(Type);
+	UObject* Object = FObjectFactory::ConstructEditorObject(Type);
 	UGizmo* Gizmo = static_cast<UGizmo*>(Object);
 
 	Gizmo->Initialize(this);
@@ -193,9 +216,14 @@ UGizmo* FEditor::GetObjectAxisGizmo() const
 	return ObjectAxisGizmo;
 }
 
+UObject* FEditor::SpawnObject(FClassType* Type)
+{
+	return FObjectFactory::ConstructEditorObject(Type);
+}
+
 void FEditor::RegisterGrid(FClassType* Type)
 {
-	UObject* Object = FObjectFactory::ConstructObject(Type);
+	UObject* Object = FObjectFactory::ConstructEditorObject(Type);
 	UGrid* Grid = static_cast<UGrid*>(Object);
 
 	Grid->Initialize(this);

@@ -58,7 +58,9 @@ void FRenderer::Shutdown()
 	ImGui::DestroyContext();
 	////////////
 
-	// 렌더 타겟 초기화
+	//24번 해야함
+	// 
+	// 렌더 타겟을 초기화
 	DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
@@ -329,6 +331,7 @@ void FRenderer::Render(float DeltaTime, FEditor* Editor, UScene* Scene)
 	BeginFrame();
 
 	UCameraComponent* Camera = Editor->GetEditorCamera();
+
 	FMatrix ViewProjMatrix = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
 	TArray<FPrimitiveRenderData> RenderList = RenderUtil::GetRenderList(Editor, Scene);
 	Camera->SetAspectRatio(Device->GetViewport().Width / Device->GetViewport().Height); // 리사이징된 카메라 화면에 맞게 종횡비를 맞춥니다.

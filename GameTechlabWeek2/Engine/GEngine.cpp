@@ -2,7 +2,7 @@
 #include "Windows.h"
 
 #include "Engine/Object/FObjectFactory.h"
-#include "Engine/Object/GObjects.h"
+#include "Engine/Object/GObjectStatics.h"
 #include "Engine/Object/UObject.h"
 #include "Engine/Core.h"
 
@@ -100,8 +100,12 @@ void GEngine::Destroy()
 	GSceneManager* SceneManager = GSceneManager::GetInstance();
 	SceneManager->Release();
 	
-	// GObjects 정리 
-	GObjects::Release();
+	// 리소스 매니저 정리
+	GResourceManager* ResourceManager = GResourceManager::GetInstance();
+	ResourceManager->Shutdown();
+    
+	// GObjectStatics 정리
+	GObjectStatics::Release();
 
 	Renderer.Shutdown();
 	

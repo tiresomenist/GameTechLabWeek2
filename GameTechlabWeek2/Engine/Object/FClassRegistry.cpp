@@ -1,6 +1,30 @@
 #include "FClassRegistry.h"
 #include "Engine/Object/FClassType.h"
 
+#include "Engine/Scene/UScene.h"
+#include "Engine/Scene/UMainScene.h"
+
+#include "Engine/Gizmo/UGizmo.h"
+#include "Engine/Gizmo/UObjectAxisGizmo.h"
+#include "Engine/Gizmo/UWorldAxisGizmo.h"
+#include "Engine/Gizmo/UWorldGridGizmo.h"
+
+#include "Engine/Editor/UGrid.h"
+
+#include "Engine/Object/UObject.h"
+#include "Engine/Object/USceneComponent.h"
+#include "Engine/Object/UCameraComponent.h"
+
+#include "Engine/Object/Primitive/UPrimitiveComponent.h"
+#include "Engine/Object/Primitive/UCubeComponent.h"
+#include "Engine/Object/Primitive/UPlaneComponent.h"
+#include "Engine/Object/Primitive/USphereComponent.h"
+#include "Engine/Object/Primitive/UPepeComponent.h"
+#include "Engine/Object/Primitive/UArrowBlueComponent.h"
+#include "Engine/Object/Primitive/UArrowGreenComponent.h"
+#include "Engine/Object/Primitive/UArrowRedComponent.h"
+#include "Engine/Object/Primitive/UOctopusComponent.h"
+
 #include <cassert>
 #include <format>
 

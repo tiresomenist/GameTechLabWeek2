@@ -15,6 +15,7 @@
 #include "ImGui/imgui_impl_win32.h"
 #include "ImGui/imgui_stdlib.h"
 #include "Engine/InputManager/GInputManager.h"
+#include "Engine/GAllocator.h"
 
 #include "Engine/GSceneManager.h"
 
@@ -54,8 +55,11 @@ void USceneWindow::Render(float DeltaTime)
 {
 	UCameraComponent* EditorCamera = Editor->GetEditorCamera();
 
-	CameraLocation = EditorCamera->GetRelativeLocation();
-	CameraRotation = EditorCamera->GetRelativeRotation();
+	CameraLocation = Editor->GetCameraLocation();
+	if (!bEditingCameraRotation)
+	{
+		CameraRotationDegree = Editor->GetCameraRotationDegree();
+	}
 	FOV = Editor->GetCameraFOV();
 
 	const ImGuiViewport* Viewport = ImGui::GetMainViewport();
@@ -87,12 +91,18 @@ void USceneWindow::Render(float DeltaTime)
 
 	float ButtonWidth = Available.x * 0.2f; // Button, DragFloat
 	float WideItemWidth = ButtonWidth * 3.0f + ItemSpacing.x * 2.0f; // FOV, NumberOfSpawn
+
+	size_t AllocationBytes = GAllocator::GetTotalAllocationBytes();
+	size_t AllocationCount = GAllocator::GetTotalAllocationCount();
 	
-	ImGui::Begin("Jungle Control Panel", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
+	ImGui::Begin("Scene Control Panel", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
 	{
 		float MilliSeconds = DeltaTime * 1000;
-		ImGui::Text("Hello Jungle World!");
+		ImGui::Text("1 Team Engine");
 		ImGui::Text("FPS %.00f (%.00f ms)", 1000 / MilliSeconds, MilliSeconds);
+		ImGui::Separator();
+		ImGui::Text("Heap Memory 사용량: %d바이트", AllocationBytes);
+		ImGui::Text("Heap Memory 객체 수: %d개", AllocationCount);
 		ImGui::Separator();
 
 		ImGui::PushItemWidth(WideItemWidth);
@@ -121,7 +131,14 @@ void USceneWindow::Render(float DeltaTime)
 		}
 		ImGui::SameLine();
 		ImGui::PushItemWidth(200);
-		ImGui::InputScalar("Number Of Spawn", ImGuiDataType_U32, &NumberOfSpawn);
+		if (ImGui::InputScalar(
+			"Number Of Spawn",
+			ImGuiDataType_U32,
+			&NumberOfSpawn,
+			&Step))
+		{
+			NumberOfSpawn = std::clamp(NumberOfSpawn, 1u, 20u);
+		}
 		ImGui::PopItemWidth();
 		ImGui::Separator();
 		ImGui::PushItemWidth(WideItemWidth);
@@ -154,23 +171,43 @@ void USceneWindow::Render(float DeltaTime)
 		ImGui::PopItemWidth();
 		ImGui::PushItemWidth(ButtonWidth); // Item 너비 설정
 		ImGui::DragFloat("##cameraX", &CameraLocation.X, 0.1f);
+		DrawItemBottomLine(IM_COL32(255, 40, 40, 255), 2.0f);
 		ImGui::SameLine();
 		ImGui::DragFloat("##cameraY", &CameraLocation.Y, 0.1f);
+		DrawItemBottomLine(IM_COL32(40, 255, 40, 255), 2.0f);
 		ImGui::SameLine();
 		ImGui::DragFloat("##cameraZ", &CameraLocation.Z, 0.1f);
+		DrawItemBottomLine(IM_COL32(20, 30, 255, 255), 2.0f);
 		ImGui::SameLine();
 		ImGui::Text("Camera Location");
-		ImGui::DragFloat("##cameraRX", &CameraRotation.X, 0.001f);
+		bool bRotationChanged = false;
+		bool bRotationActive = false;
+		bool bRotationFinished = false;
+		constexpr ImGuiSliderFlags RotationFlags = ImGuiSliderFlags_WrapAround | ImGuiSliderFlags_AlwaysClamp;
+		bRotationChanged |= ImGui::DragFloat("##cameraRX", &CameraRotationDegree.X, 0.1f, -180.0f, 180.0f, "%.3f", RotationFlags);
+		bRotationActive |= ImGui::IsItemActive();
+		bRotationFinished |= ImGui::IsItemDeactivatedAfterEdit();
+		DrawItemBottomLine(IM_COL32(255, 40, 40, 255), 2.0f);
 		ImGui::SameLine();
-		ImGui::DragFloat("##cameraRY", &CameraRotation.Y, 0.001f);
+		bRotationChanged |= ImGui::DragFloat("##cameraRY", &CameraRotationDegree.Y, 0.1f, -89.0f, 89.0f, "%.3f", RotationFlags);
+		bRotationActive |= ImGui::IsItemActive();
+		bRotationFinished |= ImGui::IsItemDeactivatedAfterEdit();
+		DrawItemBottomLine(IM_COL32(40, 255, 40, 255), 2.0f);
 		ImGui::SameLine();
-		ImGui::DragFloat("##cameraRZ", &CameraRotation.Z, 0.001f);
+		bRotationChanged |= ImGui::DragFloat("##cameraRZ", &CameraRotationDegree.Z, 0.1f, -180.0f, 180.0f, "%.3f", RotationFlags);
+		bRotationActive |= ImGui::IsItemActive();
+		bRotationFinished |= ImGui::IsItemDeactivatedAfterEdit();
+		DrawItemBottomLine(IM_COL32(20, 30, 255, 255), 2.0f);
 		ImGui::SameLine();
 		ImGui::Text("Camera Rotation");
+		if (bRotationChanged || bRotationFinished)
+		{
+			Editor->SetCameraRotationDegree(CameraRotationDegree);
+		}
+		bEditingCameraRotation = bRotationActive;
 		ImGui::PopItemWidth();
 		//ImGui::PopStyleVar();
 	}
 	Editor->SetCameraLocation(CameraLocation);
-	Editor->SetCamerRotation(CameraRotation);
 	ImGui::End();
 }

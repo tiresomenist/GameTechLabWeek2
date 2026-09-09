@@ -4,22 +4,32 @@
 #include "../../../FQuaternion.h"
 #include "../../../Container/FString.h"
 
+class USceneComponent;
+
 class UPropertyWindow : public UEditorWindow
 {
 private:
+	USceneComponent* SelectedComponent = nullptr;
 	FVector Translation;
-	FVector Rotation;
+	FVector RotationDegree;
 	FVector OScale;
+	FQuaternion RotationDragStart;
+	float RotationDragStartDegree = 0.0f;
+	float RotationDegreeAtDragStart = 0.0f;
+	int RotationDragAxis = -1;
+	bool bEditingRotation = false;
 	float SnapSize = 0.001f;
 	int SelectedSnapIndex = 0;
 	TArray<float> SnapSizeList = {0.001f, 0.01f, 0.1f, 1.0f, 5.0f};
-	bool bScaleLock;
+	bool bScaleLock = false;
 public:
 
 	void GetSelectedValue();
-	void SetSelectedValue();
-
+	void SetSelectedValue(bool bSetRotation);
 	void DeleteSelected();
+
+	bool DrawRotationField(const char* ID, float& Degree, int AxisIndex, bool& bRotationActive, bool& bRotationFinished);
 
 	void Render(float DeltaTime) override;
 };
+

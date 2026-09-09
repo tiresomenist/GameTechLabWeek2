@@ -26,7 +26,7 @@ void UScene::Serialize(TArray<FArchive>& ObjectInfoList)
     for (auto Item : Objects)
     {
         FArchive Archive;
-        Archive.SetUInt32("UUID", Item->UUID);
+        Archive.SetUInt32("UUID", Item->GetUUID());
 
         Item->Serialize(Archive);
         ObjectInfoList.Add(Archive);
@@ -40,11 +40,12 @@ void UScene::Deserialize(TArray<FArchive>& ObjectInfoList)
         FString TypeName = Item.GetString("Type");
         FClassType* Type = FClassRegistry::FindClassType(TypeName);
 
-        UObject* Object = SpawnObject<UObject*>(Type);
+        uint32 UUID = Item.GetUInt32("UUID");
+        UObject* Object = FObjectFactory::ConstructSceneObject(Type, UUID);
+        Objects.Add(Object);
+        
         Object->Deserialize(Item);
     }
-
-    UE_LOG("테스트 {}", Objects.Num());
 }
 
 void UScene::Destroy(UObject* Object)

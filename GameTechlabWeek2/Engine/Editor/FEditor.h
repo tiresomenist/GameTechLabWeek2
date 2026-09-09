@@ -4,6 +4,7 @@
 #include "Engine/Object/FObjectFactory.h"
 #include "Engine/Renderer/RenderUtil.h"
 #include "Engine/Editor/Controller/FCameraController.h"
+#include "Engine/Editor/Controller/FGizmoController.h"
 
 //TESTCODE//
 #include "Engine/Object/UCameraComponent.h"
@@ -27,6 +28,7 @@ private:
 	FCameraController CameraController;
 	FObjectPicker* ObjectPicker = nullptr;
 	FGizmoPicker* GizmoPicker = nullptr;
+	FGizmoController* GizmoController=nullptr;
 
 	USceneComponent* SelectedSceneComponent;
 	TArray<UGizmo*> Gizmos;
@@ -34,7 +36,7 @@ private:
 	TArray<UGrid*> Grids;
 	
 
-	UGizmo* ObjectAxisGizmo;
+	UGizmo* ObjectAxisGizmo = nullptr;
 
 
 public:
@@ -70,14 +72,28 @@ public:
 	//TEST CODE//
 	FVector GetCameraLocation() { return GetEditorCamera()->GetRelativeLocation(); }
 	void SetCameraLocation(FVector NewCameraLocation) { EditorCamera->SetRelativeLocation(NewCameraLocation); }
-	FQuaternion GetCamerRotation() { return GetEditorCamera()->GetRelativeRotation(); }
-	void SetCamerRotation(FQuaternion NewCameraRotation) { EditorCamera->SetRelativeRotation(NewCameraRotation); }
+	FVector GetCameraRotationDegree()
+	{
+		const FQuaternion& CameraRotation = GetEditorCamera()->GetRelativeRotation();
+		return FQuaternion::ToEuler(CameraRotation) * (180.0f / PI);
+	}
+	void SetCameraRotationDegree(const FVector& NewRotationDegree)
+	{
+		const FVector EulerRadian = NewRotationDegree * (PI / 180.0f);
+
+		const FQuaternion CameraRotation = FQuaternion::FromEuler(EulerRadian);
+
+		EditorCamera->SetRelativeRotation(CameraRotation);
+	}
 	float GetCameraFOV() { return GetEditorCamera()->GetFOV() * 180.0f / PI; }
 	void SetCameraFOV(float NewFOV) { EditorCamera->SetFOVByDegree(NewFOV); }
+	
 	void SpawnPrimitives(FClassType* ClassType, uint32 num) { GEngine::GetInstance()->GetConsole()->Append(std::format("Make {}, {} times",ClassType->Name,num)); }
 	
 	void SetObjectAxisGizmo(UGizmo* InGizmo);
 	UGizmo* GetObjectAxisGizmo()const;
+
+	UObject* SpawnObject(FClassType* Type);
 
 public:
 	friend TArray<FPrimitiveRenderData> RenderUtil::GetRenderList(FEditor* Editor, UScene* Scene);
