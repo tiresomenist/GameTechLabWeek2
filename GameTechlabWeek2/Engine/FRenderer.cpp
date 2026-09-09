@@ -380,19 +380,6 @@ void FRenderer::Render(float DeltaTime, FEditor* Editor, UScene* Scene)
         Item->Render(DeltaTime);
     }
 
-	// Render Gizmo
-	TArray<FPrimitiveRenderData> GizmoRenderList = RenderUtil::GetGizmoList(Editor, Scene);
-    for (auto Item : GizmoRenderList) 
-	{
-		FMatrix MVP = (*Item.WorldMatrix) * ViewProjMatrix;
-		UpdateTransformConstantBuffer(MVP);
-		if (Item.isSelected)
-		{
-			RenderHighlight(Item);
-		}
-		RenderGizmo(Item);
-    }
-
 	// Render Grid
 	UpdateTransformConstantBuffer(ViewProjMatrix);
 	for (auto Item : Editor->GetGrids())
@@ -423,6 +410,19 @@ void FRenderer::Render(float DeltaTime, FEditor* Editor, UScene* Scene)
 
 		UpdateTransformConstantBuffer(Z_WorldMatrix * ViewProjMatrix);
 		RenderGrid(Item->GetMeshResource());
+	}
+
+	// Render Gizmo
+	TArray<FPrimitiveRenderData> GizmoRenderList = RenderUtil::GetGizmoList(Editor, Scene);
+	for (auto Item : GizmoRenderList)
+	{
+		FMatrix MVP = (*Item.WorldMatrix) * ViewProjMatrix;
+		UpdateTransformConstantBuffer(MVP);
+		if (Item.isSelected)
+		{
+			RenderHighlight(Item);
+		}
+		RenderGizmo(Item);
 	}
 
 	UpdateTransformConstantBuffer(ViewProjMatrix);
