@@ -5,20 +5,20 @@
 #include "Engine/Core.h"
 #include <type_traits>
 
-#include "SimpleJSON.hpp"
+#include "nlohmann/json.hpp"
 
 // TODO: 언젠가는 이 코드가 JSON에 강하게 커플링 되어있는 문제를 해결해야할지도
 
 class FArchive
 {
 private:
-	json::JSON Object;
+	nlohmann::json Object;
 
 public:
 	FArchive();
-	explicit FArchive(const json::JSON& InObject);
+	explicit FArchive(const nlohmann::json& InObject);
 
-	json::JSON GetJSON() const { return Object; }
+	nlohmann::json GetJSON() const { return Object; }
 
 	int32 GetInt32(const FString& Key);
 	void SetInt32(const FString& Key, int32 Value);
@@ -38,18 +38,28 @@ public:
 	FString GetString(const FString& Key);
 	void SetString(const FString& Key, const FString& Value);
 	
+	// GetArray는 필요하면 더 추가
 	template <typename T>
 	TArray<T> GetArray(const FString& Key) = delete;
 	
 	template <>
-	TArray<float> GetArray<float>(const FString& Key);
+	TArray<float> GetArray<float>(const FString& Key)
+	{
+		TArray<float> Array;
 
-	// GetArray는 필요하면 더 추가
-	
+		for (const auto& Item : Object.at(Key))
+		{
+			float Value = Item.get<float>();
+			Array.Add(Value);
+		}
+
+		return Array;
+	}
+
 	template <typename T>
 	void SetArray(const FString& Key, TArray<T>& Value)
 	{
-		Object[Key] = json::Array();
+		Object[Key] = nlohmann::json::array();
 
 		for (int i = 0; i < Value.Num(); ++i)
 		{
@@ -57,17 +67,3 @@ public:
 		}
 	}
 };
-
-template<>
-inline TArray<float> FArchive::GetArray(const FString& Key)
-{
-	TArray<float> Array;
-
-	for (auto& Item : Object[Key].ArrayRange())
-	{
-		double Value = Item.ToFloat();
-		Array.Add(static_cast<float>(Value));
-	}
-
-	return Array;
-}

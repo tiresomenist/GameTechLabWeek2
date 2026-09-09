@@ -15,7 +15,7 @@ void FConsole::Append(FStringView Message)
 	FString Item = FString(Message);
 	MessageList.PushLast(Item); 
 
-	if (MessageList.Num() > MaxMessages)
+	if (MessageList.Num() > static_cast<size_t>(MaxMessages))
 	{
 		MessageList.PopFirst();
 	}
@@ -30,7 +30,7 @@ void FConsole::SetMaxMessages(int32 Num)
 {
 	MaxMessages = Num;
 
-	while (MessageList.Num() > Num)
+	while (MessageList.Num() > static_cast<size_t>(Num))
 	{
 		MessageList.PopFirst();
 	}

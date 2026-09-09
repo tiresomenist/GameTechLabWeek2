@@ -97,6 +97,8 @@ public:
 		Array.resize(Index);
 	}
 
+	std::vector<T>& GetVector() { return Array; }
+
 	auto begin() { return Array.begin(); }
 	auto end() { return Array.end(); }
 

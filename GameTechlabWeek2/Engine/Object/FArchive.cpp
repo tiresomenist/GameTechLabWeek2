@@ -7,14 +7,14 @@ FArchive::FArchive()
 {
 }
 
-FArchive::FArchive(const json::JSON& InObject)
+FArchive::FArchive(const nlohmann::json& InObject)
 	: Object(InObject)
 {
 }
 
 int32 FArchive::GetInt32(const FString& Key)
 {
-	return Object[Key].ToInt();
+	return Object.at(Key).get<int32>();
 }
 
 void FArchive::SetInt32(const FString& Key, int32 Value)
@@ -24,7 +24,7 @@ void FArchive::SetInt32(const FString& Key, int32 Value)
 
 float FArchive::GetFloat(const FString& Key)
 {
-	return static_cast<float>(Object[Key].ToFloat());
+	return Object.at(Key).get<float>();
 }
 
 void FArchive::SetFloat(const FString& Key, float Value)
@@ -34,7 +34,7 @@ void FArchive::SetFloat(const FString& Key, float Value)
 
 uint32 FArchive::GetUInt32(const FString& Key)
 {
-	return static_cast<uint32>(Object[Key].ToInt());
+	return Object.at(Key).get<uint32>();
 }
 
 void FArchive::SetUInt32(const FString& Key, uint32 Value)
@@ -44,7 +44,7 @@ void FArchive::SetUInt32(const FString& Key, uint32 Value)
 
 double FArchive::GetDouble(const FString& Key)
 {
-	return Object[Key].ToFloat();
+	return Object.at(Key).get<double>();
 }
 
 void FArchive::SetDouble(const FString& Key, double Value)
@@ -54,7 +54,7 @@ void FArchive::SetDouble(const FString& Key, double Value)
 
 bool FArchive::GetBool(const FString& Key)
 {
-	return Object[Key].ToBool();
+	return Object.at(Key).get<bool>();
 }
 
 void FArchive::SetBool(const FString& Key, bool Value)
@@ -64,7 +64,7 @@ void FArchive::SetBool(const FString& Key, bool Value)
 
 FString FArchive::GetString(const FString& Key)
 {
-	return Object[Key].ToString();
+	return Object.at(Key).get<FString>();
 }
 
 void FArchive::SetString(const FString& Key, const FString& Value)

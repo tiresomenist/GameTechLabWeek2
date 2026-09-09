@@ -4,7 +4,7 @@
 #include "Engine/Core.h"
 
 struct FClassType;
-struct UObject;
+class UObject;
 
 class FObjectFactory
 {

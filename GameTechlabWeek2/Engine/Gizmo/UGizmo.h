@@ -12,6 +12,7 @@ struct FGizmoHandle
 	FMeshResource* Mesh = nullptr;   // 무엇을 그리는가?
 	FMatrix WorldMatrix = FMatrix::Identity;  // 어디에 어떻게 놓는가?
 	int32 Topology = -1; //어떤식으로 그려지는가? 0:LINELIST 1:TRIANGLELIST
+	bool IsSeleted = false;
 };
 
 class UGizmo : public UObject

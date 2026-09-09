@@ -57,6 +57,7 @@ public:
 	UCameraComponent* GetEditorCamera() { return EditorCamera; }
 
 	USceneComponent* GetSelectedSceneComponent() const { return SelectedSceneComponent; }
+	int32 GetActiveGizmoAxis() const { return GizmoController ? GizmoController->GetActiveAxis() : -1; }
 	void SetSelectedSceneComponent(USceneComponent* Component);
 
 	void DeleteSelectedSceneComponent();

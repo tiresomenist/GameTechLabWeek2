@@ -22,6 +22,7 @@ public:
 	bool BeginDrag(int32 Axis);
 	void EndDrag();
 	bool IsDragging() const { return bDragging; }
+	int32 GetActiveAxis() const { return bDragging ? ActiveAxis : -1; }
 	void ChangeMod();
 private:
 	bool GetRotationDirection(float NDCX, float NDCY, FVector& OutDirection) const;

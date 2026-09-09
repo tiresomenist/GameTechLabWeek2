@@ -3,8 +3,9 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <stdexcept>
+#include <format>
 
-// TODO: 적절한 예외 처리가 언젠간 필요할 것
 
 void File::WriteText(FStringView Path, FStringView Text)
 {
@@ -12,7 +13,10 @@ void File::WriteText(FStringView Path, FStringView Text)
 
 	std::ofstream Out{ PathString };
 
-	if (!Out.is_open()) { return; }
+	if (!Out.is_open())
+	{
+		throw std::runtime_error(std::format("파일을 작성할 수 없습니다: {}", Path));
+	}
 
 	Out << Text;
 
@@ -26,7 +30,10 @@ FString File::ReadText(FStringView Path)
 	std::ifstream In{ PathString };
 	std::stringstream StringStream;
 
-	if (!In.is_open()) { return FString{}; }
+	if (!In.is_open())
+	{
+		throw std::runtime_error(std::format("파일을 불러올 수 없습니다: {}", Path));
+	}
 
 	FString Text;
 
