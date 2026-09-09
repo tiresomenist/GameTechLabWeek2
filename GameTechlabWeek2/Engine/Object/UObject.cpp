@@ -26,7 +26,6 @@ UObject::UObject(const FObjectCreateInfo& Info)
 	, ClassType{ Info.ClassType }
 	, Domain{ Info.Domain }
 {
-	UE_LOG("Object Created: {}", Info.ClassType->Name);
 }
 
 bool UObject::IsA(FClassType* InClassType) const

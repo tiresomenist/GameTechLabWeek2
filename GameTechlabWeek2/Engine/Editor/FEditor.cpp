@@ -32,7 +32,8 @@ void FEditor::Initialize()
 {
 
 	EditorCamera = static_cast<UCameraComponent*>(SpawnObject(UCameraComponent::GetClass()));
-	EditorCamera->SetRelativeLocation(FVector(-5.0f, 0.0f, 0.0f));
+	EditorCamera->SetRelativeLocation(FVector(-15.0f, -15.0f, 10.0f));
+	EditorCamera->LookAt(FVector(0.0f, 0.0f, 0.0f));
 
 	CameraController.SetCamera(EditorCamera);
 
