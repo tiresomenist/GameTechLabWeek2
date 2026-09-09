@@ -87,6 +87,7 @@ public:
 	}
 	float GetCameraFOV() { return GetEditorCamera()->GetFOV() * 180.0f / PI; }
 	void SetCameraFOV(float NewFOV) { EditorCamera->SetFOVByDegree(NewFOV); }
+	
 	void SpawnPrimitives(FClassType* ClassType, uint32 num) { GEngine::GetInstance()->GetConsole()->Append(std::format("Make {}, {} times",ClassType->Name,num)); }
 	
 	void SetObjectAxisGizmo(UGizmo* InGizmo);

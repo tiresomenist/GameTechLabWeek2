@@ -12,7 +12,8 @@ class USceneWindow : public UEditorWindow
 {
 private:
 	uint32 NumberOfSpawn = 1;
-	FString SceneName{"TestScene"};
+	uint32 Step = 1;
+	FString SceneName{"NewScene"};
 	bool bOrthogonal = false;
 	TArray<FClassType*> Spawnables;
 	FClassType* SelectedClass;

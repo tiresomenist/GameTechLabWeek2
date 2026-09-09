@@ -124,7 +124,14 @@ void USceneWindow::Render(float DeltaTime)
 		}
 		ImGui::SameLine();
 		ImGui::PushItemWidth(200);
-		ImGui::InputScalar("Number Of Spawn", ImGuiDataType_U32, &NumberOfSpawn);
+		if (ImGui::InputScalar(
+			"Number Of Spawn",
+			ImGuiDataType_U32,
+			&NumberOfSpawn,
+			&Step))
+		{
+			NumberOfSpawn = std::clamp(NumberOfSpawn, 1u, 20u);
+		}
 		ImGui::PopItemWidth();
 		ImGui::Separator();
 		ImGui::PushItemWidth(WideItemWidth);
@@ -175,7 +182,7 @@ void USceneWindow::Render(float DeltaTime)
 		bRotationFinished |= ImGui::IsItemDeactivatedAfterEdit();
 		DrawItemBottomLine(IM_COL32(255, 40, 40, 255), 2.0f);
 		ImGui::SameLine();
-		bRotationChanged |= ImGui::DragFloat("##cameraRY", &CameraRotationDegree.Y, 0.1f, -180.0f, 180.0f, "%.3f", RotationFlags);
+		bRotationChanged |= ImGui::DragFloat("##cameraRY", &CameraRotationDegree.Y, 0.1f, -89.0f, 89.0f, "%.3f", RotationFlags);
 		bRotationActive |= ImGui::IsItemActive();
 		bRotationFinished |= ImGui::IsItemDeactivatedAfterEdit();
 		DrawItemBottomLine(IM_COL32(40, 255, 40, 255), 2.0f);
