@@ -8,6 +8,8 @@ class USceneComponent;
 
 class UPropertyWindow : public UEditorWindow
 {
+    UCLASS(UPropertyWindow, "PropertyWindow", UEditorWindow)
+
 private:
 	USceneComponent* SelectedComponent = nullptr;
 	FVector Translation;

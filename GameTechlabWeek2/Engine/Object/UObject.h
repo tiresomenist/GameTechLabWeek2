@@ -83,6 +83,8 @@ private:
 	/// </summary>
 	EObjectDomain Domain;
 
+	FClassType* ClassType;
+
 protected:
 
 	UObject(const FObjectCreateInfo& Info);
@@ -125,12 +127,9 @@ public:
 	virtual void Deserialize(FArchive& Archive);
 
 	void* operator new(size_t Size);
+	void* operator new(size_t Size, std::align_val_t Alignment);
 	void operator delete(void* Ptr);
 
 	virtual ~UObject();
-
-private:
-
-	FClassType* ClassType;
 
 };

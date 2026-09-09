@@ -3,7 +3,7 @@
 #include "Engine/Core.h"
 #include <cstddef>
 
-// 아주 아주 간단한 Allocator
+// 아주 간단한 Allocator
 // 
 // TODO: Linear Allocator, Pool Allocator, Stack Allocator 등
 // 상황 및 객체 생명주기에 맞는 다양한 Allocator 구현해보기.

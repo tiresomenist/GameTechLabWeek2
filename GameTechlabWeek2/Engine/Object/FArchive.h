@@ -13,6 +13,7 @@ class FArchive
 {
 private:
 	nlohmann::json Object;
+	static double GetFixedDouble(double Value);
 
 public:
 	FArchive();
@@ -63,7 +64,14 @@ public:
 
 		for (int i = 0; i < Value.Num(); ++i)
 		{
-			Object[Key][i] = Value[i];
+			if constexpr (std::is_floating_point_v<T>)
+			{
+				Object[Key].push_back(GetFixedDouble(static_cast<double>(Value[i])));
+			}
+			else
+			{
+				Object[Key].push_back(Value[i]);
+			}
 		}
 	}
 };

@@ -10,6 +10,8 @@
 
 class UConsoleWindow : public UEditorWindow
 {
+    UCLASS(UConsoleWindow, "ConsoleWindow", UEditorWindow)
+
 private:
 	ImGuiTextFilter Filter;
 	TDeque<FString> logs;

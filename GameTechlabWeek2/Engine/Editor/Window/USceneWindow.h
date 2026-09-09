@@ -10,6 +10,8 @@ class FEditor;
 
 class USceneWindow : public UEditorWindow
 {
+    UCLASS(USceneWindow, "SceneWindow", UEditorWindow)
+
 private:
 	uint32 NumberOfSpawn = 1;
 	uint32 Step = 1;

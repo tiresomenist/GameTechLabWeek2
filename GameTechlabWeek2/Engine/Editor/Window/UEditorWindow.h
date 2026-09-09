@@ -1,16 +1,19 @@
 #pragma once
 
 #include "Engine/GEngine.h"
+#include "Engine/Object/UObject.h"
 #include "Imgui/imgui.h"
 #include <Windows.h>
 
 class FEditor;
 
-class UEditorWindow
+class UEditorWindow : public UObject
 {
+    UCLASS(UEditorWindow, "EditorWindow", UObject)
+
 protected:
 
-	FEditor* Editor;
+	FEditor* Editor = nullptr;
 
 public:
 

@@ -48,10 +48,9 @@ void FEditor::Initialize()
 
 	GizmoController = new FGizmoController(this);
 
-	// TODO 생성자 고칠 것
-	RegisterWindow(new UConsoleWindow());
-	RegisterWindow(new UPropertyWindow());
-	RegisterWindow(new USceneWindow());
+	RegisterWindow(UConsoleWindow::GetClass());
+	RegisterWindow(UPropertyWindow::GetClass());
+	RegisterWindow(USceneWindow::GetClass());
 
 	RegisterGrid(UGrid::GetClass());
 }
@@ -200,8 +199,11 @@ void FEditor::RegisterGizmo(FClassType* Type)
 	Gizmos.Add(Gizmo);
 }
 
-void FEditor::RegisterWindow(UEditorWindow* Window)
+void FEditor::RegisterWindow(FClassType* Type)
 {
+	UObject* Object = FObjectFactory::ConstructEditorObject(Type);
+	UEditorWindow* Window = static_cast<UEditorWindow*>(Object);
+
 	Window->Initialize(this);
 	Windows.Add(Window);
 }

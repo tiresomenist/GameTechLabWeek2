@@ -49,8 +49,6 @@ void* GAllocator::Allocate(size_t Size, size_t Alignment)
 	// 통계 정보에 등록
 	TotalAllocationBytes += TotalRawSize;
 	++TotalAllocationCount;
-	//UE_LOG("새로운 메모리: {} Bytes (Requested {} Bytes)", TotalRawSize, Size);
-	//UE_LOG("메모리 상태: {} Bytes 할당 / {}개의 메모리 객체", TotalAllocationBytes, TotalAllocationCount);
 
 	// 최종 메모리 포인터 반환
 	return MemoryPtr;
@@ -75,7 +73,6 @@ void GAllocator::Free(void* Ptr)
 	// 통계 정보에 등록
 	TotalAllocationBytes -= Size;
 	--TotalAllocationCount;
-	//UE_LOG("삭제-현재 Allocation 상태: {} {}", TotalAllocationBytes, TotalAllocationCount);
 
 	// 최종 메모리 반환
 	std::free(RawPtr);

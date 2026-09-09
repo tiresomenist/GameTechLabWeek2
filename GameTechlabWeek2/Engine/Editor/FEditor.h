@@ -63,7 +63,7 @@ public:
 	void DeleteSelectedSceneComponent();
 
 	void RegisterGizmo(FClassType* Type);
-	void RegisterWindow(UEditorWindow* Window);
+	void RegisterWindow(FClassType* Type);
 	void RegisterGrid(FClassType* Type);
 
 	TArray<UGizmo*>& GetGizmos() { return Gizmos; }

@@ -55,6 +55,14 @@ void* UObject::operator new(size_t Size)
 	return GAllocator::Allocate(Size);
 }
 
+void* UObject::operator new(size_t Size, std::align_val_t Alignment)
+{
+	return GAllocator::Allocate(
+		Size,
+		static_cast<size_t>(Alignment)
+	);
+}
+
 void UObject::operator delete(void* Ptr)
 {
 	GAllocator::Free(Ptr);
