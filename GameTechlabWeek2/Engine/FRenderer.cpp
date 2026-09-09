@@ -31,7 +31,7 @@ void FRenderer::Create(HWND HWnd, GDevice* InDevice)
 	CreateShaders();
 	CreateConstantBuffer();
 	CreateAlphaBlendState();
-
+	CreateDepthStencilStates();
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -374,12 +374,13 @@ void FRenderer::Render(float DeltaTime, FEditor* Editor, UScene* Scene)
 		RenderPrimitive(Item);
 	}
 
-    // 2. Editor Window 렌더
+    // Render Windows
     for (auto Item : Editor->GetWindows())
     {
         Item->Render(DeltaTime);
     }
 
+	// Render Gizmo
 	TArray<FPrimitiveRenderData> GizmoRenderList = RenderUtil::GetGizmoList(Editor, Scene);
     for (auto Item : GizmoRenderList) 
 	{
@@ -392,7 +393,7 @@ void FRenderer::Render(float DeltaTime, FEditor* Editor, UScene* Scene)
 		RenderGizmo(Item);
     }
 
-	// Grid 랜더
+	// Render Grid
 	UpdateTransformConstantBuffer(ViewProjMatrix);
 	for (auto Item : Editor->GetGrids())
 	{
