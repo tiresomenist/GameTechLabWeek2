@@ -35,6 +35,7 @@ void UPropertyWindow::SetSelectedValue()
 void UPropertyWindow::DeleteSelected()
 {
 	Editor->DeleteSelectedSceneComponent();
+	SelectedComponent = nullptr;
 }
 
 void UPropertyWindow::Render(float DeltaTime)
@@ -90,6 +91,7 @@ void UPropertyWindow::Render(float DeltaTime)
 		ImGui::DragFloat("##rotationY", &Rotation.Z, 0.001f);
 		ImGui::SameLine();
 		ImGui::Text("Rotation");
+		//클램프해야함
 		float PrevScaleX = OScale.X;
 		if (ImGui::DragFloat("##scaleX", &OScale.X, 0.001f))
 		{

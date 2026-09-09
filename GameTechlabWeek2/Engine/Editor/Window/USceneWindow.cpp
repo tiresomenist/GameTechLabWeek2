@@ -121,6 +121,7 @@ void USceneWindow::Render(float DeltaTime)
 		}
 		ImGui::SameLine();
 		ImGui::PushItemWidth(200);
+		// 20번 최대제한 필요
 		ImGui::InputScalar("Number Of Spawn", ImGuiDataType_U32, &NumberOfSpawn);
 		ImGui::PopItemWidth();
 		ImGui::Separator();

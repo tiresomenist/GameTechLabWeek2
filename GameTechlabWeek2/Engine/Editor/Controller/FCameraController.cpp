@@ -40,7 +40,7 @@ void FCameraController::Tick(float DeltaTime)
         FQuaternion Rotation = Camera->GetRelativeRotation();
         for (int Step = 0; Step < Steps; ++Step)
         {
-            Rotation = (Rotation * Yaw).GetUprightCameraRotation();
+            Rotation = (Yaw * Rotation).GetUprightCameraRotation();
             Rotation = (Rotation * Pitch).GetUprightCameraRotation();
         }
         Camera->SetRelativeRotation(Rotation);

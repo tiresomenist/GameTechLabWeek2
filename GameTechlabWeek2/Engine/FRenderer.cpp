@@ -53,6 +53,8 @@ void FRenderer::Shutdown()
 	ImGui::DestroyContext();
 	////////////
 
+	//24번 해야함
+	// 
 	// 렌더 타겟을 초기화
 	DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
 }
@@ -123,9 +125,6 @@ void FRenderer::ReleaseShader()
 
 void FRenderer::PrepareRTVDSV()
 {
-
-	DeviceContext->ClearRenderTargetView(Device->GetFrameBufferRTV(), ClearColor);
-	DeviceContext->ClearDepthStencilView(Device->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	ID3D11RenderTargetView* RTV = Device->GetFrameBufferRTV();
 	ID3D11DepthStencilView* DSV = Device->GetDepthStencilView();
 
@@ -285,13 +284,14 @@ void FRenderer::Render(float DeltaTime, FEditor* Editor, UScene* Scene)
 
 	UCameraComponent* Camera = Editor->GetEditorCamera();
 
+	Camera->SetAspectRatio(Device->GetViewport().Width / Device->GetViewport().Height); // 리사이징된 카메라 화면에 맞게 종횡비를 맞춥니다.
+
 	FMatrix ViewProjMatrix = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
 	
 	TArray<FPrimitiveRenderData> RenderList = RenderUtil::GetRenderList(Editor, Scene);
 	static float Angle = 0.0f;
 	Angle += 0.03f;
 	FMatrix Rotation = FMatrix::MakeRotationZMatrix(Angle);
-	Camera->SetAspectRatio(Device->GetViewport().Width / Device->GetViewport().Height); // 리사이징된 카메라 화면에 맞게 종횡비를 맞춥니다.
 	for (auto& Item: RenderList)
 	{
 		FMatrix MVP = (*Item.WorldMatrix) * ViewProjMatrix;

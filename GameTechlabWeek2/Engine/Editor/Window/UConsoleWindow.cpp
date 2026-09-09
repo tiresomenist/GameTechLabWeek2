@@ -37,6 +37,7 @@ void UConsoleWindow::Option()
 void UConsoleWindow::Render(float DeltaTime)
 {
 	FConsole* console = GEngine::GetInstance()->GetConsole();
+	//그려지는것도 제한걸어야함
 	logs = console->Get("");
 
 	const ImGuiViewport* Viewport = ImGui::GetMainViewport();
