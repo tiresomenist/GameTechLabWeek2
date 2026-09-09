@@ -39,9 +39,10 @@ public:
 	ID3D11DeviceContext* DeviceContext;
 	ID3D11Device* D3DDevice;
 
-	ID3D11RasterizerState* DefaultRasterizerState = nullptr;   // 래스터라이저 상태(컬링, 채우기 모드 등 정의)
-	ID3D11RasterizerState* CullFrontRasterizerState = nullptr;   // 래스터라이저 상태(컬링, 채우기 모드 등 정의)
-	ID3D11RasterizerState* CullNoneRasterizerState = nullptr;   // 래스터라이저 상태(컬링, 채우기 모드 등 정의)
+	ID3D11RasterizerState* DefaultRasterizerState = nullptr;
+	ID3D11RasterizerState* CullFrontRasterizerState = nullptr;
+	ID3D11RasterizerState* CullNoneRasterizerState = nullptr;
+
 	ID3D11BlendState* AlphaBlendState = nullptr;
 
 	ID3D11Buffer* TransformConstantBuffer = nullptr;     
@@ -49,7 +50,7 @@ public:
 
 
 	FLOAT                   ClearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
-	D3D11_VIEWPORT          ViewportInfo;               // 렌더링 영역을 정의하는 뷰포트 정보
+	D3D11_VIEWPORT          ViewportInfo;
 
 	ID3D11VertexShader* SimpleVertexShader = nullptr;
 	ID3D11PixelShader* SimplePixelShader = nullptr;
@@ -59,24 +60,21 @@ public:
 	ID3D11VertexShader* GridVertexShader = nullptr;
 	ID3D11PixelShader* GridPixelShader = nullptr;
 	
-	unsigned int Stride;
+    void Create(HWND HWnd, GDevice* InDevice);
+    void Shutdown();
 
-    void Create(HWND HWnd, GDevice* InDevice);					// 렌더러 초기화 함수
-
-    void Shutdown();                                // 렌더러에 사용된 모든 리소스를 해제하는 함수
-
-    void CreateShaders();
-    void ReleaseShader();
+    bool CreateShaders();
+	bool CompileShader(const WCHAR* FilePath, const LPCSTR EntryPoint, const LPCSTR ShaderModel, ID3DBlob** OutBlob);
     void PrepareRTVDSV();
-    void PrepareShader();
+	void ReleaseShaders();
 
     ID3D11Buffer* CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidth);
     void ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer);
 
-	void CreateConstantBuffer();								// 상수 버퍼 생성 함수
-	void ReleaseConstantBuffer();								// 상수 버퍼 소멸 함수
-	void UpdateTransformConstantBuffer(const FMatrix& WorldMatrix);      // 상수 버퍼 업데이트 함수
+	void CreateConstantBuffer();
+	void UpdateTransformConstantBuffer(const FMatrix& WorldMatrix);
 	void UpdateGridConstantBuffer(const FGridConstants& GridConstants);
+	void ReleaseConstantBuffer();
 
 	void CreateRasterizerState();
 	void ReleaseRasterizerState();

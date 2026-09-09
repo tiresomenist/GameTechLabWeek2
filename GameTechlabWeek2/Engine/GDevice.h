@@ -23,17 +23,18 @@ public:
     void Release();
     void OnResize(uint32 Width, uint32 Height);
 
-    void CreateDeviceAndSwapChain(HWND hWindow, uint32 Width, uint32 Height);    // Direct3D 장치 및 스왑 체인을 생성하는 함수
-    void ReleaseDeviceAndSwapChain();               // Direct3D 장치 및 스왑 체인을 해제하는 함수
-    void CreateFrameBuffer();                       // 프레임 버퍼를 생성하는 함수
-    void ReleaseFrameBuffer();                      // 프레임 버퍼를 해제하는 함수
-    bool CreateDepthStencilBuffer(int32 InWidth, int32 InHeight); // 깊이 스텐실 버퍼를 생성하는 함수
-    void ReleaseDepthStencilBuffer();               // 깊이 스텐실 버퍼를 해제하는 함수
+    bool CreateDeviceAndSwapChain(HWND hWindow, uint32 Width, uint32 Height);
+    void ReleaseDeviceAndSwapChain();
+    bool CreateFrameBuffer();
+    void ReleaseFrameBuffer();
+    bool CreateDepthStencilBuffer(int32 InWidth, int32 InHeight); 
+    void ReleaseDepthStencilBuffer(); 
 
     ID3D11Buffer* CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidth);
-    ID3D11Buffer* CreateVertexBuffer(FVertexTest* vertices, UINT byteWidth);
+    //ID3D11Buffer* CreateVertexBuffer(FVertexTest* vertices, UINT byteWidth);
     void ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer);
     ID3D11Buffer* CreateIndexBuffer(uint32_t* indices, UINT byteWidth);
+    void ReleaseIndexBuffer(ID3D11Buffer* indexBuffer);
 
     void SwapBuffer();
 

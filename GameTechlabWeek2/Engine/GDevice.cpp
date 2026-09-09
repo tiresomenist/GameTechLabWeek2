@@ -1,4 +1,5 @@
 #include "GDevice.h"
+#include "Engine/Log.h"
 
 GDevice* GDevice::GetInstance()
 {
@@ -15,6 +16,9 @@ void GDevice::Initialize(HWND hWindow, uint32 InWidth, uint32 InHeight)
 
 void GDevice::Release()
 {
+    ReleaseDeviceAndSwapChain();
+    ReleaseFrameBuffer();
+    ReleaseDepthStencilBuffer();
 }
 
 void GDevice::OnResize(uint32 Width, uint32 Height)
@@ -84,7 +88,7 @@ void GDevice::OnResize(uint32 Width, uint32 Height)
     DeviceContext->RSSetViewports(1, &ViewportInfo);
 }
 
-void GDevice::CreateDeviceAndSwapChain(HWND hWindow, uint32 Width, uint32 Height)
+bool GDevice::CreateDeviceAndSwapChain(HWND hWindow, uint32 Width, uint32 Height)
 {
     // 지원하는 Direct3D 기능 레벨을 정의
     D3D_FEATURE_LEVEL featurelevels[] = { D3D_FEATURE_LEVEL_11_0 };
@@ -101,17 +105,28 @@ void GDevice::CreateDeviceAndSwapChain(HWND hWindow, uint32 Width, uint32 Height
     swapchaindesc.Windowed = TRUE;                                  // 창 모드
     swapchaindesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;       // 스왑 방식
 
-    // Direct3D 장치와 스왑 체인을 생성
-    D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
-        D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_DEBUG,
-        featurelevels, ARRAYSIZE(featurelevels), D3D11_SDK_VERSION,
-        &swapchaindesc, &SwapChain, &Device, nullptr, &DeviceContext);
+    UINT createDeviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+#if defined(_DEBUG) || defined(DEBUG)
+    createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
 
-    // 생성된 스왑 체인의 정보 가져오기
+    HRESULT hr = D3D11CreateDeviceAndSwapChain(
+        nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
+        createDeviceFlags,
+        featurelevels, ARRAYSIZE(featurelevels), D3D11_SDK_VERSION,
+        &swapchaindesc, &SwapChain, &Device, nullptr, &DeviceContext
+    );
+
+    if (FAILED(hr)) {
+        UE_LOG("[GDevice] Failed to create Direct3D 11 Device and SwapChain.");
+        return false;
+    }
+
     SwapChain->GetDesc(&swapchaindesc);
 
-    // 뷰포트 정보 설정
     ViewportInfo = { 0.0f, 0.0f, (float)swapchaindesc.BufferDesc.Width, (float)swapchaindesc.BufferDesc.Height, 0.0f, 1.0f };
+
+    return true;
 }
 
 
@@ -121,19 +136,16 @@ void GDevice::ReleaseDeviceAndSwapChain()
     {
         DeviceContext->Flush();
     }
-
     if (SwapChain)
     {
         SwapChain->Release();
         SwapChain = nullptr;
     }
-
     if (Device)
     {
         Device->Release();
         Device = nullptr;
     }
-
     if (DeviceContext)
     {
         DeviceContext->Release();
@@ -141,17 +153,31 @@ void GDevice::ReleaseDeviceAndSwapChain()
     }
 }
 
-void GDevice::CreateFrameBuffer()
+bool GDevice::CreateFrameBuffer()
 {
-    // 스왑 체인으로부터 백 버퍼 텍스처 가져오기
-    SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&FrameBuffer);
+    HRESULT hr = SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&FrameBuffer);
+    if (FAILED(hr))
+    {
+        UE_LOG("[GDevice] Failed to get back buffer from SwapChain. HRESULT: {}\n", hr);
+        return false;
+    }
 
-    // 렌더 타겟 뷰 생성
     D3D11_RENDER_TARGET_VIEW_DESC framebufferRTVdesc = {};
     framebufferRTVdesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;        // 색상 포맷
     framebufferRTVdesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;   // 2D 텍스처
+    hr = Device->CreateRenderTargetView(FrameBuffer, &framebufferRTVdesc, &FrameBufferRTV);
+    if (FAILED(hr))
+    {
+        UE_LOG("[GDevice] Failed to create Render Target View. HRESULT: {}\n", hr);
 
-    Device->CreateRenderTargetView(FrameBuffer, &framebufferRTVdesc, &FrameBufferRTV);
+        if (FrameBuffer)
+        {
+            FrameBuffer->Release();
+            FrameBuffer = nullptr;
+        }
+        return false;
+    }
+    return true;
 }
 
 void GDevice::ReleaseFrameBuffer()
@@ -161,7 +187,6 @@ void GDevice::ReleaseFrameBuffer()
         FrameBuffer->Release();
         FrameBuffer = nullptr;
     }
-
     if (FrameBufferRTV)
     {
         FrameBufferRTV->Release();
@@ -186,7 +211,6 @@ bool GDevice::CreateDepthStencilBuffer(int32 InWidth, int32 inHeight)
     DepthStencilDesc.CPUAccessFlags = 0;
     DepthStencilDesc.MiscFlags = 0;
 
-    // 텍스처 리소스 생성
     hr = Device->CreateTexture2D(&DepthStencilDesc, nullptr, &DepthStencilBuffer);
     if (FAILED(hr))
     {
@@ -198,7 +222,6 @@ bool GDevice::CreateDepthStencilBuffer(int32 InWidth, int32 inHeight)
     DSVDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
     DSVDesc.Texture2D.MipSlice = 0;
 
-    // 깊이/스텐실 뷰 생성
     hr = Device->CreateDepthStencilView(DepthStencilBuffer, &DSVDesc, &DepthStencilView);
     if (FAILED(hr))
     {
@@ -231,28 +254,17 @@ ID3D11Buffer* GDevice::CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidt
 
     D3D11_SUBRESOURCE_DATA vertexbufferSRD = { vertices };
 
-    ID3D11Buffer* vertexBuffer;
+    ID3D11Buffer* vertexBuffer = nullptr;
 
-    Device->CreateBuffer(&vertexbufferdesc, &vertexbufferSRD, &vertexBuffer);
+    HRESULT hr = Device->CreateBuffer(&vertexbufferdesc, &vertexbufferSRD, &vertexBuffer);
 
+    if (FAILED(hr))
+    {
+        UE_LOG("[GDevice] Failed to create Vertex Buffer. HRESULT: {}\n", hr);
+        return nullptr;
+    }
     return vertexBuffer;
 };
-
-ID3D11Buffer* GDevice::CreateVertexBuffer(FVertexTest* vertices, UINT byteWidth)
-{
-    D3D11_BUFFER_DESC vertexbufferdesc = {};
-    vertexbufferdesc.ByteWidth = byteWidth;
-    vertexbufferdesc.Usage = D3D11_USAGE_IMMUTABLE; // will never be updated
-    vertexbufferdesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-
-    D3D11_SUBRESOURCE_DATA vertexbufferSRD = { vertices };
-
-    ID3D11Buffer* vertexBuffer;
-
-    Device->CreateBuffer(&vertexbufferdesc, &vertexbufferSRD, &vertexBuffer);
-
-    return vertexBuffer;
-}
 
 void GDevice::ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer)
 {
@@ -269,7 +281,7 @@ ID3D11Buffer* GDevice::CreateIndexBuffer(uint32_t* indices, UINT byteWidth)
     D3D11_BUFFER_DESC bd = {};
     bd.Usage = D3D11_USAGE_DEFAULT;
     bd.ByteWidth = byteWidth;
-    bd.BindFlags = D3D11_BIND_INDEX_BUFFER;  // 인덱스 버퍼로 사용
+    bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
     bd.CPUAccessFlags = 0;
 
     D3D11_SUBRESOURCE_DATA initData = {};
@@ -278,14 +290,22 @@ ID3D11Buffer* GDevice::CreateIndexBuffer(uint32_t* indices, UINT byteWidth)
     HRESULT hr = Device->CreateBuffer(&bd, &initData, &indexBuffer);
     if (FAILED(hr))
     {
+        UE_LOG("[GDevice] Failed to create Index Buffer. HRESULT: {}\n", hr);
         return nullptr;
     }
 
     return indexBuffer;
 }
 
+void GDevice::ReleaseIndexBuffer(ID3D11Buffer* indexBuffer)
+{
+    if (indexBuffer)
+    {
+        indexBuffer->Release();
+    }
+}
 
 void GDevice::SwapBuffer()
 {
-    SwapChain->Present(1, 0); // 1: VSync 활성화
+    SwapChain->Present(1, 0);
 }

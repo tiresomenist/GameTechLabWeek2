@@ -12,12 +12,14 @@
 #include "Engine/Core.h"
 #include "Engine/Object/UCameraComponent.h"
 #include "Engine/Primitive/FMeshResource.h"
+#include "Engine/Log.h"
 
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_impl_dx11.h"
 #include "ImGui/imgui_impl_win32.h"
 
 #include <format>
+#include <filesystem>
 
 void FRenderer::Create(HWND HWnd, GDevice* InDevice)
 {
@@ -44,8 +46,11 @@ void FRenderer::Create(HWND HWnd, GDevice* InDevice)
 void FRenderer::Shutdown()
 {
 	ReleaseConstantBuffer();
-	ReleaseShader();
+	ReleaseShaders();
 	ReleaseRasterizerState();
+	//ReleaseVertexBuffer();
+	ReleaseAlphaBlendState();
+
 
 	//TESTCODE//
 	ImGui_ImplDX11_Shutdown();
@@ -53,107 +58,126 @@ void FRenderer::Shutdown()
 	ImGui::DestroyContext();
 	////////////
 
-	// 렌더 타겟을 초기화
+	// 렌더 타겟 초기화
 	DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
-void FRenderer::CreateShaders()
+bool FRenderer::CreateShaders()
 {
-	ID3DBlob* vertexshaderCSO;
-	ID3DBlob* pixelshaderCSO;
+	ID3DBlob* shaderBlob = nullptr;
 
-	D3DCompileFromFile(L"GameTechlabWeek2/ShaderW0.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &vertexshaderCSO, nullptr);
-
-	D3DDevice->CreateVertexShader(vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(), nullptr, &SimpleVertexShader);
-
-	D3DCompileFromFile(L"GameTechlabWeek2/ShaderW0.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &pixelshaderCSO, nullptr);
-
-	D3DDevice->CreatePixelShader(pixelshaderCSO->GetBufferPointer(), pixelshaderCSO->GetBufferSize(), nullptr, &SimplePixelShader);
-
-	D3DCompileFromFile(L"GameTechlabWeek2/ShaderW0.hlsl", nullptr, nullptr, "VS_Highlight", "vs_5_0", 0, 0, &vertexshaderCSO, nullptr);
-
-	D3DDevice->CreateVertexShader(vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(), nullptr, &HighlightVertexShader);
-
-	D3DCompileFromFile(L"GameTechlabWeek2/ShaderW0.hlsl", nullptr, nullptr, "PS_Highlight", "ps_5_0", 0, 0, &pixelshaderCSO, nullptr);
-
-	D3DDevice->CreatePixelShader(pixelshaderCSO->GetBufferPointer(), pixelshaderCSO->GetBufferSize(), nullptr, &HighlightPixelShader);
-	
-	D3DCompileFromFile(L"GameTechlabWeek2/GridShader.hlsl", nullptr, nullptr, "VS_Grid", "vs_5_0", 0, 0, &vertexshaderCSO, nullptr);
-
-	D3DDevice->CreateVertexShader(vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(), nullptr, &GridVertexShader);
-
-	D3DCompileFromFile(L"GameTechlabWeek2/GridShader.hlsl", nullptr, nullptr, "PS_Grid", "ps_5_0", 0, 0, &pixelshaderCSO, nullptr);
-
-	D3DDevice->CreatePixelShader(pixelshaderCSO->GetBufferPointer(), pixelshaderCSO->GetBufferSize(), nullptr, &GridPixelShader);
+	// Simple Shader (VS & PS)
+	if (!CompileShader(L"GameTechlabWeek2/ShaderW0.hlsl", "mainVS", "vs_5_0", &shaderBlob)) return false;
+	D3DDevice->CreateVertexShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &SimpleVertexShader);
 
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
+	D3DDevice->CreateInputLayout(layout, ARRAYSIZE(layout), shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &SimpleInputLayout);
+	shaderBlob->Release();
 
-	D3DDevice->CreateInputLayout(layout, ARRAYSIZE(layout), vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(), &SimpleInputLayout);
+	if (!CompileShader(L"GameTechlabWeek2/ShaderW0.hlsl", "mainPS", "ps_5_0", &shaderBlob)) return false;
+	D3DDevice->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &SimplePixelShader);
+	shaderBlob->Release();
 
-	Stride = sizeof(FVertexSimple);
+	// Highlight Shader (VS & PS)
+	if (!CompileShader(L"GameTechlabWeek2/ShaderW0.hlsl", "VS_Highlight", "vs_5_0", &shaderBlob)) return false;
+	D3DDevice->CreateVertexShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &HighlightVertexShader);
+	shaderBlob->Release();
 
-	vertexshaderCSO->Release();
-	pixelshaderCSO->Release();
+	if (!CompileShader(L"GameTechlabWeek2/ShaderW0.hlsl", "PS_Highlight", "ps_5_0", &shaderBlob)) return false;
+	D3DDevice->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &HighlightPixelShader);
+	shaderBlob->Release();
+
+	// Grid Shader (VS & PS)
+	if (!CompileShader(L"GameTechlabWeek2/GridShader.hlsl", "VS_Grid", "vs_5_0", &shaderBlob)) return false;
+	D3DDevice->CreateVertexShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &GridVertexShader);
+	shaderBlob->Release();
+
+	if (!CompileShader(L"GameTechlabWeek2/GridShader.hlsl", "PS_Grid", "ps_5_0", &shaderBlob)) return false;
+	D3DDevice->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &GridPixelShader);
+	shaderBlob->Release();
+
+	return true;
+}
+bool FRenderer::CompileShader(const WCHAR* FilePath, const LPCSTR EntryPoint, const LPCSTR ShaderModel, ID3DBlob** OutBlob)
+{
+	ID3DBlob* errorBlob = nullptr;
+
+	HRESULT hr = D3DCompileFromFile(FilePath, nullptr, nullptr, EntryPoint, ShaderModel, 0, 0, OutBlob, &errorBlob);
+
+	if (FAILED(hr))
+	{
+		if (errorBlob)
+		{
+			UE_LOG("[FRenderer] Shader Compile Error in {} ({}): {}\n", std::filesystem::path(FilePath).string(), EntryPoint, (char*)errorBlob->GetBufferPointer());
+			errorBlob->Release();
+		}
+		else
+		{
+			UE_LOG("[FRenderer] Shader file not found: {}\n", std::filesystem::path(FilePath).string());
+		}
+		return false;
+	}
+
+	return true;
 }
 
-void FRenderer::ReleaseShader()
+void FRenderer::ReleaseShaders()
 {
 	if (SimpleInputLayout)
 	{
 		SimpleInputLayout->Release();
 		SimpleInputLayout = nullptr;
 	}
-
 	if (SimplePixelShader)
 	{
 		SimplePixelShader->Release();
 		SimplePixelShader = nullptr;
 	}
-
 	if (SimpleVertexShader)
 	{
 		SimpleVertexShader->Release();
 		SimpleVertexShader = nullptr;
 	}
+	if (HighlightVertexShader)
+	{
+		HighlightVertexShader->Release();
+		HighlightVertexShader = nullptr;
+	}
+	if (HighlightPixelShader)
+	{
+		HighlightPixelShader->Release();
+		HighlightPixelShader = nullptr;
+	}	
+	if (GridVertexShader)
+	{
+		GridVertexShader->Release();
+		GridVertexShader = nullptr;
+	}
+	if (GridPixelShader)
+	{
+		GridPixelShader->Release();
+		GridPixelShader = nullptr;
+	}
 }
 
 void FRenderer::PrepareRTVDSV()
 {
-
-	DeviceContext->ClearRenderTargetView(Device->GetFrameBufferRTV(), ClearColor);
-	DeviceContext->ClearDepthStencilView(Device->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	ID3D11RenderTargetView* RTV = Device->GetFrameBufferRTV();
-	ID3D11DepthStencilView* DSV = Device->GetDepthStencilView();
-
-	DeviceContext->ClearRenderTargetView(RTV, ClearColor);
-	DeviceContext->ClearDepthStencilView(DSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
 	ViewportInfo = Device->GetViewport(); // 리사이징 된 현재 뷰포트 복사
 	DeviceContext->RSSetViewports(1, &ViewportInfo);
+
 	DeviceContext->RSSetState(DefaultRasterizerState);
 
+	ID3D11RenderTargetView* RTV = Device->GetFrameBufferRTV();
+	ID3D11DepthStencilView* DSV = Device->GetDepthStencilView();
+	DeviceContext->ClearRenderTargetView(RTV, ClearColor);
+	DeviceContext->ClearDepthStencilView(DSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	DeviceContext->OMSetRenderTargets(1, &RTV, DSV);
+
 	DeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
-}
-
-void FRenderer::PrepareShader()
-{
-	DeviceContext->VSSetShader(SimpleVertexShader, nullptr, 0);
-	DeviceContext->PSSetShader(SimplePixelShader, nullptr, 0);
-	DeviceContext->IASetInputLayout(SimpleInputLayout);
-
-	// 상수 버퍼 사용시 호출
-	// 버텍스 쉐이더에 상수 버퍼를 설정합니다.
-	if (TransformConstantBuffer)
-	{
-		DeviceContext->VSSetConstantBuffers(0, 1, &TransformConstantBuffer);
-	}
 }
 
 ID3D11Buffer* FRenderer::CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidth)
@@ -183,16 +207,16 @@ void FRenderer::ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer)
 void FRenderer::CreateConstantBuffer()
 {
 	D3D11_BUFFER_DESC constantbufferdesc = {};
-	constantbufferdesc.ByteWidth = sizeof(FConstants) + 0xf & 0xfffffff0; // ensure constant buffer size is multiple of 16 bytes
-	constantbufferdesc.Usage = D3D11_USAGE_DYNAMIC; // will be updated from CPU every frame
+	constantbufferdesc.ByteWidth = sizeof(FConstants) + 0xf & 0xfffffff0;
+	constantbufferdesc.Usage = D3D11_USAGE_DYNAMIC;
 	constantbufferdesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	constantbufferdesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
 	D3DDevice->CreateBuffer(&constantbufferdesc, nullptr, &TransformConstantBuffer);
 
 	D3D11_BUFFER_DESC gridconstantbufferdesc = {};
-	gridconstantbufferdesc.ByteWidth = sizeof(FConstants) + 0xf & 0xfffffff0; // ensure constant buffer size is multiple of 16 bytes
-	gridconstantbufferdesc.Usage = D3D11_USAGE_DYNAMIC; // will be updated from CPU every frame
+	gridconstantbufferdesc.ByteWidth = sizeof(FConstants) + 0xf & 0xfffffff0;
+	gridconstantbufferdesc.Usage = D3D11_USAGE_DYNAMIC; 
 	gridconstantbufferdesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	gridconstantbufferdesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
@@ -206,23 +230,28 @@ void FRenderer::ReleaseConstantBuffer()
 		TransformConstantBuffer->Release();
 		TransformConstantBuffer = nullptr;
 	}
+	if (GridConstantBuffer)
+	{
+		GridConstantBuffer->Release();
+		GridConstantBuffer = nullptr;
+	}
 }
 
 void FRenderer::CreateRasterizerState()
 {
 	D3D11_RASTERIZER_DESC rasterizerdesc = {};
-	rasterizerdesc.FillMode = D3D11_FILL_SOLID; // 채우기 모드
+	rasterizerdesc.FillMode = D3D11_FILL_SOLID;
 	rasterizerdesc.CullMode = D3D11_CULL_BACK;  // 백 페이스 컬링
 	D3DDevice->CreateRasterizerState(&rasterizerdesc, &DefaultRasterizerState);
 
 	D3D11_RASTERIZER_DESC rasterizerdescHighlight = {};
-	rasterizerdescHighlight.FillMode = D3D11_FILL_SOLID; // 채우기 모드
+	rasterizerdescHighlight.FillMode = D3D11_FILL_SOLID;
 	rasterizerdescHighlight.CullMode = D3D11_CULL_FRONT;  // 프론트 페이스 컬링
 	D3DDevice->CreateRasterizerState(&rasterizerdescHighlight, &CullFrontRasterizerState);
 
 	D3D11_RASTERIZER_DESC rasterizerdescGrid = {};
-	rasterizerdescGrid.FillMode = D3D11_FILL_SOLID; // 채우기 모드
-	rasterizerdescGrid.CullMode = D3D11_CULL_NONE;  // 프론트 페이스 컬링
+	rasterizerdescGrid.FillMode = D3D11_FILL_SOLID;
+	rasterizerdescGrid.CullMode = D3D11_CULL_NONE;
 	D3DDevice->CreateRasterizerState(&rasterizerdescGrid, &CullNoneRasterizerState);
 }
 
@@ -233,6 +262,16 @@ void FRenderer::ReleaseRasterizerState()
 		DefaultRasterizerState->Release();
 		DefaultRasterizerState = nullptr;
 	}
+	if (CullFrontRasterizerState)
+	{
+		CullFrontRasterizerState->Release();
+		CullFrontRasterizerState = nullptr;
+	}
+	if (CullNoneRasterizerState)
+	{
+		CullNoneRasterizerState->Release();
+		CullNoneRasterizerState = nullptr;
+	}
 }
 
 void FRenderer::CreateAlphaBlendState()
@@ -241,26 +280,29 @@ void FRenderer::CreateAlphaBlendState()
 	blendDesc.AlphaToCoverageEnable = FALSE;
 	blendDesc.IndependentBlendEnable = FALSE;
 
-	// 0번째 렌더 타겟(우리의 메인 화면)에 대한 블렌딩 설정
+	// 0번째 렌더 타겟(메인 화면)
 	blendDesc.RenderTarget[0].BlendEnable = TRUE;
 	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;       // 새로 그릴 픽셀의 알파값 비중
 	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;  // 이미 그려진 픽셀의 비중 (1 - SrcAlpha)
 	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;           // 두 색상을 더함
 
-	// 알파 채널 자체를 섞는 공식 (보통 아래와 같이 고정)
+	// 알파 채널 자체를 섞는다
 	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
 	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
 	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
-	// Device를 이용해 객체 생성
 	D3DDevice->CreateBlendState(&blendDesc, &AlphaBlendState);
 }
 
 void FRenderer::ReleaseAlphaBlendState()
 {
-
+	if (AlphaBlendState)
+	{
+		AlphaBlendState->Release();
+		AlphaBlendState = nullptr;
+	}
 }
 
 void FRenderer::BeginFrame()
@@ -269,14 +311,17 @@ void FRenderer::BeginFrame()
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
     PrepareRTVDSV();
-    PrepareShader();
 }
 
 void FRenderer::EndFrame()
 {
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
 	GDevice::GetInstance()->SwapBuffer();
+
+	ID3D11RenderTargetView* nullRTV = nullptr;
+	DeviceContext->OMSetRenderTargets(1, &nullRTV, nullptr);
 }
 
 void FRenderer::Render(float DeltaTime, FEditor* Editor, UScene* Scene)
@@ -284,13 +329,8 @@ void FRenderer::Render(float DeltaTime, FEditor* Editor, UScene* Scene)
 	BeginFrame();
 
 	UCameraComponent* Camera = Editor->GetEditorCamera();
-
 	FMatrix ViewProjMatrix = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
-	
 	TArray<FPrimitiveRenderData> RenderList = RenderUtil::GetRenderList(Editor, Scene);
-	static float Angle = 0.0f;
-	Angle += 0.03f;
-	FMatrix Rotation = FMatrix::MakeRotationZMatrix(Angle);
 	Camera->SetAspectRatio(Device->GetViewport().Width / Device->GetViewport().Height); // 리사이징된 카메라 화면에 맞게 종횡비를 맞춥니다.
 	for (auto& Item: RenderList)
 	{
@@ -348,104 +388,117 @@ void FRenderer::Render(float DeltaTime, FEditor* Editor, UScene* Scene)
 	UpdateTransformConstantBuffer(ViewProjMatrix);
 	EndFrame();
 }
-////////////////
 
 void FRenderer::UpdateTransformConstantBuffer(const FMatrix& MVP)
 {
-	if (TransformConstantBuffer)
+	if (!TransformConstantBuffer)
 	{
-		D3D11_MAPPED_SUBRESOURCE constantbufferMSR;
+		return;
+	}
+	D3D11_MAPPED_SUBRESOURCE constantbufferMSR;
 
-		DeviceContext->Map(TransformConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR);
+	HRESULT hr = DeviceContext->Map(TransformConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR);
+	FConstants* constants = (FConstants*)constantbufferMSR.pData;
+	if (SUCCEEDED(hr))
+	{
 		FConstants* constants = (FConstants*)constantbufferMSR.pData;
-
-		constants->MVP = MVP;
+		if (constants)
+		{
+			constants->MVP = MVP;
+		}
 		DeviceContext->Unmap(TransformConstantBuffer, 0);
+	}
+	else
+	{
+		UE_LOG("[FRenderer] Failed to Map TransformConstantBuffer. HRESULT: {}\n", hr);
 	}
 }
 
 void FRenderer::UpdateGridConstantBuffer(const FGridConstants& GridConstants)
 {
-	if (GridConstantBuffer)
+	if (!GridConstantBuffer)
 	{
-		D3D11_MAPPED_SUBRESOURCE constantbufferMSR;
+		return;
+	}
+	
+	D3D11_MAPPED_SUBRESOURCE constantbufferMSR;
 
-		DeviceContext->Map(GridConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR);
-
+	HRESULT hr = DeviceContext->Map(GridConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR);
+	FGridConstants* constants = (FGridConstants*)constantbufferMSR.pData;
+	if (SUCCEEDED(hr))
+	{
 		FGridConstants* constants = (FGridConstants*)constantbufferMSR.pData;
-
-		constants->CameraPos = GridConstants.CameraPos;
-		constants->GridPlaneType = GridConstants.GridPlaneType;
-
+		if (constants)
+		{
+			constants->CameraPos = GridConstants.CameraPos;
+			constants->GridPlaneType = GridConstants.GridPlaneType;
+		}
 		DeviceContext->Unmap(GridConstantBuffer, 0);
+	}
+	else
+	{
+		UE_LOG("[FRenderer] Failed to Map GridConstantBuffer. HRESULT: {}\n", hr);
 	}
 }
 
 void FRenderer::RenderPrimitive(const FPrimitiveRenderData& Data)
 {
-	DeviceContext->VSSetConstantBuffers(0, 1, &TransformConstantBuffer);
-
-	// 지오메트리 바인딩
 	UINT Offset = 0;
+	DeviceContext->IASetInputLayout(SimpleInputLayout);
 	DeviceContext->IASetVertexBuffers(0, 1, &Data.VertexBuffer, &Data.Stride, &Offset);
 	DeviceContext->IASetIndexBuffer(Data.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	DeviceContext->IASetPrimitiveTopology(Data.Topology);
 
-	// 머티리얼(셰이더/텍스처) 바인딩
-	//BindMaterial(Data.Material);
 	DeviceContext->VSSetShader(SimpleVertexShader, nullptr, 0);
-	DeviceContext->PSSetShader(SimplePixelShader, nullptr, 0);
+	DeviceContext->VSSetConstantBuffers(0, 1, &TransformConstantBuffer);
 
 	DeviceContext->RSSetState(DefaultRasterizerState);
 
-	// Draw
+	DeviceContext->PSSetShader(SimplePixelShader, nullptr, 0);
+
+	// BindMaterial(Data.Material); 
+
 	DeviceContext->DrawIndexed(Data.IndexCount, 0, 0);
 }
 
 void FRenderer::RenderHighlight(const FPrimitiveRenderData& Data)
 {
-	DeviceContext->VSSetConstantBuffers(0, 1, &TransformConstantBuffer);
-
 	UINT Offset = 0;
+	DeviceContext->IASetInputLayout(SimpleInputLayout);
 	DeviceContext->IASetVertexBuffers(0, 1, &Data.VertexBuffer, &Data.Stride, &Offset);
 	DeviceContext->IASetIndexBuffer(Data.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	DeviceContext->IASetPrimitiveTopology(Data.Topology);
 
 	DeviceContext->VSSetShader(HighlightVertexShader, nullptr, 0);
-	DeviceContext->PSSetShader(HighlightPixelShader, nullptr, 0);
+	DeviceContext->VSSetConstantBuffers(0, 1, &TransformConstantBuffer);
 
 	DeviceContext->RSSetState(CullFrontRasterizerState);
+
+	DeviceContext->PSSetShader(HighlightPixelShader, nullptr, 0);
 
 	DeviceContext->DrawIndexed(Data.IndexCount, 0, 0);
 }
 
 void FRenderer::RenderGrid(FMeshResource* Data)
 {
+	UINT Offset = 0;
+	DeviceContext->IASetInputLayout(SimpleInputLayout);
+	DeviceContext->IASetVertexBuffers(0, 1, &Data->VertexBuffer, &Data->Stride, &Offset);
+	DeviceContext->IASetIndexBuffer(Data->IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	DeviceContext->VSSetShader(GridVertexShader, nullptr, 0);
 	DeviceContext->VSSetConstantBuffers(0, 1, &TransformConstantBuffer);
 	DeviceContext->VSSetConstantBuffers(1, 1, &GridConstantBuffer);
+
+	DeviceContext->RSSetState(CullNoneRasterizerState);
+
+	DeviceContext->PSSetShader(GridPixelShader, nullptr, 0);
 	DeviceContext->PSSetConstantBuffers(1, 1, &GridConstantBuffer);
 
-	// 알파 블렌딩 켜기
 	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	UINT sampleMask = 0xffffffff;
 	DeviceContext->OMSetBlendState(AlphaBlendState, blendFactor, sampleMask);
 
-	// 지오메트리 바인딩
-	UINT Offset = 0;
-	DeviceContext->IASetVertexBuffers(0, 1, &Data->VertexBuffer, &Data->Stride, &Offset);
-	DeviceContext->IASetIndexBuffer(Data->IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); // @HARD
-
-	// 그리드 전용 셰이더 바인딩
-	DeviceContext->VSSetShader(GridVertexShader, nullptr, 0);
-	DeviceContext->PSSetShader(GridPixelShader, nullptr, 0);
-
-	// 뒷면을 안 그리는 기본 래스터라이저 상태 적용 (판때기니까 양면 다 그리려면 CullNone을 써도 됨)
-	DeviceContext->RSSetState(CullNoneRasterizerState);
-
-	// Draw 명령
 	DeviceContext->DrawIndexed(Data->IndexCount, 0, 0);
-
-	// 알파 블렌딩 끄기 (원상복구)
-	DeviceContext->OMSetBlendState(nullptr, blendFactor, sampleMask);
 }
