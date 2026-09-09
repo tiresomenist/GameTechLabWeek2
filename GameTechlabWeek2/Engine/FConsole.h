@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Container/TArray.h"
+#include "Container/TDeque.h"
 #include "Container/FString.h"
 
 #include "Core.h"
@@ -8,13 +8,11 @@
 class FConsole
 {
 private:
-	TArray<FString> MessageList;
+	TDeque<FString> MessageList;
 	int32 MaxMessages = 100;
-	FString Filter;
-	//FConsole Console;
-	TArray<FString> logs;
+
 public:
-	const TArray<FString> Get(FString Filter) const;
+	const TDeque<FString>& Get() const;
 
 	void Initialize();
 

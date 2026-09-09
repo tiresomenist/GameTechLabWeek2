@@ -2,6 +2,10 @@
 #include "Engine/Object/USceneComponent.h"
 #include "Engine/GResourceManager.h"
 
+#include "Engine/GDevice.h"
+#include "Engine/Object/UCameraComponent.h"
+#include <cmath>
+
 //UObjectAxisGizmo::UObjectAxisGizmo()
 
 void UObjectAxisGizmo::Initialize()
@@ -19,27 +23,72 @@ bool UObjectAxisGizmo::UpdateTransform() {
 	if (Editor == nullptr || Handles.Num() != 3) return false;
 
 	auto* SelectedObject = Editor->GetSelectedSceneComponent();
-	if (SelectedObject == nullptr) return false;
+	auto* Camera = Editor->GetEditorCamera();
 
-	const FMatrix& ObjectWorld = SelectedObject->GetWorldMatrix();
+	if (!SelectedObject || !Camera)	return false;
 
-	const FVector WorldLocation(ObjectWorld.M[3][0],ObjectWorld.M[3][1],ObjectWorld.M[3][2]);
+	const auto& Viewport = GDevice::GetInstance()->GetViewport();
 
-	const FMatrix ScaleMatrix =	FMatrix::MakeScaleMatrix(GizmoScale);
+	if (!std::isfinite(Viewport.Width) ||!std::isfinite(Viewport.Height) ||	Viewport.Width <= 0.0f ||Viewport.Height <= 0.0f)
+	{
+		return false;
+	}
+
+	const FVector WorldLocation =SelectedObject->GetWorldMatrix().GetOrigin();
+
+	const FVector4 ViewPosition = FVector4(WorldLocation, 1.0f) * Camera->GetViewMatrix();
+
+	const float ViewDepth = ViewPosition.X;
+
+	if (!std::isfinite(ViewDepth) ||ViewDepth <= Camera->GetNearZ() ||ViewDepth >= Camera->GetFarZ())
+	{
+		return false;
+	}
+
+	float VisibleWorldHeight;
+
+	if (Camera->GetIsPerspective())
+	{
+		const float FOV = Camera->GetFOV();
+
+		if (!std::isfinite(FOV) || FOV <= 0.0f || FOV >= PI) return false;
+
+		VisibleWorldHeight = 2.0f * ViewDepth * std::tan(FOV * 0.5f);
+	}
+	else
+	{
+		VisibleWorldHeight = Camera->GetOrthoHeight();
+	}
+
+	if (!std::isfinite(VisibleWorldHeight) ||VisibleWorldHeight <= 0.0f)
+	{
+		return false;
+	}
+
+	const float TargetPixels = Viewport.Height * GizmoScreenHeightRatio;
+
+	const float WorldUnitsPerPixel = VisibleWorldHeight / Viewport.Height;
+
+	if (HandleBaseLengths.Num() != 3) return false;
+	TArray<FMatrix> ScaleMatrices;
+	for (const float BaseLength : HandleBaseLengths)
+	{
+		if (!std::isfinite(BaseLength) || BaseLength <= 0.0f) return false;
+		const float DisplayScale = WorldUnitsPerPixel * TargetPixels / BaseLength;
+		if (!std::isfinite(DisplayScale) || DisplayScale <= 0.0f) return false;
+		ScaleMatrices.Add(FMatrix::MakeScaleMatrix(GizmoScale * DisplayScale));
+	}
 	
 	const FMatrix TranslationMatrix = FMatrix::MakeTranslationMatrix(WorldLocation);
 
-	FMatrix RotationMatirx;
+	FMatrix RotationMatirx = FMatrix::Identity;
 	if (Mode == EGizmoMode::Scale) {
 		RotationMatirx = SelectedObject->GetRelativeRotation().ToRotationMatrix();
 	}
-	else {
-		RotationMatirx = FMatrix::Identity;
-	}
 
-	Handles[0].WorldMatrix = ScaleMatrix * FMatrix::MakeRotationYMatrix(PI / 2) * RotationMatirx * TranslationMatrix;
-	Handles[1].WorldMatrix = ScaleMatrix * FMatrix::MakeRotationXMatrix(-PI / 2) * RotationMatirx * TranslationMatrix;
-	Handles[2].WorldMatrix = ScaleMatrix * RotationMatirx * TranslationMatrix;
+	Handles[0].WorldMatrix = ScaleMatrices[0] * FMatrix::MakeRotationYMatrix(PI / 2) * RotationMatirx * TranslationMatrix;
+	Handles[1].WorldMatrix = ScaleMatrices[1] * FMatrix::MakeRotationXMatrix(-PI / 2) * RotationMatirx * TranslationMatrix;
+	Handles[2].WorldMatrix = ScaleMatrices[2] * RotationMatirx * TranslationMatrix;
 
 	return true;
 }
@@ -77,7 +126,7 @@ TArray<FPrimitiveRenderData> UObjectAxisGizmo::GetTranslateRenderData()
 		Data.IndexBuffer = Mesh->IndexBuffer;
 		Data.Stride = Mesh->Stride;
 		Data.IndexCount = Mesh->IndexCount;
-		Data.Topology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
+		Data.Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 		// UObjectAxisGizmo의 멤버 행렬
 		Data.WorldMatrix = &Handles[0].WorldMatrix;
 		Data.isSelected = false;
@@ -92,7 +141,7 @@ TArray<FPrimitiveRenderData> UObjectAxisGizmo::GetTranslateRenderData()
 		Data.IndexBuffer = Mesh->IndexBuffer;
 		Data.Stride = Mesh->Stride;
 		Data.IndexCount = Mesh->IndexCount;
-		Data.Topology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
+		Data.Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 		// UObjectAxisGizmo의 멤버 행렬
 		Data.WorldMatrix = &Handles[1].WorldMatrix;
 		Data.isSelected = false;
@@ -107,7 +156,7 @@ TArray<FPrimitiveRenderData> UObjectAxisGizmo::GetTranslateRenderData()
 		Data.IndexBuffer = Mesh->IndexBuffer;
 		Data.Stride = Mesh->Stride;
 		Data.IndexCount = Mesh->IndexCount;
-		Data.Topology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
+		Data.Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 		// UObjectAxisGizmo의 멤버 행렬
 		Data.WorldMatrix = &Handles[2].WorldMatrix;
@@ -193,7 +242,7 @@ TArray<FPrimitiveRenderData> UObjectAxisGizmo::GetScaleRenderData()
 		Data.IndexBuffer = Mesh->IndexBuffer;
 		Data.Stride = Mesh->Stride;
 		Data.IndexCount = Mesh->IndexCount;
-		Data.Topology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
+		Data.Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 		// UObjectAxisGizmo의 멤버 행렬
 		Data.WorldMatrix = &Handles[0].WorldMatrix;
 		Data.isSelected = false;
@@ -208,7 +257,7 @@ TArray<FPrimitiveRenderData> UObjectAxisGizmo::GetScaleRenderData()
 		Data.IndexBuffer = Mesh->IndexBuffer;
 		Data.Stride = Mesh->Stride;
 		Data.IndexCount = Mesh->IndexCount;
-		Data.Topology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
+		Data.Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 		// UObjectAxisGizmo의 멤버 행렬
 		Data.WorldMatrix = &Handles[1].WorldMatrix;
 		Data.isSelected = false;
@@ -223,7 +272,7 @@ TArray<FPrimitiveRenderData> UObjectAxisGizmo::GetScaleRenderData()
 		Data.IndexBuffer = Mesh->IndexBuffer;
 		Data.Stride = Mesh->Stride;
 		Data.IndexCount = Mesh->IndexCount;
-		Data.Topology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
+		Data.Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 		// UObjectAxisGizmo의 멤버 행렬
 		Data.WorldMatrix = &Handles[2].WorldMatrix;
@@ -256,11 +305,35 @@ void UObjectAxisGizmo::SetMode(EGizmoMode InMode)
 	TArray<FString> Names;
 	switch (Mode)
 	{
-	case EGizmoMode::Translate: Names = { "MoveRed", "MoveGreen", "MoveBlue" }; break;
+	case EGizmoMode::Translate: Names = { "ArrowRed", "ArrowGreen", "ArrowBlue" }; break;
 	case EGizmoMode::Rotate: Names = { "RotateRed", "RotateGreen", "RotateBlue" }; break;
 	case EGizmoMode::Scale: Names = { "ScaleRed", "ScaleGreen", "ScaleBlue" }; break;
 	}
 	if (Names.Num() != 3 || Handles.Num() != 3) return;
-	for (int32 Axis = 0; Axis < 3; ++Axis)
+
+	HandleBaseLengths = { 0.0f, 0.0f, 0.0f };
+	for (int32 Axis = 0; Axis < 3; ++Axis) {
+
 		Handles[Axis].Mesh = GResourceManager::GetInstance()->GetPrimitive(Names[Axis]);
+		Handles[Axis].Topology = Mode == EGizmoMode::Rotate ? 0 : 1;
+
+		const auto* Mesh = Handles[Axis].Mesh;
+		if (!Mesh) continue;
+		// 이동/스케일은 원점부터 Z축 끝까지, 회전은 XY 평면의 반지름.
+		// 메시 정점 순회는 모드 변경 때만 수행한다.
+		for (const auto& Vertex : Mesh->vertexs)
+		{
+			const float Length = Mode == EGizmoMode::Rotate
+				? std::hypot(Vertex.x * GizmoScale.X, Vertex.y * GizmoScale.Y)
+				: std::fabs(Vertex.z * GizmoScale.Z);
+			if (!std::isfinite(Length))
+			{
+				HandleBaseLengths[Axis] = 0.0f;
+				break;
+			}
+			if (Length > HandleBaseLengths[Axis]) HandleBaseLengths[Axis] = Length;
+		}
+	}
+		
+		
 }

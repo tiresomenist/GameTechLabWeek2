@@ -71,7 +71,7 @@ project "GameTechlabWeek2"
 	-- 동적 링킹
 	links {
 		"d3d11",			-- DirectX11 
-		"d3d11compiler",	-- DirectX11
+		"d3dcompiler",		-- DirectX11
 		"dxgi",				-- DirectX11
 		"user32"			-- Win32
 	}

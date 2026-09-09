@@ -87,11 +87,6 @@ public:
 		std::sort(Array.begin(), Array.end(), Compare);
 	}
 
-	int Size()
-	{
-		return Array.size();
-	}
-
 	void assign(T* first, T* last)
 	{
 		Array.assign(first, last);
