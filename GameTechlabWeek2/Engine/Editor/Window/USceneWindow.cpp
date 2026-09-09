@@ -15,6 +15,7 @@
 #include "ImGui/imgui_impl_win32.h"
 #include "ImGui/imgui_stdlib.h"
 #include "Engine/InputManager/GInputManager.h"
+#include "Engine/GAllocator.h"
 
 #include "Engine/GSceneManager.h"
 
@@ -90,12 +91,18 @@ void USceneWindow::Render(float DeltaTime)
 
 	float ButtonWidth = Available.x * 0.2f; // Button, DragFloat
 	float WideItemWidth = ButtonWidth * 3.0f + ItemSpacing.x * 2.0f; // FOV, NumberOfSpawn
+
+	size_t AllocationBytes = GAllocator::GetTotalAllocationBytes();
+	size_t AllocationCount = GAllocator::GetTotalAllocationCount();
 	
 	ImGui::Begin("Scene Control Panel", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
 	{
 		float MilliSeconds = DeltaTime * 1000;
 		ImGui::Text("1 Team Engine");
 		ImGui::Text("FPS %.00f (%.00f ms)", 1000 / MilliSeconds, MilliSeconds);
+		ImGui::Separator();
+		ImGui::Text("Heap Memory 사용량: %d바이트", AllocationBytes);
+		ImGui::Text("Heap Memory 객체 수: %d개", AllocationCount);
 		ImGui::Separator();
 
 		ImGui::PushItemWidth(WideItemWidth);
