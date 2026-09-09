@@ -45,11 +45,12 @@ public:
 
 	ID3D11DepthStencilState* DefaultDepthStencilState = nullptr;
 	ID3D11DepthStencilState* GizmoDepthStencilState = nullptr;
+	ID3D11DepthStencilState* HighlightDepthStencilState = nullptr;
 
 	ID3D11BlendState* AlphaBlendState = nullptr;
 
-	ID3D11Buffer* TransformConstantBuffer = nullptr;     
-	ID3D11Buffer* GridConstantBuffer = nullptr;          
+	ID3D11Buffer* TransformConstantBuffer = nullptr;
+	ID3D11Buffer* GridConstantBuffer = nullptr;
 
 
 	FLOAT                   ClearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
@@ -62,17 +63,17 @@ public:
 	ID3D11PixelShader* HighlightPixelShader = nullptr;
 	ID3D11VertexShader* GridVertexShader = nullptr;
 	ID3D11PixelShader* GridPixelShader = nullptr;
-	
-    void Create(HWND HWnd, GDevice* InDevice);
-    void Shutdown();
 
-    bool CreateShaders();
+	void Create(HWND HWnd, GDevice* InDevice);
+	void Shutdown();
+
+	bool CreateShaders();
 	bool CompileShader(const WCHAR* FilePath, const LPCSTR EntryPoint, const LPCSTR ShaderModel, ID3DBlob** OutBlob);
-    void PrepareRTVDSV();
+	void PrepareRTVDSV();
 	void ReleaseShaders();
 
-    ID3D11Buffer* CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidth);
-    void ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer);
+	ID3D11Buffer* CreateVertexBuffer(FVertexSimple* vertices, UINT byteWidth);
+	void ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer);
 
 	void CreateConstantBuffer();
 	void UpdateTransformConstantBuffer(const FMatrix& WorldMatrix);

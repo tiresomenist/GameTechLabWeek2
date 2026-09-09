@@ -33,10 +33,10 @@ void FRenderer::Create(HWND HWnd, GDevice* InDevice)
 	CreateAlphaBlendState();
 	CreateDepthStencilStates();
 
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    io.Fonts->AddFontFromFileTTF("Assets/Fonts/Pretendard-Regular.ttf", 16.0f);
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	io.Fonts->AddFontFromFileTTF("Assets/Fonts/Pretendard-Regular.ttf", 16.0f);
 
 	// Setup Platform/Renderer backends
 	ImGui_ImplWin32_Init(HWnd);
@@ -153,7 +153,7 @@ void FRenderer::ReleaseShaders()
 	{
 		HighlightPixelShader->Release();
 		HighlightPixelShader = nullptr;
-	}	
+	}
 	if (GridVertexShader)
 	{
 		GridVertexShader->Release();
@@ -218,7 +218,7 @@ void FRenderer::CreateConstantBuffer()
 
 	D3D11_BUFFER_DESC gridconstantbufferdesc = {};
 	gridconstantbufferdesc.ByteWidth = sizeof(FConstants) + 0xf & 0xfffffff0;
-	gridconstantbufferdesc.Usage = D3D11_USAGE_DYNAMIC; 
+	gridconstantbufferdesc.Usage = D3D11_USAGE_DYNAMIC;
 	gridconstantbufferdesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	gridconstantbufferdesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
@@ -248,7 +248,7 @@ void FRenderer::CreateRasterizerState()
 
 	D3D11_RASTERIZER_DESC rasterizerdescHighlight = {};
 	rasterizerdescHighlight.FillMode = D3D11_FILL_SOLID;
-	rasterizerdescHighlight.CullMode = D3D11_CULL_FRONT;  // 프론트 페이스 컬링
+	rasterizerdescHighlight.CullMode = D3D11_CULL_NONE;  // 프론트 페이스 컬링
 	D3DDevice->CreateRasterizerState(&rasterizerdescHighlight, &CullFrontRasterizerState);
 
 	D3D11_RASTERIZER_DESC rasterizerdescGrid = {};
@@ -319,6 +319,13 @@ void FRenderer::CreateDepthStencilStates()
 	D3D11_DEPTH_STENCIL_DESC GizmoDSDesc = DSDesc;
 	GizmoDSDesc.DepthEnable = FALSE;
 	D3DDevice->CreateDepthStencilState(&GizmoDSDesc, &GizmoDepthStencilState);
+
+	D3D11_DEPTH_STENCIL_DESC HighlightDesc = {};
+	HighlightDesc.DepthEnable = TRUE;  // 깊이 검사는 유지
+	HighlightDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO; // 깊이 기록 안 함
+	HighlightDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+	D3DDevice->CreateDepthStencilState(&HighlightDesc, &HighlightDepthStencilState);
 }
 
 void FRenderer::ReleaseDepthStencilStates()
@@ -337,10 +344,10 @@ void FRenderer::ReleaseDepthStencilStates()
 
 void FRenderer::BeginFrame()
 {
-    ImGui_ImplDX11_NewFrame();
-    ImGui_ImplWin32_NewFrame();
-    ImGui::NewFrame();
-    PrepareRTVDSV();
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+	PrepareRTVDSV();
 }
 
 void FRenderer::EndFrame()
@@ -363,7 +370,7 @@ void FRenderer::Render(float DeltaTime, FEditor* Editor, UScene* Scene)
 	FMatrix ViewProjMatrix = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
 	TArray<FPrimitiveRenderData> RenderList = RenderUtil::GetRenderList(Editor, Scene);
 	Camera->SetAspectRatio(Device->GetViewport().Width / Device->GetViewport().Height);
-	for (auto& Item: RenderList)
+	for (auto& Item : RenderList)
 	{
 		FMatrix MVP = (*Item.WorldMatrix) * ViewProjMatrix;
 		UpdateTransformConstantBuffer(MVP);
@@ -374,11 +381,11 @@ void FRenderer::Render(float DeltaTime, FEditor* Editor, UScene* Scene)
 		RenderPrimitive(Item);
 	}
 
-    // Render Windows
-    for (auto Item : Editor->GetWindows())
-    {
-        Item->Render(DeltaTime);
-    }
+	// Render Windows
+	for (auto Item : Editor->GetWindows())
+	{
+		Item->Render(DeltaTime);
+	}
 
 	// Render Grid
 	UpdateTransformConstantBuffer(ViewProjMatrix);
@@ -467,7 +474,7 @@ void FRenderer::UpdateGridConstantBuffer(const FGridConstants& GridConstants)
 	{
 		return;
 	}
-	
+
 	D3D11_MAPPED_SUBRESOURCE constantbufferMSR;
 
 	HRESULT hr = DeviceContext->Map(GridConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR);
@@ -524,7 +531,7 @@ void FRenderer::RenderHighlight(const FPrimitiveRenderData& Data)
 
 	DeviceContext->PSSetShader(HighlightPixelShader, nullptr, 0);
 
-	DeviceContext->OMSetDepthStencilState(DefaultDepthStencilState, 0);
+	DeviceContext->OMSetDepthStencilState(HighlightDepthStencilState, 0);
 
 	DeviceContext->DrawIndexed(Data.IndexCount, 0, 0);
 }
