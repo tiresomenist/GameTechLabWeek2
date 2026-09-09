@@ -20,16 +20,13 @@ TArray<FPrimitiveRenderData> RenderUtil::GetRenderList(FEditor* Editor, UScene* 
 		}
 	}
 
-	for (auto Item : Editor->Grids)
-	{
-		TArray<FPrimitiveRenderData> Array = Item->GetRenderData();
+	return RenderList;
+}
 
-		for (auto& Data : Array)
-		{
-			RenderList.Add(Data);
-		}
-	}
-
+TArray<FPrimitiveRenderData> RenderUtil::GetGizmoList(FEditor* Editor, UScene* Scene)
+{
+	TArray<FPrimitiveRenderData> RenderList;
+	
 	for (auto Item : Editor->Gizmos)
 	{
 		TArray<FPrimitiveRenderData> Array = Item->GetRenderData();
@@ -39,6 +36,5 @@ TArray<FPrimitiveRenderData> RenderUtil::GetRenderList(FEditor* Editor, UScene* 
 			RenderList.Add(Data);
 		}
 	}
-
 	return RenderList;
 }

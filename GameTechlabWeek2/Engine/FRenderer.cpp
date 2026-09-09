@@ -31,7 +31,7 @@ void FRenderer::Create(HWND HWnd, GDevice* InDevice)
 	CreateShaders();
 	CreateConstantBuffer();
 	CreateAlphaBlendState();
-
+	CreateDepthStencilStates();
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -307,6 +307,34 @@ void FRenderer::ReleaseAlphaBlendState()
 	}
 }
 
+void FRenderer::CreateDepthStencilStates()
+{
+	D3D11_DEPTH_STENCIL_DESC DSDesc = {};
+	DSDesc.DepthEnable = TRUE;
+	DSDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	DSDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	DSDesc.StencilEnable = FALSE;
+	D3DDevice->CreateDepthStencilState(&DSDesc, &DefaultDepthStencilState);
+
+	D3D11_DEPTH_STENCIL_DESC GizmoDSDesc = DSDesc;
+	GizmoDSDesc.DepthEnable = FALSE;
+	D3DDevice->CreateDepthStencilState(&GizmoDSDesc, &GizmoDepthStencilState);
+}
+
+void FRenderer::ReleaseDepthStencilStates()
+{
+	if (DefaultDepthStencilState)
+	{
+		DefaultDepthStencilState->Release();
+		DefaultDepthStencilState = nullptr;
+	}
+	if (GizmoDepthStencilState)
+	{
+		GizmoDepthStencilState->Release();
+		GizmoDepthStencilState = nullptr;
+	}
+}
+
 void FRenderer::BeginFrame()
 {
     ImGui_ImplDX11_NewFrame();
@@ -334,7 +362,7 @@ void FRenderer::Render(float DeltaTime, FEditor* Editor, UScene* Scene)
 
 	FMatrix ViewProjMatrix = Camera->GetViewMatrix() * Camera->GetProjectionMatrix();
 	TArray<FPrimitiveRenderData> RenderList = RenderUtil::GetRenderList(Editor, Scene);
-	Camera->SetAspectRatio(Device->GetViewport().Width / Device->GetViewport().Height); // 리사이징된 카메라 화면에 맞게 종횡비를 맞춥니다.
+	Camera->SetAspectRatio(Device->GetViewport().Width / Device->GetViewport().Height);
 	for (auto& Item: RenderList)
 	{
 		FMatrix MVP = (*Item.WorldMatrix) * ViewProjMatrix;
@@ -346,17 +374,26 @@ void FRenderer::Render(float DeltaTime, FEditor* Editor, UScene* Scene)
 		RenderPrimitive(Item);
 	}
 
-    // 2. Editor Window 렌더
+    // Render Windows
     for (auto Item : Editor->GetWindows())
     {
         Item->Render(DeltaTime);
     }
 
-    for (auto Item : Editor->GetGizmos()) {
-        Item->GetRenderData();
+	// Render Gizmo
+	TArray<FPrimitiveRenderData> GizmoRenderList = RenderUtil::GetGizmoList(Editor, Scene);
+    for (auto Item : GizmoRenderList) 
+	{
+		FMatrix MVP = (*Item.WorldMatrix) * ViewProjMatrix;
+		UpdateTransformConstantBuffer(MVP);
+		if (Item.isSelected)
+		{
+			RenderHighlight(Item);
+		}
+		RenderGizmo(Item);
     }
 
-	// Grid 랜더
+	// Render Grid
 	UpdateTransformConstantBuffer(ViewProjMatrix);
 	for (auto Item : Editor->GetGrids())
 	{
@@ -459,6 +496,7 @@ void FRenderer::RenderPrimitive(const FPrimitiveRenderData& Data)
 
 	DeviceContext->PSSetShader(SimplePixelShader, nullptr, 0);
 
+	DeviceContext->OMSetDepthStencilState(DefaultDepthStencilState, 0);
 	// BindMaterial(Data.Material); 
 
 	DeviceContext->DrawIndexed(Data.IndexCount, 0, 0);
@@ -478,6 +516,8 @@ void FRenderer::RenderHighlight(const FPrimitiveRenderData& Data)
 	DeviceContext->RSSetState(CullFrontRasterizerState);
 
 	DeviceContext->PSSetShader(HighlightPixelShader, nullptr, 0);
+
+	DeviceContext->OMSetDepthStencilState(DefaultDepthStencilState, 0);
 
 	DeviceContext->DrawIndexed(Data.IndexCount, 0, 0);
 }
@@ -502,6 +542,28 @@ void FRenderer::RenderGrid(FMeshResource* Data)
 	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	UINT sampleMask = 0xffffffff;
 	DeviceContext->OMSetBlendState(AlphaBlendState, blendFactor, sampleMask);
+	DeviceContext->OMSetDepthStencilState(DefaultDepthStencilState, 0);
 
 	DeviceContext->DrawIndexed(Data->IndexCount, 0, 0);
+}
+
+void FRenderer::RenderGizmo(const FPrimitiveRenderData& Data)
+{
+	UINT Offset = 0;
+	DeviceContext->IASetInputLayout(SimpleInputLayout);
+	DeviceContext->IASetVertexBuffers(0, 1, &Data.VertexBuffer, &Data.Stride, &Offset);
+	DeviceContext->IASetIndexBuffer(Data.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	DeviceContext->IASetPrimitiveTopology(Data.Topology);
+
+	DeviceContext->VSSetShader(SimpleVertexShader, nullptr, 0);
+	DeviceContext->VSSetConstantBuffers(0, 1, &TransformConstantBuffer);
+
+	DeviceContext->RSSetState(DefaultRasterizerState);
+
+	DeviceContext->PSSetShader(SimplePixelShader, nullptr, 0);
+
+	DeviceContext->OMSetDepthStencilState(GizmoDepthStencilState, 0);
+	// BindMaterial(Data.Material); 
+
+	DeviceContext->DrawIndexed(Data.IndexCount, 0, 0);
 }
