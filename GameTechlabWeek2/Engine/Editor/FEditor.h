@@ -22,22 +22,26 @@ class FGizmoPicker;
 class FEditor
 {
 private:
-
-	// 현재 선택된 SceneComponent;
-	UCameraComponent* EditorCamera;
+	// 현재 선택된 SceneComponent
+	UCameraComponent* EditorCamera = nullptr;
 	FCameraController CameraController;
 	FObjectPicker* ObjectPicker = nullptr;
 	FGizmoPicker* GizmoPicker = nullptr;
-	FGizmoController* GizmoController=nullptr;
+	FGizmoController* GizmoController = nullptr;
 
-	USceneComponent* SelectedSceneComponent;
+	USceneComponent* SelectedSceneComponent = nullptr;
 	TArray<UGizmo*> Gizmos;
 	TArray<UEditorWindow*> Windows;
 	TArray<UGrid*> Grids;
-	
-
 	UGizmo* ObjectAxisGizmo = nullptr;
 
+	void InitializeGizmos();
+	void InitializeWindows();
+	void InitializeGrids();
+
+	void ReleaseGizmos();
+	void ReleaseWindows();
+	void ReleaseGrids();
 
 public:
 
@@ -66,9 +70,9 @@ public:
 	void RegisterWindow(FClassType* Type);
 	void RegisterGrid(FClassType* Type);
 
-	TArray<UGizmo*>& GetGizmos() { return Gizmos; }
-	TArray<UEditorWindow*>& GetWindows() { return Windows; }
-	TArray<UGrid*>& GetGrids() { return Grids; }
+	const TArray<UGizmo*>& GetGizmos() const { return Gizmos; }
+	const TArray<UEditorWindow*>& GetWindows() const { return Windows; }
+	const TArray<UGrid*>& GetGrids() const { return Grids; }
 
 	//TEST CODE//
 	FVector GetCameraLocation() { return GetEditorCamera()->GetRelativeLocation(); }

@@ -36,7 +36,7 @@ void FRenderer::Create(HWND HWnd, GDevice* InDevice)
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
-    io.Fonts->AddFontFromFileTTF("Assets/Pretendard-Regular.ttf", 16.0f);
+    io.Fonts->AddFontFromFileTTF("Assets/Fonts/Pretendard-Regular.ttf", 16.0f);
 
 	// Setup Platform/Renderer backends
 	ImGui_ImplWin32_Init(HWnd);
@@ -69,7 +69,7 @@ bool FRenderer::CreateShaders()
 	ID3DBlob* shaderBlob = nullptr;
 
 	// Simple Shader (VS & PS)
-	if (!CompileShader(L"GameTechlabWeek2/ShaderW0.hlsl", "mainVS", "vs_5_0", &shaderBlob)) return false;
+	if (!CompileShader(L"Assets/Shaders/MainShader.hlsl", "mainVS", "vs_5_0", &shaderBlob)) return false;
 	D3DDevice->CreateVertexShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &SimpleVertexShader);
 
 	D3D11_INPUT_ELEMENT_DESC layout[] =
@@ -80,25 +80,25 @@ bool FRenderer::CreateShaders()
 	D3DDevice->CreateInputLayout(layout, ARRAYSIZE(layout), shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &SimpleInputLayout);
 	shaderBlob->Release();
 
-	if (!CompileShader(L"GameTechlabWeek2/ShaderW0.hlsl", "mainPS", "ps_5_0", &shaderBlob)) return false;
+	if (!CompileShader(L"Assets/Shaders/MainShader.hlsl", "mainPS", "ps_5_0", &shaderBlob)) return false;
 	D3DDevice->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &SimplePixelShader);
 	shaderBlob->Release();
 
 	// Highlight Shader (VS & PS)
-	if (!CompileShader(L"GameTechlabWeek2/ShaderW0.hlsl", "VS_Highlight", "vs_5_0", &shaderBlob)) return false;
+	if (!CompileShader(L"Assets/Shaders/MainShader.hlsl", "VS_Highlight", "vs_5_0", &shaderBlob)) return false;
 	D3DDevice->CreateVertexShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &HighlightVertexShader);
 	shaderBlob->Release();
 
-	if (!CompileShader(L"GameTechlabWeek2/ShaderW0.hlsl", "PS_Highlight", "ps_5_0", &shaderBlob)) return false;
+	if (!CompileShader(L"Assets/Shaders/MainShader.hlsl", "PS_Highlight", "ps_5_0", &shaderBlob)) return false;
 	D3DDevice->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &HighlightPixelShader);
 	shaderBlob->Release();
 
 	// Grid Shader (VS & PS)
-	if (!CompileShader(L"GameTechlabWeek2/GridShader.hlsl", "VS_Grid", "vs_5_0", &shaderBlob)) return false;
+	if (!CompileShader(L"Assets/Shaders/GridShader.hlsl", "VS_Grid", "vs_5_0", &shaderBlob)) return false;
 	D3DDevice->CreateVertexShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &GridVertexShader);
 	shaderBlob->Release();
 
-	if (!CompileShader(L"GameTechlabWeek2/GridShader.hlsl", "PS_Grid", "ps_5_0", &shaderBlob)) return false;
+	if (!CompileShader(L"Assets/Shaders/GridShader.hlsl", "PS_Grid", "ps_5_0", &shaderBlob)) return false;
 	D3DDevice->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &GridPixelShader);
 	shaderBlob->Release();
 

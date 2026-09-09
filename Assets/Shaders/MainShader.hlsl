@@ -1,4 +1,4 @@
-// ShaderW0.hlsl
+// MainShader.hlsl
 cbuffer constants : register(b0)
 {
     row_major float4x4 MVP;

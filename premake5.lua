@@ -19,7 +19,9 @@ project "GameTechlabWeek2"
 		"**.h",
 		"**.cpp",
 		"**.hpp",
-		"**.c" 
+		"**.c",
+		"Assets/**",
+		"Scenes/**"
 	}
 
 	-- 멀티 프로세싱 컴파일

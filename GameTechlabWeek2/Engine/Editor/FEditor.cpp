@@ -30,7 +30,6 @@
 
 void FEditor::Initialize()
 {
-
 	EditorCamera = static_cast<UCameraComponent*>(SpawnObject(UCameraComponent::GetClass()));
 	EditorCamera->SetRelativeLocation(FVector(-15.0f, -15.0f, 10.0f));
 	EditorCamera->LookAt(FVector(0.0f, 0.0f, 0.0f));
@@ -38,20 +37,30 @@ void FEditor::Initialize()
 	CameraController.SetCamera(EditorCamera);
 
 	ObjectPicker = new FObjectPicker(this);
-	SelectedSceneComponent = nullptr;
 	GizmoPicker = new FGizmoPicker(this);
 
+	InitializeGizmos();
+	GizmoController = new FGizmoController(this);
+	InitializeWindows();
+	InitializeGrids();
+}
 
+void FEditor::InitializeGizmos()
+{
 	RegisterGizmo(UObjectAxisGizmo::GetClass());
 	RegisterGizmo(UWorldAxisGizmo::GetClass());
 	RegisterGizmo(UWorldGridGizmo::GetClass());
+}
 
-	GizmoController = new FGizmoController(this);
-
+void FEditor::InitializeWindows()
+{
 	RegisterWindow(UConsoleWindow::GetClass());
 	RegisterWindow(UPropertyWindow::GetClass());
 	RegisterWindow(USceneWindow::GetClass());
+}
 
+void FEditor::InitializeGrids()
+{
 	RegisterGrid(UGrid::GetClass());
 }
 
@@ -127,11 +136,49 @@ void FEditor::Release()
 {
 	delete GizmoController;
 	GizmoController = nullptr;
+
 	CameraController.SetCamera(nullptr);
+
 	delete ObjectPicker;
 	ObjectPicker = nullptr;
+
 	delete GizmoPicker;
 	GizmoPicker = nullptr;
+
+	SelectedSceneComponent = nullptr;
+
+	ReleaseGizmos();
+	ReleaseWindows();
+	ReleaseGrids();
+}
+
+void FEditor::ReleaseGizmos()
+{
+	ObjectAxisGizmo = nullptr;
+
+	for (UGizmo* Gizmo : Gizmos)
+	{
+		delete Gizmo;
+	}
+	Gizmos.Empty();
+}
+
+void FEditor::ReleaseWindows()
+{
+	for (UEditorWindow* Window : Windows)
+	{
+		delete Window;
+	}
+	Windows.Empty();
+}
+
+void FEditor::ReleaseGrids()
+{
+	for (UGrid* Grid : Grids)
+	{
+		delete Grid;
+	}
+	Grids.Empty();
 }
 
 void FEditor::SpawnPrimitive(FClassType* PrimitiveType, int Count)

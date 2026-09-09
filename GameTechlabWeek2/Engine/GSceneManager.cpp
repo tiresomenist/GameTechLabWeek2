@@ -10,10 +10,19 @@
 #include "nlohmann/json.hpp"
 
 #include <charconv>
+#include <filesystem>
 #include <limits>
 #include <stdexcept>
 
+namespace
+{
+	constexpr FStringView SceneDirectory = "Scenes";
 
+	FString GetScenePath(FStringView SceneName)
+	{
+		return (std::filesystem::path(SceneDirectory) / (FString{ SceneName } + ".json")).generic_string();
+	}
+}
 
 GSceneManager* GSceneManager::GetInstance()
 {
@@ -126,8 +135,7 @@ void GSceneManager::InternalLoadScene()
 	{
 		if (!NextSceneFile.empty())
 		{
-			FString FileName{ NextSceneFile };
-			FileName += ".json";
+			const FString FileName = GetScenePath(NextSceneFile);
 
 			const FString FileText = File::ReadText(FileName);
 			const nlohmann::json FileJSON = nlohmann::json::parse(FileText);
@@ -201,11 +209,11 @@ void GSceneManager::SaveScene(FStringView SerializedName)
 	FileJSON["NextUUID"] = NextUUID;
 	FileJSON["Primitives"] = ObjectArray;
 
-	FString FileName{ SerializedName };
-	FileName += ".json";
+	const FString FileName = GetScenePath(SerializedName);
 
 	try
 	{
+		std::filesystem::create_directories(SceneDirectory);
 		FString FileText = FileJSON.dump();
 		File::WriteText(FileName, FileText);
 	}
