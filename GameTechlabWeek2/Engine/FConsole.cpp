@@ -1,8 +1,10 @@
 #include "FConsole.h"
 #include "windows.h"
 
+// 18번 필터없애고 참조
 const TArray<FString> FConsole::Get(FString Filter) const
 {
+	// 18번 최대개수 제한걸어야함
 	return MessageList;
 }
 
