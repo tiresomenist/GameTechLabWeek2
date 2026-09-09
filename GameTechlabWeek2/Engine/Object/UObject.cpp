@@ -1,5 +1,5 @@
 #include "UObject.h"
-#include "Engine/Object/GObjects.h"
+#include "Engine/Object/GObjectStatics.h"
 #include "Engine/GAllocator.h"
 #include "Engine/Object/FArchive.h"
 #include "Engine/Log.h"
@@ -62,7 +62,7 @@ void UObject::operator delete(void* Ptr)
 
 UObject::~UObject()
 {
-	GObjects::DestoryObject(InternalIndex);
+	GObjectStatics::DestoryObject(InternalIndex);
 }
 
 void UObject::Serialize(FArchive& Archive)

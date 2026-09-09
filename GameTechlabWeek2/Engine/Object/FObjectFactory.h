@@ -4,8 +4,7 @@
 
 #include "Engine/Object/FClassType.h"
 #include "Engine/Object/UObject.h"
-#include "Engine/Object/GObjects.h"
-#include "Engine/UEngineStatics.h"
+#include "Engine/Object/GObjectStatics.h"
 
 class FObjectFactory
 {
@@ -19,14 +18,14 @@ public:
 			throw std::logic_error("ConstructObject: Type is nullptr");
 		}
 
-		uint32 UUID = UEngineStatics::GenUUID();
-		uint32 InternalIndex = GObjects::GetNextIndex();
+		uint32 UUID = GObjectStatics::GenUUID();
+		uint32 InternalIndex = GObjectStatics::GetNextIndex();
 
 		UObject* Object = Type->ClassConstructor(UUID, InternalIndex, Type);
 
 		Object->Initialize();
 
-		GObjects::AddObject(Object);
+		GObjectStatics::AddObject(Object);
 		
 		return Object;
 	}

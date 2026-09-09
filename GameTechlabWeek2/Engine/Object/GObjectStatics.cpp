@@ -1,24 +1,24 @@
-#include "GObjects.h"
+#include "GObjectStatics.h"
 #include "Engine/Object/UObject.h"
 
 #include <iostream>
 
-void GObjects::AddObject(UObject* Object)
+void GObjectStatics::AddObject(UObject* Object)
 {
 	GUObjectArray.Add(Object);
 }
 
-void GObjects::DestoryObject(uint32 InternalIndex)
+void GObjectStatics::DestoryObject(uint32 InternalIndex)
 {
 	GUObjectArray[InternalIndex] = nullptr;
 }
 
-uint32 GObjects::GetNextIndex()
+uint32 GObjectStatics::GetNextIndex()
 {
 	return GUObjectArray.Num();
 }
 
-void GObjects::Release()
+void GObjectStatics::Release()
 {
 	for (auto& Item : GUObjectArray)
 	{
