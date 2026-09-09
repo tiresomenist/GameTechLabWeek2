@@ -129,7 +129,7 @@ TArray<FPrimitiveRenderData> UObjectAxisGizmo::GetTranslateRenderData()
 		Data.Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 		// UObjectAxisGizmo의 멤버 행렬
 		Data.WorldMatrix = &Handles[0].WorldMatrix;
-		Data.isSelected = false;
+		Data.isSelected = (Editor->GetActiveGizmoAxis() == Handles[0].Axis);
 
 		Result.Add(Data);
 	}
@@ -144,7 +144,7 @@ TArray<FPrimitiveRenderData> UObjectAxisGizmo::GetTranslateRenderData()
 		Data.Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 		// UObjectAxisGizmo의 멤버 행렬
 		Data.WorldMatrix = &Handles[1].WorldMatrix;
-		Data.isSelected = false;
+		Data.isSelected = (Editor->GetActiveGizmoAxis() == Handles[1].Axis);
 
 		Result.Add(Data);
 	}
@@ -160,11 +160,10 @@ TArray<FPrimitiveRenderData> UObjectAxisGizmo::GetTranslateRenderData()
 
 		// UObjectAxisGizmo의 멤버 행렬
 		Data.WorldMatrix = &Handles[2].WorldMatrix;
-		Data.isSelected = false;
+		Data.isSelected = (Editor->GetActiveGizmoAxis() == Handles[2].Axis);
 
 		Result.Add(Data);
 	}
-
 	return Result;
 }
 
@@ -187,7 +186,7 @@ TArray<FPrimitiveRenderData> UObjectAxisGizmo::GetRotateRenderData()
 		Data.Topology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
 		// UObjectAxisGizmo의 멤버 행렬
 		Data.WorldMatrix = &Handles[0].WorldMatrix;
-		Data.isSelected = false;
+		Data.isSelected = (Editor->GetActiveGizmoAxis() == Handles[0].Axis);
 
 		Result.Add(Data);
 	}
@@ -202,7 +201,7 @@ TArray<FPrimitiveRenderData> UObjectAxisGizmo::GetRotateRenderData()
 		Data.Topology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
 		// UObjectAxisGizmo의 멤버 행렬
 		Data.WorldMatrix = &Handles[1].WorldMatrix;
-		Data.isSelected = false;
+		Data.isSelected = (Editor->GetActiveGizmoAxis() == Handles[1].Axis);
 
 		Result.Add(Data);
 	}
@@ -218,7 +217,7 @@ TArray<FPrimitiveRenderData> UObjectAxisGizmo::GetRotateRenderData()
 
 		// UObjectAxisGizmo의 멤버 행렬
 		Data.WorldMatrix = &Handles[2].WorldMatrix;
-		Data.isSelected = false;
+		Data.isSelected = (Editor->GetActiveGizmoAxis() == Handles[2].Axis);
 
 		Result.Add(Data);
 	}
@@ -245,7 +244,7 @@ TArray<FPrimitiveRenderData> UObjectAxisGizmo::GetScaleRenderData()
 		Data.Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 		// UObjectAxisGizmo의 멤버 행렬
 		Data.WorldMatrix = &Handles[0].WorldMatrix;
-		Data.isSelected = false;
+		Data.isSelected = (Editor->GetActiveGizmoAxis() == Handles[0].Axis);
 
 		Result.Add(Data);
 	}
@@ -260,7 +259,7 @@ TArray<FPrimitiveRenderData> UObjectAxisGizmo::GetScaleRenderData()
 		Data.Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 		// UObjectAxisGizmo의 멤버 행렬
 		Data.WorldMatrix = &Handles[1].WorldMatrix;
-		Data.isSelected = false;
+		Data.isSelected = (Editor->GetActiveGizmoAxis() == Handles[1].Axis);
 
 		Result.Add(Data);
 	}
@@ -276,7 +275,7 @@ TArray<FPrimitiveRenderData> UObjectAxisGizmo::GetScaleRenderData()
 
 		// UObjectAxisGizmo의 멤버 행렬
 		Data.WorldMatrix = &Handles[2].WorldMatrix;
-		Data.isSelected = false;
+		Data.isSelected = (Editor->GetActiveGizmoAxis() == Handles[2].Axis);
 
 		Result.Add(Data);
 	}
