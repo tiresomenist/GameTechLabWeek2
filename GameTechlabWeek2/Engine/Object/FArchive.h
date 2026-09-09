@@ -13,7 +13,6 @@ class FArchive
 {
 private:
 	nlohmann::json Object;
-	static double GetFixedDouble(double Value);
 
 public:
 	FArchive();
@@ -41,16 +40,13 @@ public:
 	
 	// GetArray는 필요하면 더 추가
 	template <typename T>
-	TArray<T> GetArray(const FString& Key) = delete;
-	
-	template <>
-	TArray<float> GetArray<float>(const FString& Key)
+	TArray<T> GetArray(const FString& Key)
 	{
-		TArray<float> Array;
+		TArray<T> Array;
 
 		for (const auto& Item : Object.at(Key))
 		{
-			float Value = Item.get<float>();
+			T Value = Item.get<T>();
 			Array.Add(Value);
 		}
 
@@ -58,20 +54,13 @@ public:
 	}
 
 	template <typename T>
-	void SetArray(const FString& Key, TArray<T>& Value)
+	void SetArray(const FString& Key, const TArray<T>& Value)
 	{
 		Object[Key] = nlohmann::json::array();
 
 		for (int i = 0; i < Value.Num(); ++i)
 		{
-			if constexpr (std::is_floating_point_v<T>)
-			{
-				Object[Key].push_back(GetFixedDouble(static_cast<double>(Value[i])));
-			}
-			else
-			{
-				Object[Key].push_back(Value[i]);
-			}
+			Object[Key].push_back(Value[i]);
 		}
 	}
 };
