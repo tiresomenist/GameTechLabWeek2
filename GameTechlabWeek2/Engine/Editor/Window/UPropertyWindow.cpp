@@ -8,29 +8,85 @@ void UPropertyWindow::GetSelectedValue()
 {
 	USceneComponent* NewComponent = Editor->GetSelectedSceneComponent();
 
+
 	if (SelectedComponent != NewComponent)
 	{
 		SelectedComponent = NewComponent;
+		bEditingRotation = false;
+	}
 
-		if (SelectedComponent)
+	if (SelectedComponent != nullptr)
+	{
+		Translation = SelectedComponent->GetRelativeLocation();
+		if (!bEditingRotation)
 		{
-			Translation = SelectedComponent->GetRelativeLocation();
 			const FQuaternion& Quaternion = SelectedComponent->GetRelativeRotation();
-			Rotation = FQuaternion::ToEuler(Quaternion);
-			OScale = SelectedComponent->GetRelativeScale3D();
+			RotationDegree = FQuaternion::ToEuler(Quaternion) * (180.0f / PI);
 		}
+		OScale = SelectedComponent->GetRelativeScale3D();
 	}
 }
 
-void UPropertyWindow::SetSelectedValue()
+void UPropertyWindow::SetSelectedValue(bool bSetRotation)
 {
 	if (SelectedComponent != nullptr)
 	{
 		SelectedComponent->SetRelativeLocation(Translation);
-		SelectedComponent->SetRelativeRotation(FQuaternion::FromEuler(Rotation));
+		if (bSetRotation && RotationDragAxis >= 0)
+		{
+			FVector RotationAxis;
+			float CurrentDegree = 0.0f;
+
+			switch (RotationDragAxis)
+			{
+			case 0:
+				RotationAxis = FVector(1.0f, 0.0f, 0.0f);
+				CurrentDegree = RotationDegree.X;
+				break;
+
+			case 1:
+				RotationAxis = FVector(0.0f, 1.0f, 0.0f);
+				CurrentDegree = RotationDegree.Y;
+				break;
+
+			case 2:
+				RotationAxis = FVector(0.0f, 0.0f, 1.0f);
+				CurrentDegree = RotationDegree.Z;
+				break;
+
+			default:
+				break;
+			}
+
+			const float DeltaRadian = (CurrentDegree - RotationDragStartDegree) * (PI / 180.0f);
+
+			const FQuaternion DeltaRotation = FQuaternion::FromAxisAngle(RotationAxis,DeltaRadian);
+
+			// 현재 월드 회전 기즈모와 같은 적용 순서
+			SelectedComponent->SetRelativeRotation(DeltaRotation * RotationDragStart);
+		}
 		SelectedComponent->SetRelativeScale3D(OScale);
 	}
 }
+
+bool UPropertyWindow::DrawRotationField(const char* ID, float& Degree, int AxisIndex, bool& bRotationActive, bool& bRotationFinished)
+{
+	const float BeforeEdit = Degree;
+	const bool bChanged = ImGui::DragFloat(ID,&Degree,0.1f,0.0f,0.0f,"%.3f");
+
+	if (ImGui::IsItemActivated())
+	{
+		RotationDragStart = SelectedComponent->GetRelativeRotation();
+
+		RotationDragStartDegree = BeforeEdit;
+		RotationDragAxis = AxisIndex;
+	}
+
+	bRotationActive |= ImGui::IsItemActive();
+	bRotationFinished |= ImGui::IsItemDeactivatedAfterEdit();
+	return bChanged;
+}
+
 
 void UPropertyWindow::DeleteSelected()
 {
@@ -48,8 +104,8 @@ void UPropertyWindow::Render(float DeltaTime)
 	constexpr float WindowWidthRatio = 0.35f;
 	constexpr float WindowHeightRatio = 0.25f;
 
-	float WindowWidth = WorkSize.x * WindowWidthRatio;
-	float WindowHeight = WorkSize.y * WindowHeightRatio;
+	float WindowWidth = WindowWidthRatio * 1000.0f;
+	float WindowHeight = WindowHeightRatio * 1000.0f;
 
 	ImVec2 NewPosition = WorkPosition;
 	NewPosition.x += WorkSize.x * 0.42f;
@@ -73,95 +129,112 @@ void UPropertyWindow::Render(float DeltaTime)
 	float ComboWidth = Available.x * 0.3f;
 
 	GetSelectedValue();
+	bool bRotationChanged = false;
+	bool bRotationActive = false;
+	bool bRotationFinished = false;
+	float PreviousDegree = RotationDegree.X;
 
-	ImGui::Begin("Jungle Property Window");
+	if (SelectedComponent != nullptr)
 	{
-		ImGui::PushItemWidth(ButtonWidth);
-		ImGui::DragFloat("##translationX", &Translation.X, SnapSize);
-		ImGui::SameLine();
-		ImGui::DragFloat("##translationY", &Translation.Y, SnapSize);
-		ImGui::SameLine();
-		ImGui::DragFloat("##translationZ", &Translation.Z, SnapSize);
-		ImGui::SameLine();
-		ImGui::Text("Translation");
-		ImGui::DragFloat("##rotationR", &Rotation.X, 0.001f);
-		ImGui::SameLine();
-		ImGui::DragFloat("##rotationP", &Rotation.Y, 0.001f);
-		ImGui::SameLine();
-		ImGui::DragFloat("##rotationY", &Rotation.Z, 0.001f);
-		ImGui::SameLine();
-		ImGui::Text("Rotation");
-		//클램프해야함
-		float PrevScaleX = OScale.X;
-		if (ImGui::DragFloat("##scaleX", &OScale.X, 0.001f))
+		ImGui::Begin("Property Window");
 		{
-			if (bScaleLock)
+			ImGui::PushItemWidth(ButtonWidth);
+			ImGui::DragFloat("##translationX", &Translation.X, SnapSize);
+			DrawItemBottomLine(IM_COL32(255, 40, 40, 255), 2.0f);
+			ImGui::SameLine();
+			ImGui::DragFloat("##translationY", &Translation.Y, SnapSize);
+			DrawItemBottomLine(IM_COL32(40, 255, 40, 255), 2.0f);
+			ImGui::SameLine();
+			ImGui::DragFloat("##translationZ", &Translation.Z, SnapSize);
+			DrawItemBottomLine(IM_COL32(20, 30, 255, 255), 2.0f);
+			ImGui::SameLine();
+			ImGui::Text("Translation");
+			constexpr ImGuiSliderFlags RotationFlags = ImGuiSliderFlags_WrapAround | ImGuiSliderFlags_AlwaysClamp;
+			bRotationChanged |= DrawRotationField("##rotationR", RotationDegree.X, 0, bRotationActive, bRotationFinished);
+			DrawItemBottomLine(IM_COL32(255, 40, 40, 255), 2.0f);
+			ImGui::SameLine();
+			bRotationChanged |= DrawRotationField("##rotationP", RotationDegree.Y, 1, bRotationActive, bRotationFinished);
+			DrawItemBottomLine(IM_COL32(40, 255, 40, 255), 2.0f);
+			ImGui::SameLine();
+			bRotationChanged |= DrawRotationField("##rotationY", RotationDegree.Z, 2, bRotationActive, bRotationFinished);
+			DrawItemBottomLine(IM_COL32(20, 30, 255, 255), 2.0f);
+			ImGui::SameLine();
+			ImGui::Text("Rotation");
+			float PrevScaleX = OScale.X;
+			PrevScaleX = std::clamp(PrevScaleX, 0.0001f, 200.0f);
+			if (ImGui::DragFloat("##scaleX", &OScale.X, 0.001f))
 			{
-				float ScaleRatio = OScale.X / PrevScaleX;
-				OScale.Y *= ScaleRatio;
-				OScale.Z *= ScaleRatio;
-			}
-		}
-		ImGui::SameLine();
-		float PrevScaleY = OScale.Y;
-		if (ImGui::DragFloat("##scaleY", &OScale.Y, 0.001f))
-		{
-			if (bScaleLock)
-			{
-				float ScaleRatio = OScale.Y / PrevScaleY;
-				OScale.X *= ScaleRatio;
-				OScale.Z *= ScaleRatio;
-			}
-		}
-		ImGui::SameLine();
-		float PrevScaleZ = OScale.Z;
-		if (ImGui::DragFloat("##scaleZ", &OScale.Z, 0.001f))
-		{
-			if (bScaleLock)
-			{
-				float ScaleRatio = OScale.Z / PrevScaleZ;
-				OScale.X *= ScaleRatio;
-				OScale.Y *= ScaleRatio;
-			}
-		}
-		ImGui::SameLine();
-		ImGui::Text("Scale");
-		ImGui::PopItemWidth();
-		//ImGui::PopStyleVar();
-		ImGui::PushItemWidth(ComboWidth);
-		char SnapPrev[32];
-		snprintf(SnapPrev, sizeof(SnapPrev), "%g", SnapSizeList[SelectedSnapIndex]);
-		if (ImGui::BeginCombo("SnapSize", SnapPrev))
-		{
-			for (int i = 0; i < SnapSizeList.Size(); i++)
-			{
-				bool bSelected = (SelectedSnapIndex == i);
-
-				char ItemName[32];
-				snprintf(ItemName, sizeof(ItemName), "%g", SnapSizeList[i]);
-
-				if (ImGui::Selectable(ItemName, bSelected))
+				if (bScaleLock)
 				{
-					SelectedSnapIndex = i;
+					float ScaleRatio = OScale.X / PrevScaleX;
+					OScale.Y *= ScaleRatio;
+					OScale.Z *= ScaleRatio;
 				}
-
-				if (bSelected)
-				{
-					ImGui::SetItemDefaultFocus();
-				}
-				SnapSize = SnapSizeList[SelectedSnapIndex];
 			}
-			ImGui::EndCombo();
+			DrawItemBottomLine(IM_COL32(255, 40, 40, 255), 2.0f);
+			ImGui::SameLine();
+			float PrevScaleY = OScale.Y;
+			if (ImGui::DragFloat("##scaleY", &OScale.Y, 0.001f))
+			{
+				if (bScaleLock)
+				{
+					float ScaleRatio = OScale.Y / PrevScaleY;
+					OScale.X *= ScaleRatio;
+					OScale.Z *= ScaleRatio;
+				}
+			}
+			DrawItemBottomLine(IM_COL32(40, 255, 40, 255), 2.0f);
+			ImGui::SameLine();
+			float PrevScaleZ = OScale.Z;
+			if (ImGui::DragFloat("##scaleZ", &OScale.Z, 0.001f))
+			{
+				if (bScaleLock)
+				{
+					float ScaleRatio = OScale.Z / PrevScaleZ;
+					OScale.X *= ScaleRatio;
+					OScale.Y *= ScaleRatio;
+				}
+			}
+			DrawItemBottomLine(IM_COL32(20, 30, 255, 255), 2.0f);
+			ImGui::SameLine();
+			ImGui::Text("Scale");
+			ImGui::PopItemWidth();
+			//ImGui::PopStyleVar();
+			ImGui::PushItemWidth(ComboWidth);
+			char SnapPrev[32];
+			snprintf(SnapPrev, sizeof(SnapPrev), "%g", SnapSizeList[SelectedSnapIndex]);
+			if (ImGui::BeginCombo("SnapSize", SnapPrev))
+			{
+				for (int i = 0; i < SnapSizeList.Size(); i++)
+				{
+					bool bSelected = (SelectedSnapIndex == i);
+
+					char ItemName[32];
+					snprintf(ItemName, sizeof(ItemName), "%g", SnapSizeList[i]);
+
+					if (ImGui::Selectable(ItemName, bSelected))
+					{
+						SelectedSnapIndex = i;
+					}
+
+					if (bSelected)
+					{
+						ImGui::SetItemDefaultFocus();
+					}
+					SnapSize = SnapSizeList[SelectedSnapIndex];
+				}
+				ImGui::EndCombo();
+			}
+			ImGui::PopItemWidth();
+			ImGui::SameLine();
+			ImGui::Checkbox("Scale Lock", &bScaleLock);
+			if (ImGui::Button("Delete"))
+			{
+				DeleteSelected();
+			}
 		}
-		ImGui::PopItemWidth();
-		ImGui::SameLine();
-		ImGui::Checkbox("Scale Lock", &bScaleLock);
-		if (ImGui::Button("Delete"))
-		{
-			DeleteSelected();
-		}
+		ImGui::End();
 	}
-	ImGui::End();
-
-	SetSelectedValue();
+	bEditingRotation = bRotationActive;
+	SetSelectedValue(bRotationChanged || bRotationFinished);
 }
