@@ -99,10 +99,10 @@ void FEditor::Tick(float DeltaTime)
 		}
 	}
 
-	const bool bGizmoOwnsInput =bWasDragging || GizmoController->IsDragging();
+	const bool bGizmoOwnsInput = bWasDragging || GizmoController->IsDragging();
 
 	GizmoController->Tick();
-	if (bGizmoOwnsInput)
+	if (bGizmoOwnsInput|| bWantToCaptureMouse)
 	{
 		// 카메라를 막는 동안 쌓인 회전 입력 폐기
 		int32 DX, DY;

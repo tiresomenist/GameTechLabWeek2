@@ -72,10 +72,22 @@ public:
 	//TEST CODE//
 	FVector GetCameraLocation() { return GetEditorCamera()->GetRelativeLocation(); }
 	void SetCameraLocation(FVector NewCameraLocation) { EditorCamera->SetRelativeLocation(NewCameraLocation); }
-	FQuaternion GetCamerRotation() { return GetEditorCamera()->GetRelativeRotation(); }
-	void SetCamerRotation(FQuaternion NewCameraRotation) { EditorCamera->SetRelativeRotation(NewCameraRotation); }
+	FVector GetCameraRotationDegree()
+	{
+		const FQuaternion& CameraRotation = GetEditorCamera()->GetRelativeRotation();
+		return FQuaternion::ToEuler(CameraRotation) * (180.0f / PI);
+	}
+	void SetCameraRotationDegree(const FVector& NewRotationDegree)
+	{
+		const FVector EulerRadian = NewRotationDegree * (PI / 180.0f);
+
+		const FQuaternion CameraRotation = FQuaternion::FromEuler(EulerRadian);
+
+		EditorCamera->SetRelativeRotation(CameraRotation);
+	}
 	float GetCameraFOV() { return GetEditorCamera()->GetFOV() * 180.0f / PI; }
 	void SetCameraFOV(float NewFOV) { EditorCamera->SetFOVByDegree(NewFOV); }
+	
 	void SpawnPrimitives(FClassType* ClassType, uint32 num) { GEngine::GetInstance()->GetConsole()->Append(std::format("Make {}, {} times",ClassType->Name,num)); }
 	
 	void SetObjectAxisGizmo(UGizmo* InGizmo);

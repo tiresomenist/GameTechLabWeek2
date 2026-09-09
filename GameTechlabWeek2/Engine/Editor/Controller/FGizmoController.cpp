@@ -82,9 +82,9 @@ void FGizmoController::CalculateAxis()
 
     for (int32 Axis = 0; Axis < 3; ++Axis)
     {
-        FVector WorldOrigin(FVector4(0, 0, 0, 1) * AxisMatrices[Axis]); //화살표 원점
+        FVector WorldOrigin(FVector4(0, 0, 0, 1) * AxisMatrices[Axis]); //월드기준 화살표 원점
 
-        FVector WorldEnd(FVector4(0, 0, 1, 1) * AxisMatrices[Axis]);    //화살표 끝점
+        FVector WorldEnd(FVector4(0, 0, 1, 1) * AxisMatrices[Axis]);    //월드기준 화살표 끝점
 
         FVector WorldDelta = WorldEnd - WorldOrigin;
         float WorldLength = WorldDelta.Length();
@@ -97,6 +97,7 @@ void FGizmoController::CalculateAxis()
         FVector ScreenOrigin;
         FVector ScreenEnd;
 
+        //월드좌표계->화면좌표계
         if (!WorldToPixel(WorldOrigin, ViewProjection, Viewport, ScreenOrigin) ||
             !WorldToPixel(WorldEnd, ViewProjection, Viewport, ScreenEnd))
         {
@@ -142,13 +143,16 @@ bool FGizmoController::BeginDrag(int32 Axis)
 	DragScreenDirection = ScreenDirections[Axis];
 	DragWorldDirection = WorldDirections[Axis];
 	DragUnitsPerPixel = UnitsPerPixel[Axis];
+    //회전 모드일때 추가 계산
 	if (Mode == EGizmoMode::Rotate)
 	{
+        //객체의 월드 위치
 		RotationPivot = SelectedObject->GetWorldMatrix().GetOrigin();
-		AccumulatedAngle = 0.0;
+		//누적회전각
+        AccumulatedAngle = 0.0;
 		auto& Input = *GInputManager::GetInstance();
-		bHasRotationDirection = GetRotationDirection(
-			Input.GetLeftCursorX(), Input.GetLeftCursorY(), PreviousRotationDirection);
+		
+        bHasRotationDirection = GetRotationDirection(Input.GetLeftCursorX(), Input.GetLeftCursorY(), PreviousRotationDirection);
 		if (!bHasRotationDirection) { EndDrag(); return false; }
 	}
 	bDragging = true;
@@ -200,11 +204,11 @@ void FGizmoController::Tick()
 	DragPixels.Y += float(DeltaY);
 
     const float Distance = DragPixels.Dot(DragScreenDirection) * DragUnitsPerPixel;
+    //축방향으로 움직인 값. 내적으로 구함
     const float AlongPixels = DragPixels.Dot(DragScreenDirection);
     constexpr float PixelsPerScaleUnit = 100.0f;
 
-    // +100픽셀: 시작 크기의 2배
-    // -50픽셀: 시작 크기의 0.5배
+    //스케일 변화량
     const float Factor = (std::max)(0.01f, 1.0f + AlongPixels / PixelsPerScaleUnit);
 
     FVector NewScale = StartObjectScale;
@@ -232,8 +236,7 @@ void FGizmoController::Tick()
             const float SinAngle = DragWorldDirection.Dot(PreviousRotationDirection.Cross(Direction));
             const float CosAngle = PreviousRotationDirection.Dot(Direction);
             AccumulatedAngle += std::atan2(SinAngle, CosAngle);
-            const auto DeltaRotation = FQuaternion::FromAxisAngle(
-                DragWorldDirection, float(std::remainder(AccumulatedAngle, 2.0 * PI)));
+            const auto DeltaRotation = FQuaternion::FromAxisAngle(DragWorldDirection, float(std::remainder(AccumulatedAngle, 2.0 * PI)));
             SelectedObject->SetRelativeRotation(DeltaRotation * StartObjectRotation);
         }
         PreviousRotationDirection = Direction;
@@ -256,26 +259,35 @@ void FGizmoController::Tick()
 
 bool FGizmoController::GetRotationDirection(float NDCX, float NDCY, FVector& OutDirection) const
 {
-    if (!Editor || !Editor->GetEditorCamera()) return false;
+    // 뭔가 잘못되었으면 리턴
+    if (!Editor || !Editor->GetEditorCamera()) return false;    
     const auto& Viewport = GDevice::GetInstance()->GetViewport();
     if (Viewport.Width <= 0.0f || Viewport.Height <= 0.0f) return false;
     auto* Camera = Editor->GetEditorCamera();
     Camera->SetAspectRatio(Viewport.Width / Viewport.Height);
+
+    //VP행렬의 역행렬
     FMatrix Inverse;
     if (!(Camera->GetViewMatrix() * Camera->GetProjectionMatrix()).TryInverse(Inverse)) return false;
     const FVector4 Near = FVector4(NDCX, NDCY, 0, 1) * Inverse;
     const FVector4 Far = FVector4(NDCX, NDCY, 1, 1) * Inverse;
-    if (!std::isfinite(Near.W) || !std::isfinite(Far.W) ||
-        std::fabs(Near.W) < 1.0e-6f || std::fabs(Far.W) < 1.0e-6f) return false;
+    if (!std::isfinite(Near.W) || !std::isfinite(Far.W) || std::fabs(Near.W) < 1.0e-6f || std::fabs(Far.W) < 1.0e-6f) return false;
+    
+    // 클릭->월드 레이로 변환
     const FVector Origin = FVector(Near) / Near.W;
     const FVector Direction = (FVector(Far) / Far.W - Origin).GetNormalized();
+    
     const float Denominator = Direction.Dot(DragWorldDirection);
     if (!std::isfinite(Denominator) || std::fabs(Denominator) < 1.0e-4f) return false;
+
     const float T = (RotationPivot - Origin).Dot(DragWorldDirection) / Denominator;
     if (!std::isfinite(T) || T < 0.0f) return false;
+
     const FVector Radial = Origin + Direction * T - RotationPivot;
     const float LengthSquared = Radial.LengthSquared();
+
     if (!std::isfinite(LengthSquared) || LengthSquared < 1.0e-8f) return false;
+
     OutDirection = Radial / std::sqrt(LengthSquared);
     return true;
 }

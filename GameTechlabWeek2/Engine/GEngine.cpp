@@ -100,6 +100,10 @@ void GEngine::Destroy()
 	GSceneManager* SceneManager = GSceneManager::GetInstance();
 	SceneManager->Release();
 	
+	// 리소스 매니저 정리
+	GResourceManager* ResourceManager = GResourceManager::GetInstance();
+	ResourceManager->Shutdown();
+    
 	// GObjectStatics 정리
 	GObjectStatics::Release();
 

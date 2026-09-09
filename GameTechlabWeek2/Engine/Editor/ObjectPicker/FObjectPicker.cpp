@@ -80,6 +80,7 @@ UPrimitiveComponent* FObjectPicker::Pick()
 
 	UPrimitiveComponent* SelectedObject = nullptr;
 	float ClosestDistance = 100000.f;
+	// 19번 최적화해야됨
 	Scene->ForEachPrimitive(
 		[&](UPrimitiveComponent* Primitive)
 		{
