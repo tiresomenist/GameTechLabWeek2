@@ -19,5 +19,7 @@ public:
 	virtual void Render(float DeltaTime) {}
 
 	void DrawItemBottomLine(uint32 Color, float Thickness);
+
+	virtual ~UEditorWindow() = default;
 };
 

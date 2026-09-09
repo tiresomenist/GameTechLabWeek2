@@ -1,4 +1,5 @@
 #include "GObjectStatics.h"
+#include "Engine/Object/UObject.h"
 
 #include <iostream>
 
@@ -24,7 +25,7 @@ uint32 GObjectStatics::GetNextIndex()
 
 void GObjectStatics::Release()
 {
-	for (auto& Item : ObjectArray)
+	for (auto Item : ObjectArray)
 	{
 		if (Item != nullptr)
 		{
