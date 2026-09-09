@@ -8,6 +8,8 @@
 #include "Engine/InputManager/WndProc.h"
 #include "Engine/Log.h"
 
+#include "../resource.h"
+
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // 각종 메시지를 처리할 함수
@@ -54,10 +56,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     WCHAR WindowClass[] = L"JungleWindowClass";
 
     // 윈도우 타이틀바에 표시될 이름
-    WCHAR Title[] = L"Game Tech Lab";
+    WCHAR Title[] = L"PEPE Engine";
 
     // 각종 메시지를 처리할 함수인 WndProc의 함수 포인터를 WindowClass 구조체에 넣는다.
     WNDCLASSW wndclass = { 0, WndProc, 0, 0, 0, 0, 0, 0, 0, WindowClass };
+    wndclass.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
 
     // 윈도우 클래스 등록
     RegisterClassW(&wndclass);
