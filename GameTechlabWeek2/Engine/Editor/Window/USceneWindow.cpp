@@ -10,6 +10,8 @@
 #include "Engine/Object/FClassType.h"
 #include "Engine/Object/Primitive/USphereComponent.h"
 #include "Engine/Object/Primitive/UCubeComponent.h"
+#include "Engine/Object/Primitive/UTriangleComponent.h"
+#include "Engine/Object/Primitive/UPlaneComponent.h"
 #include "Engine/Object/Primitive/UPepeComponent.h"
 #include "Engine/Object/Primitive/UOctopusComponent.h"
 #include "Engine/Object/UCameraComponent.h"
@@ -46,6 +48,8 @@ void USceneWindow::Initialize(FEditor* Editor)
 
 	Spawnables.Add(USphereComponent::GetClass());
 	Spawnables.Add(UCubeComponent::GetClass());
+	Spawnables.Add(UPlaneComponent::GetClass());
+	Spawnables.Add(UTriangleComponent::GetClass());
 	Spawnables.Add(UPepeComponent::GetClass());
 	Spawnables.Add(UOctopusComponent::GetClass());
 

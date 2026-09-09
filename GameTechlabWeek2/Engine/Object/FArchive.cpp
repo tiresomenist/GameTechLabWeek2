@@ -63,7 +63,7 @@ bool FArchive::GetBool(const FString& Key)
 void FArchive::SetBool(const FString& Key, bool Value)
 {
 	Object[Key] = Value;
-}
+}	
 
 FString FArchive::GetString(const FString& Key)
 {

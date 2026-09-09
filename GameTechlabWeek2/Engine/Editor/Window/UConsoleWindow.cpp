@@ -106,37 +106,29 @@ void UConsoleWindow::Render(float DeltaTime)
 
 	ImGui::Begin("Console");
 	{
-		ImGui::Text("This example implements a console with basic coloring, completion (TAB key) and history (Up/Down keys), A more elaborate implementation may want to store entries along with extra data such as timestamp, emitter, etc.");
-		ImGui::Text("Enter 'HELP for help.");
-
-		if(ImGui::Button("Add Debug Text"))
+		if (ImGui::Button("Add Debug Text"))
 		{
 			AddDebugText("[Debug] Test");
 		}
 		ImGui::SameLine();
-		if(ImGui::Button("Add Debug Error"))
+		if (ImGui::Button("Add Debug Error"))
 		{
 			AddDebugError("[Error] Test");
 		}
 		ImGui::SameLine();
-		if(ImGui::Button("Clear"))
+		if (ImGui::Button("Clear"))
 		{
 			Clear();
 		}
 		ImGui::SameLine();
-		if(ImGui::Button("Copy"))
+		if (ImGui::Button("Copy"))
 		{
 			Copy();
 		}
-		ImGui::Separator();
-		if(ImGui::Button("options"))
-		{
-			Option();
-		}
+		ImGui::SameLine();
+		ImGui::Text("검색: ");
 		ImGui::SameLine();
 		Filter.Draw("##SearchFilter", 180.f);
-		ImGui::SameLine();
-		ImGui::Text("Filter (\"incl,-excl\") (\"error\")");
 		ImGui::Separator();
 
 		ImGui::BeginChild("##consoleLogArea",ImVec2(0,0),true, ImGuiWindowFlags_HorizontalScrollbar);

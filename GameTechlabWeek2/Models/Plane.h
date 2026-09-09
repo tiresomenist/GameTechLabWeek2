@@ -1,14 +1,16 @@
 #pragma once
 
+#include <cstdint>
 #include "Engine/Renderer/FVertexSimple.h"
 
-// Unit plane on XZ, centered at the origin and facing Y+.
-inline FVertexSimple plane_vertices[] =
-{
-    { -0.5f, 0.0f, -0.5f, 0.0f, 0.5f, 0.0f, 1.0f },
-    { -0.5f, 0.0f,  0.5f, 0.0f, 0.5f, 1.0f, 1.0f },
-    {  0.5f, 0.0f, -0.5f, 1.0f, 0.5f, 0.0f, 1.0f },
-    { -0.5f, 0.0f,  0.5f, 0.0f, 0.5f, 1.0f, 1.0f },
-    {  0.5f, 0.0f,  0.5f, 1.0f, 0.5f, 1.0f, 1.0f },
-    {  0.5f, 0.0f, -0.5f, 1.0f, 0.5f, 0.0f, 1.0f },
+inline FVertexSimple plane_vertices[] = {
+    { -1.000000f, -1.000000f, 0.000000f, 1.000000f, 1.000000f, 0.000000f, 0.000000f },
+    { 1.000000f, -1.000000f, 0.000000f, 1.000000f, 0.000000f, 1.000000f, 0.000000f },
+    { -1.000000f, 1.000000f, 0.000000f, 1.000000f, 0.000000f, 0.000000f, 1.000000f },
+    { 1.000000f, 1.000000f, 0.000000f, 1.000000f, 1.000000f, 0.000000f, 0.000000f },
+};
+
+inline uint32_t plane_indices[] = {
+    0, 1, 3,
+    0, 3, 2,
 };

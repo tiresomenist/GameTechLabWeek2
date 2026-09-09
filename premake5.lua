@@ -20,9 +20,18 @@ project "GameTechlabWeek2"
 		"**.cpp",
 		"**.hpp",
 		"**.c",
+		"**.rc",
+		"**.ico",
 		"Assets/**",
 		"Scenes/**"
 	}
+
+	-- 셰이더는 FRenderer에서 여러 진입점으로 런타임 컴파일한다.
+	-- Visual Studio가 기본 진입점(main)으로 미리 컴파일하지 않도록 콘텐츠로만 취급한다.
+	filter "files:**.hlsl"
+		buildaction "None"
+
+	filter {}
 
 	-- 멀티 프로세싱 컴파일
 	-- 한번에 여러 cpp 파일 컴파일로 컴파일 속도 향상
@@ -41,7 +50,16 @@ project "GameTechlabWeek2"
 		
 	filter "configurations:Release"
 		defines { "NDEBUG" }
-		optimize "On"
+		-- Release 빌드에서도 컴파일러/링커 최적화를 사용하지 않는다.
+		-- 최적화된 바이너리가 일부 안티바이러스에서 오진되는 문제를 피하기 위함이다.
+		optimize "Off"
+		functionlevellinking "Off"
+		intrinsics "Off"
+		stringpooling "Off"
+		linktimeoptimization "Off"
+
+	filter { "configurations:Release", "toolset:msc*" }
+		linkoptions { "/OPT:NOREF", "/OPT:NOICF" }
 	
 	-- 동적 링킹
 	links {

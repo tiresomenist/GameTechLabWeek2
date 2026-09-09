@@ -2,6 +2,7 @@
 #include "Engine/Renderer/FVertexSimple.h"
 #include "Models/Sphere.h"
 #include "Models/Cube.h"
+#include "Models/Plane.h"
 #include "Models/Triangle.h"
 #include "Models/PePe.h"
 #include "Models/Octopus.h"
@@ -30,7 +31,8 @@ void GResourceManager::Initialize(GDevice* InDevice)
     Device = InDevice;
     CreateMesh("Sphere", sphere_vertices, sphere_indices);
     CreateMesh("Cube", cube_vertices, cube_indices);
-    //CreateMesh("Triangle", triangle_vertices, triangle_indices);
+    CreateMesh("Triangle", triangle_vertices, triangle_indices);
+    CreateMesh("Plane", plane_vertices, plane_indices);
     CreateMesh("Pepe", pepe_vertices, pepe_indices);
     CreateMesh("Octopus", octopus_vertices, octopus_indices);
     CreateMesh("ArrowRed", arrow_red_vertices, arrow_red_indices);
