@@ -23,8 +23,11 @@ public:
 
 private:
 
+	void InternalLoadScene();
+
 	UScene* CurrentScene = nullptr;
-	UScene* NextScene = nullptr;
+	FClassType* NextScene = nullptr;
+	FString NextSceneFile = "";
 
 	// 싱글톤
 	GSceneManager() = default;

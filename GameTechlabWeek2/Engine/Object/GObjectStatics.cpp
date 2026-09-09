@@ -1,26 +1,30 @@
 #include "GObjectStatics.h"
-#include "Engine/Object/UObject.h"
 
 #include <iostream>
 
+void GObjectStatics::SetNextUUID(EObjectDomain Domain, uint32 UUID)
+{
+	NextUUID[static_cast<size_t>(Domain)] = UUID;
+}
+
 void GObjectStatics::AddObject(UObject* Object)
 {
-	GUObjectArray.Add(Object);
+	ObjectArray.Add(Object);
 }
 
 void GObjectStatics::DestoryObject(uint32 InternalIndex)
 {
-	GUObjectArray[InternalIndex] = nullptr;
+	ObjectArray[InternalIndex] = nullptr;
 }
 
 uint32 GObjectStatics::GetNextIndex()
 {
-	return GUObjectArray.Num();
+	return ObjectArray.Num();
 }
 
 void GObjectStatics::Release()
 {
-	for (auto& Item : GUObjectArray)
+	for (auto& Item : ObjectArray)
 	{
 		if (Item != nullptr)
 		{
@@ -28,5 +32,5 @@ void GObjectStatics::Release()
 		}
 	}
 
-	GUObjectArray.Empty();
+	ObjectArray.Empty();
 }

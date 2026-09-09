@@ -81,6 +81,8 @@ public:
 	void SetObjectAxisGizmo(UGizmo* InGizmo);
 	UGizmo* GetObjectAxisGizmo()const;
 
+	UObject* SpawnObject(FClassType* Type);
+
 public:
 	friend TArray<FPrimitiveRenderData> RenderUtil::GetRenderList(FEditor* Editor, UScene* Scene);
 };

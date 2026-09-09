@@ -31,7 +31,7 @@
 void FEditor::Initialize()
 {
 
-	EditorCamera = static_cast<UCameraComponent*>(FObjectFactory::ConstructObject(UCameraComponent::GetClass()));
+	EditorCamera = static_cast<UCameraComponent*>(SpawnObject(UCameraComponent::GetClass()));
 	EditorCamera->SetRelativeLocation(FVector(-5.0f, 0.0f, 0.0f));
 
 	CameraController.SetCamera(EditorCamera);
@@ -93,7 +93,7 @@ void FEditor::Tick(float DeltaTime)
 			SetSelectedSceneComponent(Selected);
 			if (Selected != nullptr) {
 				//SelectedSceneComponent = Selected;
-				UE_LOG("[{}] : [{}번째 오브젝트 선택]", Time, Selected->UUID);
+				UE_LOG("[{}] : [{}번째 오브젝트 선택]", Time, Selected->GetUUID());
 				Selected->RenderData.isSelected = true;
 			}
 		}
@@ -154,7 +154,7 @@ void FEditor::LoadScene(FStringView SceneName)
 {
 	SetSelectedSceneComponent(nullptr);
 	GSceneManager* SceneManager = GSceneManager::GetInstance();
-	FClassType* SceneType = GetCurrentScene()->GetClassType();
+	FClassType* SceneType = GetCurrentScene()->GetInstanceClass();
 
 	SceneManager->LoadScene(SceneType, SceneName);
 }
@@ -189,7 +189,7 @@ void FEditor::DeleteSelectedSceneComponent()
 
 void FEditor::RegisterGizmo(FClassType* Type)
 {
-	UObject* Object = FObjectFactory::ConstructObject(Type);
+	UObject* Object = FObjectFactory::ConstructEditorObject(Type);
 	UGizmo* Gizmo = static_cast<UGizmo*>(Object);
 
 	Gizmo->Initialize(this);
@@ -215,9 +215,14 @@ UGizmo* FEditor::GetObjectAxisGizmo() const
 	return ObjectAxisGizmo;
 }
 
+UObject* FEditor::SpawnObject(FClassType* Type)
+{
+	return FObjectFactory::ConstructEditorObject(Type);
+}
+
 void FEditor::RegisterGrid(FClassType* Type)
 {
-	UObject* Object = FObjectFactory::ConstructObject(Type);
+	UObject* Object = FObjectFactory::ConstructEditorObject(Type);
 	UGrid* Grid = static_cast<UGrid*>(Object);
 
 	Grid->Initialize(this);

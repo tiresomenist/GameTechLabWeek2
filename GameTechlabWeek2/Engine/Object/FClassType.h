@@ -7,9 +7,10 @@
 // 전방 선언
 class UObject;
 struct FClassType;
+struct FObjectCreateInfo;
 
 // UObject 생성자 타입
-using Constructor = std::function<UObject* (uint32, uint32, FClassType*)>;
+using Constructor = std::function<UObject* (const FObjectCreateInfo&)>;
 
 struct FClassType
 {
