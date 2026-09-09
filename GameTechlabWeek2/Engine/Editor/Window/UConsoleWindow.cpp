@@ -19,7 +19,7 @@ void UConsoleWindow::Clear()
 void UConsoleWindow::Copy()
 {
 	FString ClipBoardText;
-	for (uint32 i = 0; i < logs.Size(); i++)
+	for (uint32 i = 0; i < logs.Num(); i++)
 	{
 		if (!Filter.PassFilter(logs[i].c_str()))
 		{
@@ -38,7 +38,7 @@ void UConsoleWindow::Render(float DeltaTime)
 {
 	FConsole* console = GEngine::GetInstance()->GetConsole();
 	//그려지는것도 제한걸어야함
-	logs = console->Get("");
+	logs = console->Get();
 
 	const ImGuiViewport* Viewport = ImGui::GetMainViewport();
 	const ImVec2 WorkPosition = Viewport->WorkPos; // 메뉴창을 제외한 제일 왼쪽 위 위치

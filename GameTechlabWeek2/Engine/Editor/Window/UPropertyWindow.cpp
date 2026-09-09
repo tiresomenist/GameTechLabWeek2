@@ -205,7 +205,7 @@ void UPropertyWindow::Render(float DeltaTime)
 			snprintf(SnapPrev, sizeof(SnapPrev), "%g", SnapSizeList[SelectedSnapIndex]);
 			if (ImGui::BeginCombo("SnapSize", SnapPrev))
 			{
-				for (int i = 0; i < SnapSizeList.Size(); i++)
+				for (int i = 0; i < SnapSizeList.Num(); i++)
 				{
 					bool bSelected = (SelectedSnapIndex == i);
 
