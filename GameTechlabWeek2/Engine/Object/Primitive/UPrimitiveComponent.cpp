@@ -6,7 +6,7 @@ void UPrimitiveComponent::Initialize()
 {
 	Super::Initialize();
 
-	FClassType* ClassType = GetClassType();
+	FClassType* ClassType = GetInstanceClass();
 	RenderData = CreateRenderData(ClassType->Name);
 	RenderData.WorldMatrix = &GetWorldMatrix();
 }

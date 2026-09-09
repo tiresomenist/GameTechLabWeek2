@@ -34,7 +34,7 @@ public:
 	template <typename T>
 	T SpawnObject(FClassType* Type)
 	{
-		UObject* Object = FObjectFactory::ConstructObject(Type);
+		UObject* Object = FObjectFactory::ConstructSceneObject(Type);
 		Objects.Add(Object);
 
 		return Cast<T>(Object);

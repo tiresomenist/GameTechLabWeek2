@@ -1,14 +1,14 @@
 #include "UObject.h"
-#include "Engine/Object/GObjects.h"
+#include "Engine/Object/GObjectStatics.h"
 #include "Engine/GAllocator.h"
 #include "Engine/Object/FArchive.h"
 #include "Engine/Log.h"
 
 FClassType* UObject::GetClass()
 {
-	static auto CreateObject = [](uint32 UUID, uint32 InternalIndex, FClassType* InClassType)
+	static auto CreateObject = [](const FObjectCreateInfo& Info)
 		{
-			return new UObject(UUID, InternalIndex, InClassType);
+			return new UObject(Info);
 		};
 
 	static FClassType Type
@@ -20,12 +20,12 @@ FClassType* UObject::GetClass()
     return &Type;
 }
 
-UObject::UObject(uint32 InUUID, uint32 InInternalIndex, FClassType* InClassType)
-	: UUID{ InUUID }
-	, InternalIndex{ InInternalIndex }
-	, ClassType{ InClassType }
+UObject::UObject(const FObjectCreateInfo& Info)
+	: UUID{ Info.UUID }
+	, InternalIndex{ Info.InternalIndex }
+	, ClassType{ Info.ClassType }
+	, Domain{ Info.Domain }
 {
-	UE_LOG("Object Created: {}", InClassType->Name);
 }
 
 bool UObject::IsA(FClassType* InClassType) const
@@ -62,7 +62,7 @@ void UObject::operator delete(void* Ptr)
 
 UObject::~UObject()
 {
-	GObjects::DestoryObject(InternalIndex);
+	GObjectStatics::DestoryObject(InternalIndex);
 }
 
 void UObject::Serialize(FArchive& Archive)

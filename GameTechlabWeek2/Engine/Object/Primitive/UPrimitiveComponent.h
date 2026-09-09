@@ -24,7 +24,7 @@ public:
 
     FMeshResource* GetMeshResource() const
     {
-        return GResourceManager::GetInstance()->GetPrimitive(FString(GetClassType()->Name));
+        return GResourceManager::GetInstance()->GetPrimitive(FString(GetInstanceClass()->Name));
     }
 
     FPrimitiveRenderData RenderData;
