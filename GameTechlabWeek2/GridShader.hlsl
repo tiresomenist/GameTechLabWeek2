@@ -31,12 +31,12 @@ VS_OUTPUT VS_Grid(VS_INPUT input)
     if (GridPlaneType == 0) // XY 평면 (기존)
     {
         float2 gridOrigin = floor(CameraPos.xy);
-        //worldPos += float3(gridOrigin, 0.0f);
+        worldPos += float3(gridOrigin, 0.0f);
     }
     else if (GridPlaneType == 1) // YZ 평면 (Z축 전용)
     {
-        float2 gridOrigin = floor(CameraPos.yz);
-        //worldPos += float3(0.0f, gridOrigin.x, gridOrigin.y);
+        float heightOffset = floor(CameraPos.x);
+        worldPos += float3(heightOffset, 0.0f, 0.0f);
     }
     
     output.Pos = mul(float4(worldPos, 1.0f), MVP);
