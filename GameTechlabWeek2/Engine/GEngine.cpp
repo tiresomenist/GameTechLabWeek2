@@ -5,6 +5,7 @@
 #include "Engine/Object/GObjectStatics.h"
 #include "Engine/Object/UObject.h"
 #include "Engine/Core.h"
+#include "Engine/Log.h"
 
 #include "Engine/Editor/FEditor.h"
 #include "Engine/GSceneManager.h"
@@ -77,6 +78,12 @@ void GEngine::Tick()
 {
 	float DeltaTime = GetTime() - LastTickTime;
 	LastTickTime = GetTime();
+
+	if (DeltaTime > 0.1f)
+	{
+		UE_LOG("[경고] 프레임 업데이트 시간이 100ms를 초과했습니다. 걸린 시간: {:.1f} ms", DeltaTime * 1000);
+	}
+
 	// 게임 로직을 수행합니다.
 	GSceneManager* SceneManager = GSceneManager::GetInstance();
 	SceneManager->Tick(DeltaTime);
