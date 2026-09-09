@@ -43,6 +43,9 @@ public:
 	ID3D11RasterizerState* CullFrontRasterizerState = nullptr;
 	ID3D11RasterizerState* CullNoneRasterizerState = nullptr;
 
+	ID3D11DepthStencilState* DefaultDepthStencilState = nullptr;
+	ID3D11DepthStencilState* GizmoDepthStencilState = nullptr;
+
 	ID3D11BlendState* AlphaBlendState = nullptr;
 
 	ID3D11Buffer* TransformConstantBuffer = nullptr;     
@@ -82,6 +85,9 @@ public:
 	void CreateAlphaBlendState();
 	void ReleaseAlphaBlendState();
 
+	void CreateDepthStencilStates();
+	void ReleaseDepthStencilStates();
+
 	void BeginFrame();
 	void EndFrame();
 
@@ -89,4 +95,5 @@ public:
 	void RenderPrimitive(const FPrimitiveRenderData& Data);
 	void RenderHighlight(const FPrimitiveRenderData& Data);
 	void RenderGrid(FMeshResource* Data);
+	void RenderGizmo(const FPrimitiveRenderData& Data);
 };
