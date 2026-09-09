@@ -15,6 +15,7 @@ public:
 	FGizmoPicker(FEditor* InEditor);
 	~FGizmoPicker();
 	void Tick();
+	bool RayTriangleIntersect(const FRay& Ray, FVector A, FVector B, FVector C, float& OutDistance);
 	bool RaySegmentIntersect(const FRay& Ray, FVector A, FVector B, float Radius, float& OutRayT, float& OutDistance);
 	bool MakeWorldRay(FRay& OutRay);
 	int Pick(UGizmo* InGizmos);
