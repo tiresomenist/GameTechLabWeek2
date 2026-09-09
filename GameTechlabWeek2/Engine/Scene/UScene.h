@@ -6,7 +6,7 @@
 #include "../Object/Primitive/UPrimitiveComponent.h"
 
 struct FPrimitiveRenderData;
-struct UCameraComponent;
+class UCameraComponent;
 class FRenderer;
 class FArchive;
 

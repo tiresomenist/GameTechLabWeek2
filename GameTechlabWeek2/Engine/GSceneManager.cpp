@@ -1,11 +1,19 @@
 #include "GSceneManager.h"
 #include "Container/FString.h"
 #include "Engine/Object/FArchive.h"
+#include "Engine/Object/FClassRegistry.h"
 #include "Engine/Object/FObjectFactory.h"
 #include "Engine/Object/GObjectStatics.h"
 #include "Engine/Scene/UMainScene.h"
 #include "Engine/Util/File.h"
-#include "SimpleJSON.hpp"
+#include "Engine/Log.h"
+#include "nlohmann/json.hpp"
+
+#include <charconv>
+#include <limits>
+#include <stdexcept>
+
+
 
 GSceneManager* GSceneManager::GetInstance()
 {
@@ -53,12 +61,103 @@ void GSceneManager::LoadScene(FClassType* SceneType, FStringView SerializedName)
 	}
 }
 
+bool ValidateSceneJSON(const nlohmann::json& Root)
+{
+	if (!Root.is_object())
+	{
+		// 주어진 JSON이 객체가 아님
+		return false;
+	}
+
+	if (Root.at("Version").get<int32>() != 1)
+	{
+		// 버전이 다름
+		return false;
+	}
+
+	const uint32 NextUUID = Root.at("NextUUID").get<uint32>();
+	const nlohmann::json& Primitives = Root.at("Primitives");
+
+	if (!Primitives.is_object())
+	{
+		// Primitives가 존재하지 않거나 객체가 아님
+		return false;
+    }
+
+	for (const auto& Item : Primitives.items())
+	{
+		const uint32 UUID = std::stoi(Item.key());
+		const nlohmann::json& Primitive = Item.value();
+
+		if (!Primitive.is_object())
+		{
+			// Primitives 객체의 value가 객체가 아님
+			return false;
+		}
+
+		const nlohmann::json& Type = Primitive.at("Type");
+		if (!Type.is_string())
+		{
+			// 객체에 Type가 없음
+			return false;
+		}
+
+		const FString TypeName = Type.get<FString>();
+		if (FClassRegistry::FindClassType(TypeName) == nullptr)
+		{
+			// 주어진 객체의 Type이 프로그램에 존재하지 않음
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void GSceneManager::InternalLoadScene()
 {
 	// UScene의 자식인지 체크
 	if (!NextScene->IsA(UScene::GetClass())) { return; }
 
-	// 기존 Scene Unload
+	TArray<FArchive> ObjectInfoList;
+	uint32 NextUUID = 0;
+
+	// 현재 Scene을 제거하기 전에 파일 전체를 파싱하고 검증합니다.
+	try
+	{
+		if (!NextSceneFile.empty())
+		{
+			FString FileName{ NextSceneFile };
+			FileName += ".json";
+
+			const FString FileText = File::ReadText(FileName);
+			const nlohmann::json FileJSON = nlohmann::json::parse(FileText);
+
+			if (!ValidateSceneJSON(FileJSON))
+			{
+				throw std::runtime_error("JSON 형식이 올바르지 않습니다.");
+			}
+
+			NextUUID = FileJSON.at("NextUUID").get<uint32>();
+
+			const nlohmann::json& List = FileJSON.at("Primitives");
+			for (const auto& Item : List.items())
+			{
+				const uint32 UUID = std::stoi(Item.key());
+				FArchive Archive{ Item.value() };
+				Archive.SetUInt32("UUID", UUID);
+				ObjectInfoList.Add(Archive);
+			}
+		}
+	}
+	catch (const std::exception& Error)
+	{
+		UE_LOG("[SceneManger] 저장된 {} 씬 로드 실패: {}", NextSceneFile, Error.what());
+		NextScene = nullptr;
+		NextSceneFile = "";
+		return;
+	}
+
+	// 검증을 통과한 뒤 기존 Scene을 교체합니다.
 	if (CurrentScene)
 	{
 		CurrentScene->EndPlay();
@@ -66,42 +165,9 @@ void GSceneManager::InternalLoadScene()
 		CurrentScene = nullptr;
 	}
 
-	TArray<FArchive> ObjectInfoList;
-	GObjectStatics::SetNextUUID(EObjectDomain::EOT_Scene, 0);
-
-	// 주어진 파일이 없다면 Deserialize 단계 생략
-	if (NextSceneFile.empty())
-	{
-		UObject* RawPtr = FObjectFactory::ConstructEngineObject(NextScene);
-		CurrentScene = static_cast<UScene*>(RawPtr);
-	}
-	else
-	{
-		// 직렬화된 파일 불러오기
-		// TODO: 적절한 예외처리가 없음
-		FString FileName{ NextSceneFile };
-		FileName += ".json";
-
-		FString FileText = File::ReadText(FileName);
-		json::JSON FileJSON = json::JSON::Load(FileText);
-
-		// GObjectStatics 초기화
-		uint32 NextUUID = FileJSON["NextUUID"].ToInt();
-		GObjectStatics::SetNextUUID(EObjectDomain::EOT_Scene, NextUUID);
-
-		UObject* RawPtr = FObjectFactory::ConstructEngineObject(NextScene);
-		CurrentScene = static_cast<UScene*>(RawPtr);
-
-		json::JSON& List = FileJSON["Primitives"];
-		for (auto& Item : List.ObjectRange())
-		{
-			uint32 UUID = std::stoi(Item.first);
-			FArchive Archive{ Item.second };
-			Archive.SetUInt32("UUID", UUID);
-
-			ObjectInfoList.Add(Archive);
-		}
-	}
+	GObjectStatics::SetNextUUID(EObjectDomain::EOT_Scene, NextUUID);
+	UObject* RawPtr = FObjectFactory::ConstructEngineObject(NextScene);
+	CurrentScene = static_cast<UScene*>(RawPtr);
 
 	CurrentScene->Deserialize(ObjectInfoList);
 	CurrentScene->BeginPlay();
@@ -112,18 +178,15 @@ void GSceneManager::InternalLoadScene()
 }
 
 
-
-
 void GSceneManager::SaveScene(FStringView SerializedName)
 {
 	if (CurrentScene == nullptr) { return; }
 	if (SerializedName == "") { return; }
 
-	// TODO: 적절한 예외처리가 없음
 	TArray<FArchive> ObjectInfoList;
 	CurrentScene->Serialize(ObjectInfoList);
 	
-	json::JSON ObjectArray;
+	nlohmann::json ObjectArray = nlohmann::json::object();
 
 	for (auto& Item : ObjectInfoList)
 	{
@@ -133,7 +196,7 @@ void GSceneManager::SaveScene(FStringView SerializedName)
 
 	uint32 NextUUID = GObjectStatics::GetNextUUID(EObjectDomain::EOT_Scene);
 
-	json::JSON FileJSON;
+	nlohmann::json FileJSON;
 	FileJSON["Version"] = 1;
 	FileJSON["NextUUID"] = NextUUID;
 	FileJSON["Primitives"] = ObjectArray;
@@ -141,6 +204,13 @@ void GSceneManager::SaveScene(FStringView SerializedName)
 	FString FileName{ SerializedName };
 	FileName += ".json";
 
-	FString FileText = FileJSON.dump();
-	File::WriteText(FileName, FileText);
+	try
+	{
+		FString FileText = FileJSON.dump();
+		File::WriteText(FileName, FileText);
+	}
+	catch (const std::exception& Error)
+	{
+		UE_LOG("[SceneManger] {} 씬 저장 실패: {}", FileName, Error.what());
+	}
 }
