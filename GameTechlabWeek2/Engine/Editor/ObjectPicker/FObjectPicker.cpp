@@ -72,6 +72,42 @@ bool FObjectPicker::RayTriangleIntersect(const FRay& Ray,FVector A, FVector B, F
 	return OutDistance > 1.0e-6f;
 }
 
+bool FObjectPicker::RayAABBIntersect(const FRay& Ray,const FVector& BoundsMin,const FVector& BoundsMax,float MaxDistance)
+{
+	float Enter = 0.0f;
+	float Exit = MaxDistance;
+
+	auto TestAxis = [&](float Origin, float Direction, float Min, float Max) -> bool
+		{
+			// 이 축으로 움직이지 않으면 시작점이 범위 안에 있어야 함.
+			if (Direction == 0.0f)
+				return Origin >= Min && Origin <= Max;
+
+			float T0 = (Min - Origin) / Direction;
+			float T1 = (Max - Origin) / Direction;
+
+			if (T0 > T1)
+				std::swap(T0, T1);
+
+			Enter = (std::max)(Enter, T0);
+			Exit = (std::min)(Exit, T1);
+
+			// 같을 때도 허용해야 두께가 0인 Plane·Triangle을 검사할 수 있음.
+			return Enter <= Exit;
+		};
+
+	if (!TestAxis(Ray.Origin.X, Ray.Direction.X, BoundsMin.X, BoundsMax.X))
+		return false;
+
+	if (!TestAxis(Ray.Origin.Y, Ray.Direction.Y, BoundsMin.Y, BoundsMax.Y))
+		return false;
+
+	if (!TestAxis(Ray.Origin.Z, Ray.Direction.Z, BoundsMin.Z, BoundsMax.Z))
+		return false;
+
+	return true;
+}
+
 UPrimitiveComponent* FObjectPicker::Pick()
 {
 	UScene* Scene = Editor->GetCurrentScene();
@@ -84,9 +120,24 @@ UPrimitiveComponent* FObjectPicker::Pick()
 	Scene->ForEachPrimitive(
 		[&](UPrimitiveComponent* Primitive)
 		{
+			
 			FMeshResource* Mesh = Primitive->GetMeshResource();
+			
 			if (Mesh == nullptr) {
 				UE_LOG("클래스를 참조하지 못했습니다.");
+				return;
+			}
+
+			FMatrix InverseWorld;
+			if (!Primitive->GetWorldMatrix().TryInverse(InverseWorld)) {
+				return;
+			}
+
+			FRay LocalRay;
+			LocalRay.Origin = FVector(FVector4(Ray.Origin, 1.0f) * InverseWorld);
+			LocalRay.Direction = FVector(FVector4(Ray.Direction, 0.0f) * InverseWorld);
+
+			if (Mesh->bHasBounds && !RayAABBIntersect(LocalRay,Mesh->BoundsMin,Mesh->BoundsMax,ClosestDistance)){
 				return;
 			}
 			for (uint32 Index = 0; Index + 2 < Mesh->IndexCount; Index += 3)
@@ -103,15 +154,9 @@ UPrimitiveComponent* FObjectPicker::Pick()
 				FVector B(V1.x, V1.y, V1.z);
 				FVector C(V2.x, V2.y, V2.z);
 
-
-				// 현재 오브젝트의 WorldMatrix를 반영
-				A = FVector(FVector4(A, 1.0f) * Primitive->GetWorldMatrix());
-				B = FVector(FVector4(B, 1.0f) * Primitive->GetWorldMatrix());
-				C = FVector(FVector4(C, 1.0f) * Primitive->GetWorldMatrix());
-
 				float T;
 				
-				if (RayTriangleIntersect(Ray, A, B, C, T))
+				if (RayTriangleIntersect(LocalRay, A, B, C, T))
 				{
 					if (T < ClosestDistance)
 					{

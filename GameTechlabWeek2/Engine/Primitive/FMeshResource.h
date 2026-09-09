@@ -5,6 +5,8 @@
 #include "Container/TArray.h"
 #include "Engine/Renderer/FVertexSimple.h"
 #include "Engine/Core.h"
+#include "FVector.h"
+
 
 struct FMeshResource
 {
@@ -16,4 +18,8 @@ struct FMeshResource
 
 	TArray<FVertexSimple> vertexs;
 	TArray<uint32> indexes;
+
+	FVector BoundsMin;
+	FVector BoundsMax;
+	bool bHasBounds = false;
 };

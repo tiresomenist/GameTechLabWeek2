@@ -1,3 +1,7 @@
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+
 #include "GResourceManager.h"
 #include "Engine/Renderer/FVertexSimple.h"
 #include "Models/Sphere.h"
@@ -19,6 +23,8 @@
 #include "Models/RotateGreen.h"
 #include "Models/RotateBlue.h"
 #include "Models/Grid.h"
+#include "FVector.h"
+
 
 GResourceManager* GResourceManager::GetInstance()
 {
@@ -67,6 +73,28 @@ FMeshResource* GResourceManager::CreateMesh(const FString& MeshName,
     Mesh->Stride = sizeof(FVertexSimple);
     Mesh->VertexBuffer = Device->CreateVertexBuffer(&Mesh->vertexs[0], Mesh->Stride * Mesh->VertexCount);
     Mesh->IndexBuffer = Device->CreateIndexBuffer(&Mesh->indexes[0], sizeof(uint32) * Mesh->IndexCount);
+    Mesh->bHasBounds = false;
+    if (Mesh->vertexs.Num() > 0)
+    {
+        const auto& First = Mesh->vertexs[0];
+
+        Mesh->BoundsMin = FVector(First.x, First.y, First.z);   
+        Mesh->BoundsMax = Mesh->BoundsMin;
+
+        for (const auto& Vertex : Mesh->vertexs)
+        {
+            Mesh->BoundsMin.X = std::max(Mesh->BoundsMin.X, Vertex.x);
+            Mesh->BoundsMin.Y = std::max(Mesh->BoundsMin.Y, Vertex.y);
+            Mesh->BoundsMin.Z = std::max(Mesh->BoundsMin.Z, Vertex.z);
+
+            Mesh->BoundsMax.X = std::min(Mesh->BoundsMax.X, Vertex.x);
+            Mesh->BoundsMax.Y = std::min(Mesh->BoundsMax.Y, Vertex.y);
+            Mesh->BoundsMax.Z = std::min(Mesh->BoundsMax.Z, Vertex.z);
+        }
+
+        Mesh->bHasBounds = true;
+    }
+
     PrimitiveCache[MeshName] = Mesh;
     return Mesh;
     

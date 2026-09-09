@@ -1,3 +1,7 @@
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+
 #pragma once
 #include <unordered_map>
 #include <map>
@@ -7,7 +11,7 @@
 #include "Container/FString.h"
 #include "Container/Tarray.h"
 #include "Engine/Renderer/FVertexSimple.h"
-#include "../Engine/Primitive/FMeshResource.h"
+#include "Engine/Primitive/FMeshResource.h"
 
 //struct FMeshResource
 //{
@@ -73,7 +77,27 @@ public:
 		MeshResource->VertexCount = VertexCount;
 		MeshResource->IndexCount = IndexCount;
 		MeshResource->Stride = sizeof(FVertexSimple);
+		MeshResource->bHasBounds = false;
+		if (MeshResource->vertexs.Num() > 0)
+		{
+			const auto& First = MeshResource->vertexs[0];
 
+			MeshResource->BoundsMin = FVector(First.x, First.y, First.z);
+			MeshResource->BoundsMax = MeshResource->BoundsMin;
+
+			for (const auto& Vertex : MeshResource->vertexs)
+			{
+				MeshResource->BoundsMin.X = (std::min)(MeshResource->BoundsMin.X, Vertex.x);
+				MeshResource->BoundsMin.Y = (std::min)(MeshResource->BoundsMin.Y, Vertex.y);
+				MeshResource->BoundsMin.Z = (std::min)(MeshResource->BoundsMin.Z, Vertex.z);
+
+				MeshResource->BoundsMax.X = (std::max)(MeshResource->BoundsMax.X, Vertex.x);
+				MeshResource->BoundsMax.Y = (std::max)(MeshResource->BoundsMax.Y, Vertex.y);
+				MeshResource->BoundsMax.Z = (std::max)(MeshResource->BoundsMax.Z, Vertex.z);
+			}
+
+			MeshResource->bHasBounds = true;
+		}
 		PrimitiveCache[MeshName] = MeshResource;
 
 		return MeshResource;
